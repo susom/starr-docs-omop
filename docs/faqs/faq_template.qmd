@@ -1,0 +1,42 @@
+---
+description: "<put the question name here>"
+code-annotations: hover
+---
+
+Note: This page will not render on the main webpage and it is only for internal reference
+
+
+### Question
+
+Write the full question here
+
+### Explanation
+
+Please fill the space below by
+- Contextualizing
+- Writing the SQL queries using a block like the following
+
+**You can annotate code line by line to explain what is going on without making the code harder to read with too may in-line comments
+You can check the full guide [here](https://quarto.org/docs/authoring/code-annotation.html)**
+
+```{python message=FALSE, warning=FALSE}
+from google.cloud import bigquery # <1>
+
+project_id = 'som-rit-phi-starr-dev' # <2>
+bq_client = bigquery.Client(project_id) #<3>
+```
+
+
+1. Importing Python Bigquery package.
+2. Setting the project in which the queries execute. This in independent on the project where the data lives.
+3. Creating the Bigquery Client to run queries.
+
+- Please write an explanation of the query and how this addresses the question.
+
+Notes:
+
+- Please be succinct and break the analysis is as many logical steps needed. Do not try to explain everything in one step.
+
+### Conclusion
+
+Write a final conclusion that wraps-up the detailed explanation.

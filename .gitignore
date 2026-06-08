@@ -1,0 +1,21 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+.log
+uv.lock
+.venv
+
+# Quarto
+.quarto/
+docs/_site/
+
+# Temporary files
+.temp/
+
+*.css
+*.html
+*.pdf
+*.js
+*.woff

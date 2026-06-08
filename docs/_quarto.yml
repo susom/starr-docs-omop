@@ -1,0 +1,121 @@
+project:
+  type: website
+  pre-render:
+    - ../scripts/generate_docs.py omop
+    - ../scripts/generate_faq.py
+  render:
+    - starr_omop54.qmd
+    - omop_data_model.qmd
+    - faq.qmd
+
+website:
+  title: "STARR-OMOP Documentation"
+  site-path: "/"
+  open-graph: true
+  page-navigation: true
+  back-to-top-navigation: false
+  sidebar:
+    collapse-level: 2
+    show-item-context: true
+    contents:
+      - section: "STARR-OMOP v5.4"
+        href: starr_omop54.qmd
+        contents:
+        - section: "Data Model Tables"
+          href: omop_data_model.qmd
+          contents:
+            - text: "care_site"
+              href: omop_data_model.qmd#care_site
+            - text: "cdm_source"
+              href: omop_data_model.qmd#cdm_source
+            - text: "cohort"
+              href: omop_data_model.qmd#cohort
+            - text: "cohort_definition"
+              href: omop_data_model.qmd#cohort_definition
+            - text: "condition_occurrence"
+              href: omop_data_model.qmd#condition_occurrence
+            - text: "cost"
+              href: omop_data_model.qmd#cost
+            - text: "death"
+              href: omop_data_model.qmd#death
+            - text: "device_exposure"
+              href: omop_data_model.qmd#device_exposure
+            - text: "dose_era"
+              href: omop_data_model.qmd#dose_era
+            - text: "drug_era"
+              href: omop_data_model.qmd#drug_era
+            - text: "drug_exposure"
+              href: omop_data_model.qmd#drug_exposure
+            - text: "episode"
+              href: omop_data_model.qmd#episode
+            - text: "episode_event"
+              href: omop_data_model.qmd#episode_event
+            - text: "image_occurrence"
+              href: omop_data_model.qmd#image_occurrence
+            - text: "location"
+              href: omop_data_model.qmd#location
+            - text: "measurement"
+              href: omop_data_model.qmd#measurement
+            - text: "metadata"
+              href: omop_data_model.qmd#metadata
+            - text: "note"
+              href: omop_data_model.qmd#note
+            - text: "note_nlp"
+              href: omop_data_model.qmd#note_nlp
+            - text: "observation"
+              href: omop_data_model.qmd#observation
+            - text: "observation_period"
+              href: omop_data_model.qmd#observation_period
+            - text: "payer_plan_period"
+              href: omop_data_model.qmd#payer_plan_period
+            - text: "person"
+              href: omop_data_model.qmd#person
+            - text: "procedure_occurrence"
+              href: omop_data_model.qmd#procedure_occurrence
+            - text: "provider"
+              href: omop_data_model.qmd#provider
+            - text: "specimen"
+              href: omop_data_model.qmd#specimen
+            - text: "visit_detail"
+              href: omop_data_model.qmd#visit_detail
+            - text: "visit_occurrence"
+              href: omop_data_model.qmd#visit_occurrence
+      - text: "FAQ"
+        href: faq.qmd
+  navbar:
+    left:
+      - text: "STARR-OMOP v5.4"
+        menu:
+          - text: "Overview"
+            href: starr_omop54.qmd
+          - text: "Data Model Tables"
+            href: omop_data_model.qmd
+      - text: "FAQ"
+        href: faq.qmd
+    right:
+      - text: "STARR-Common Docs"
+        icon: box-arrow-up-right
+        href: https://susom.github.io/starr-docs-common/
+
+    tools:
+      - icon: github
+        href: https://github.com/susom/starr-docs-omop
+  page-footer:
+    right:
+      - text: "Report Issue"
+        href: "https://github.com/susom/starr-docs-omop/issues/new?title=Documentation%20Issue"
+    center:
+      - icon: github
+        href: https://github.com/susom/starr-docs-omop
+  search: true
+
+format:
+  html:
+    theme: lux
+    css: styles.css
+    toc: true
+    toc-depth: 5
+    smooth-scroll: true
+
+execute:
+  lib-dir: /home/rstudio/renv/library/linux-ubuntu-noble/R-4.4/aarch64-unknown-linux-gnu

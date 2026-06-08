@@ -1,0 +1,94 @@
+---
+title: "FAQ"
+description: "Frequently Asked Questions for STARR-OMOP"
+code-annotations: hover
+---
+
+Below a list of frequently asked questions for STARR-OMOP v5.4.
+
+::: {.callout-note collapse="true"}
+## How do I know which event is represented in each row
+
+### Question
+
+How do I know which events are represented by a single row in each one of the tables (e.g. `condition_occurrence`)? I only see numbers and dates but no other information.
+
+### Explanation
+
+The OMOP CDM tables use concept IDs to represent clinical events. These concept IDs are numeric identifiers that map to human-readable terms in the `concept` table. To understand what a row represents, you need to join the clinical event table with the `concept` table.
+
+In the `condition_occurrence` table, the `condition_concept_id` field contains the standardized concept representing the condition. To get the actual condition name, you join with the `concept` table.
+
+Let's demonstrate how to retrieve condition information with their human-readable names:
+
+```{python}
+#| warning: false
+#| message: false
+
+from google.cloud import bigquery # <1>
+
+project_id = 'som-rit-starr-training' # <2>
+bq_client = bigquery.Client(project_id) # <3>
+```
+
+1. Importing Python BigQuery package to interact with BigQuery.
+2. Setting the project ID for query execution.
+3. Creating the BigQuery Client to run queries.
+
+```{python}
+#| warning: false
+#| message: false
+
+query = """
+SELECT
+    co.person_id, # <1>
+    co.condition_concept_id, # <2>
+    c.concept_name, # <3>
+    c.vocabulary_id, # <4>
+    co.condition_start_date # <5>
+FROM
+    `som-rit-starr-training.starr_omop_cdm5_deid_1pcent_lite_2022_10_30.condition_occurrence` AS co # <6>
+INNER JOIN
+    `som-rit-starr-training.starr_omop_cdm5_deid_1pcent_lite_2022_10_30.concept` AS c # <7>
+    ON co.condition_concept_id = c.concept_id # <8>
+    AND c.vocabulary_id = 'SNOMED' # <9>
+LIMIT 3
+"""
+
+df = bq_client.query(query).to_dataframe() # <10>
+```
+
+1. The person_id links to the patient who has this condition.
+2. The condition_concept_id is the numeric code representing the condition.
+3. The concept_name from the concept table provides the human-readable condition name.
+4. The vocabulary_id indicates which standardized vocabulary this concept comes from (e.g., SNOMED).
+5. The condition_start_date indicates when the condition was diagnosed or observed.
+6. The condition_occurrence table contains all condition records.
+7. The concept table contains the mapping from concept IDs to readable names.
+8. Joining on condition_concept_id = concept_id links the numeric code to its meaning.
+9. Select only the SNOMED concepts. They are the majority of the concepts in the condition_occurrence table.
+10. Execute the query and convert results to a pandas DataFrame.
+
+Now let's check the table
+
+```{python}
+#| echo: false
+#| warning: false
+#| message: false
+
+from IPython.display import Markdown
+Markdown(df.to_markdown(index=False))
+```
+
+You can apply this same pattern to any OMOP-CDM table that contains concept IDs. For example:
+
+- In `drug_exposure`, join `drug_concept_id` with the `concept` table
+- In `procedure_occurrence`, join `procedure_concept_id` with the `concept` table
+- In `measurement`, join `measurement_concept_id` with the `concept` table
+
+### Conclusion
+
+OMOP CDM tables store standardized numeric concept IDs to represent clinical events. To see what these numbers mean, you must join with the `concept` table using the appropriate concept_id field. This design allows for standardized, interoperable healthcare data analysis while maintaining semantic meaning through the vocabulary tables. The `concept` table acts as a central reference that translates all numeric codes into human-readable descriptions.
+
+:::
+

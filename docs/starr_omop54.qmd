@@ -1,0 +1,123 @@
+---
+title: "STARR-OMOP v5.4"
+description: "Stanford Electronic Health Record data in OMOP Common Data Model version 5.4"
+---
+
+## Introduction
+
+STARR-OMOP is Stanford Electronic Health Record data from its two Hospitals in an Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM). Use OMOP for observational science, population health science, collaborative network studies and reproducible data science.
+
+There are a number of popular CDMs to choose from including i2b2, Pediatric Learning Healthcare System (PEDSNet), Patient-Centered Clinical Research Network (PCORNet), Health Care Systems Research Network, and the US Food and Drug Administration Sentinel. Choosing a particular CDM over another is a matter of meeting specific research objectives. It is not uncommon for an academic medical center to support more than one.
+
+Our second generation research clinical data warehouse (r-CDW) needs to support a large number of use cases. For this r-CDW, we chose OMOP CDM. OMOP CDM demonstrates applicability for many different use cases including:
+
+- **Claims and EHR** - Proven for integrated analysis of administrative claims and electronic health records
+- **Longitudinal registries** - EHR-based patient registries for long-term studies
+- **Transactional databases** - Hospital operational data for quality improvement
+- **Comparative effectiveness research** - Strong results with minimal information loss during transformation
+- **Clinical phenotyping** - Speeds up implementation of clinical phenotypes across networks
+- **Research reproducibility** - Promotes consistent, reproducible research methods
+
+## OMOP Common Data Model v5.4
+
+The OMOP Common Data Model (CDM) is a standardized data structure for observational healthcare data. Version 5.4 represents the latest evolution of this model, maintained by the [Observational Health Data Sciences and Informatics (OHDSI) community](https://ohdsi.org).
+
+### Key Features
+
+- **Standardized Vocabularies**: Maps local codes to standard concepts (SNOMED-CT, RxNorm, LOINC)
+- **Person-Centric Design**: All clinical events linked to individual patients
+- **Domain Tables**: Organized by clinical domain (conditions, drugs, procedures, measurements, etc.)
+- **Temporal Relationships**: Captures timing and sequence of clinical events
+- **Hierarchical Concepts**: Supports analysis at multiple levels of granularity
+
+### Core Clinical Domains
+
+The CDM organizes healthcare data into the following core domains:
+
+::: {.grid}
+::: {.g-col-12 .g-col-md-6}
+#### Clinical Event Tables
+- **Person** - Demographics and patient identity
+- **Observation Period** - Time spans of available data
+- **Visit Occurrence** - Healthcare encounters
+- **Condition Occurrence** - Diagnoses and symptoms
+- **Drug Exposure** - Medications and prescriptions
+- **Procedure Occurrence** - Medical procedures
+- **Device Exposure** - Medical devices
+- **Measurement** - Lab tests and vital signs
+- **Observation** - Clinical facts not in other domains
+:::
+
+::: {.g-col-12 .g-col-md-6}
+#### Health System Tables
+- **Provider** - Healthcare providers
+- **Care Site** - Healthcare facilities
+- **Location** - Geographic information
+- **Payer Plan Period** - Insurance coverage
+
+#### Derived Tables
+- **Condition Era** - Continuous condition periods
+- **Drug Era** - Continuous drug exposure periods
+- **Episode** - Disease phases and treatments
+:::
+:::
+
+### OHDSI Community & Tools
+
+OMOP is supported by an open-source public-private partnership that welcomes community participation. There is a robust community of end users, developers, and thought leaders actively engaged in various shared repositories, discussion forums, training and workshops.
+
+**Popular OHDSI tools include:**
+
+- **ATLAS** - Web-based cohort definition and analysis
+- **ACHILLES** - Database characterization and profiling
+- **Data Quality Dashboard** - Comprehensive data quality checks
+- **HADES** - Health Analytics Data-to-Evidence Suite (R packages)
+
+For comprehensive OMOP CDM v5.4 documentation, visit the [official OHDSI documentation](https://ohdsi.github.io/CommonDataModel/cdm54.html).
+
+## STARR-OMOP Pipeline
+
+Research IT receives raw Clarity from each of the two hospitals and builds a filtered Clarity for each. These filtered Clarity databases then become the source for OMOP ETLs. Patients at the two hospitals are linked via their MRN.
+
+We first build an OMOP database with all PHI present. Then, we build two PHI scrubbed databases that are accessible to Stanford researchers without an IRB:
+
+- **STARR-OMOP-deid** - Contains PHI scrubbed clinical text (NOTES) using [TiDE](https://starr.stanford.edu/methods/tide-clinical-text-safe-harbor)
+- **STARR-OMOP-deid-lite** - Subset without clinical notes, used by ATLAS and ACE (Advanced Cohort Engine)
+
+### Refresh Schedule
+
+- **STARR-OMOP-deid**: Monthly refresh
+- **STARR-OMOP-deid-lite**: Weekly refresh
+
+Patient identifiers remain stable between refreshes.
+
+## Access & Services
+
+### Self-Service Access
+
+STARR-OMOP-deid and STARR-OMOP-deid-lite are available through [self-service](https://starr.stanford.edu/self-service).
+
+### Consultation Services
+
+For OMOP PHI, Limited Data Sets, linking with Clarity, or sharing with non-Stanford researchers, please request a [consultation service](https://starr.stanford.edu/consultation-services).
+
+### Documentation & Training
+
+For documentation and training resources, please refer to [research support](https://starr.stanford.edu/research-support).
+
+## Data Model Documentation
+
+Detailed table and column definitions for STARR-OMOP are available in the [Data Model Tables](omop_data_model.qmd) page. This comprehensive documentation includes:
+
+- **Table Descriptions**: Stanford-specific implementation notes for each OMOP table
+- **Column Definitions**: Detailed descriptions with data types and constraints
+
+The documentation is extracted directly from our data transformation layer, ensuring it remains synchronized with the actual implementation.
+
+[View Data Model Tables →](omop_data_model.qmd){.btn .btn-primary}
+
+## Frequently Asked Questions
+
+Common questions about STARR-OMOP are automatically collected from individual FAQ entries and compiled into a comprehensive list. Each question includes detailed explanations, code examples, and best practices for working with the OMOP data model.
+
+[View FAQ →](faq.qmd){.btn .btn-primary}
