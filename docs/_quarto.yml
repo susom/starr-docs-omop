@@ -100,6 +100,13 @@ website:
       - text: "STARR-Common Docs"
         icon: box-arrow-up-right
         href: https://vigilant-lamp-n3go165.pages.github.io/
+      - text: "LLMs.txt"
+        icon: robot
+        menu:
+          - text: "llms.txt"
+            href: llms.txt
+          - text: "llms-full.txt"
+            href: llms-full.txt
 
     tools:
       - icon: github
