@@ -19,3 +19,7 @@ docs/_site/
 *.pdf
 *.js
 *.woff
+
+# But keep Stanford theme assets
+!docs/styles.css
+!docs/fonts/*.woff
