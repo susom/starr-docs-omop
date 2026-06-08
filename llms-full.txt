@@ -1,0 +1,3488 @@
+# STARR-OMOP Documentation
+
+============================================================
+# STARR-OMOP v5.4
+Stanford Electronic Health Record data in OMOP Common Data Model version 5.4
+============================================================
+
+## Introduction
+
+STARR-OMOP is Stanford Electronic Health Record data from its two Hospitals in an Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM). Use OMOP for observational science, population health science, collaborative network studies and reproducible data science.
+
+There are a number of popular CDMs to choose from including i2b2, Pediatric Learning Healthcare System (PEDSNet), Patient-Centered Clinical Research Network (PCORNet), Health Care Systems Research Network, and the US Food and Drug Administration Sentinel. Choosing a particular CDM over another is a matter of meeting specific research objectives. It is not uncommon for an academic medical center to support more than one.
+
+Our second generation research clinical data warehouse (r-CDW) needs to support a large number of use cases. For this r-CDW, we chose OMOP CDM. OMOP CDM demonstrates applicability for many different use cases including:
+
+- **Claims and EHR** - Proven for integrated analysis of administrative claims and electronic health records
+- **Longitudinal registries** - EHR-based patient registries for long-term studies
+- **Transactional databases** - Hospital operational data for quality improvement
+- **Comparative effectiveness research** - Strong results with minimal information loss during transformation
+- **Clinical phenotyping** - Speeds up implementation of clinical phenotypes across networks
+- **Research reproducibility** - Promotes consistent, reproducible research methods
+
+## OMOP Common Data Model v5.4
+
+The OMOP Common Data Model (CDM) is a standardized data structure for observational healthcare data. Version 5.4 represents the latest evolution of this model, maintained by the Observational Health Data Sciences and Informatics (OHDSI) community.
+
+### Key Features
+
+- **Standardized Vocabularies**: Maps local codes to standard concepts (SNOMED-CT, RxNorm, LOINC)
+- **Person-Centric Design**: All clinical events linked to individual patients
+- **Domain Tables**: Organized by clinical domain (conditions, drugs, procedures, measurements, etc.)
+- **Temporal Relationships**: Captures timing and sequence of clinical events
+- **Hierarchical Concepts**: Supports analysis at multiple levels of granularity
+
+### Core Clinical Domains
+
+The CDM organizes healthcare data into the following core domains:
+
+#### Clinical Event Tables
+- **Person** - Demographics and patient identity
+- **Observation Period** - Time spans of available data
+- **Visit Occurrence** - Healthcare encounters
+- **Condition Occurrence** - Diagnoses and symptoms
+- **Drug Exposure** - Medications and prescriptions
+- **Procedure Occurrence** - Medical procedures
+- **Device Exposure** - Medical devices
+- **Measurement** - Lab tests and vital signs
+- **Observation** - Clinical facts not in other domains
+
+#### Health System Tables
+- **Provider** - Healthcare providers
+- **Care Site** - Healthcare facilities
+- **Location** - Geographic information
+- **Payer Plan Period** - Insurance coverage
+
+#### Derived Tables
+- **Condition Era** - Continuous condition periods
+- **Drug Era** - Continuous drug exposure periods
+- **Episode** - Disease phases and treatments
+
+### OHDSI Community & Tools
+
+OMOP is supported by an open-source public-private partnership that welcomes community participation. There is a robust community of end users, developers, and thought leaders actively engaged in various shared repositories, discussion forums, training and workshops.
+
+**Popular OHDSI tools include:**
+
+- **ATLAS** - Web-based cohort definition and analysis
+- **ACHILLES** - Database characterization and profiling
+- **Data Quality Dashboard** - Comprehensive data quality checks
+- **HADES** - Health Analytics Data-to-Evidence Suite (R packages)
+
+For comprehensive OMOP CDM v5.4 documentation, visit the official OHDSI documentation.
+
+## STARR-OMOP Pipeline
+
+Research IT receives raw Clarity from each of the two hospitals and builds a filtered Clarity for each. These filtered Clarity databases then become the source for OMOP ETLs. Patients at the two hospitals are linked via their MRN.
+
+We first build an OMOP database with all PHI present. Then, we build two PHI scrubbed databases that are accessible to Stanford researchers without an IRB:
+
+- **STARR-OMOP-deid** - Contains PHI scrubbed clinical text (NOTES) using TiDE
+- **STARR-OMOP-deid-lite** - Subset without clinical notes, used by ATLAS and ACE (Advanced Cohort Engine)
+
+### Refresh Schedule
+
+- **STARR-OMOP-deid**: Monthly refresh
+- **STARR-OMOP-deid-lite**: Weekly refresh
+
+Patient identifiers remain stable between refreshes.
+
+## Access & Services
+
+### Self-Service Access
+
+STARR-OMOP-deid and STARR-OMOP-deid-lite are available through self-service.
+
+### Consultation Services
+
+For OMOP PHI, Limited Data Sets, linking with Clarity, or sharing with non-Stanford researchers, please request a consultation service.
+
+### Documentation & Training
+
+For documentation and training resources, please refer to research support.
+
+## Data Model Documentation
+
+Detailed table and column definitions for STARR-OMOP are available in the Data Model Tables page. This comprehensive documentation includes:
+
+- **Table Descriptions**: Stanford-specific implementation notes for each OMOP table
+- **Column Definitions**: Detailed descriptions with data types and constraints
+
+The documentation is extracted directly from our data transformation layer, ensuring it remains synchronized with the actual implementation.
+
+View Data Model Tables →
+
+## Frequently Asked Questions
+
+Common questions about STARR-OMOP are automatically collected from individual FAQ entries and compiled into a comprehensive list. Each question includes detailed explanations, code examples, and best practices for working with the OMOP data model.
+
+View FAQ →
+
+============================================================
+# OMOP CDM v5.4 Data Model
+Detailed table and column definitions from dbt models
+============================================================
+
+## Overview
+
+This page documents all tables in the STARR-OMOP CDM v5.4 implementation, extracted from the dbt model definitions. Each table includes Stanford-specific implementation notes and detailed column descriptions.
+
+**Total Tables:** 41
+
+---
+
+## _VARIANT_OCCURRENCE 
+
+The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing.
+This table is custom to STARR-OMOP and is not part of the standard OMOP CDM.
+Currently, it only contains variants identified via the STANFORD ACTIONABLE MUTATION PANEL FOR SOLID TUMORS (STAMP) test.
+The data is sourced from the Epic Genomics Suite, which incorporated STAMP tests starting in August of 2025.
+STAMP tests performed prior to this date are not currently included in this table.
+
+variant_occurrence_id (int64)
+
+This is the primary key of the table. This is a unique identifier for every variant occurrence. It is assumed that every variant occurrence with a different unique identifier
+is in fact a different event and should be treated independently.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person_id in the person table for whom the condition is recorded.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+visit_occurrence_id (INT64)
+
+A foreign key identifier to the visit_occurrence_id in the visit_occurrence table for the visit associated with the ordered test.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+procedure_occurrence_id (INT64)
+
+A foreign key identifier to the OMOP procedure_occurrence table for the procedure order for the variant test.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('procedure_occurrence')(procedure_occurrence_id)`
+
+provider_id (INT64)
+
+A foreign key identifier to the provider in the provider table who authorized the order for the variant test.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+order_datetime (DATETIME)
+
+The datetime when the test was ordered.
+
+test_name (string)
+
+The name of the test associated with the variant record.
+
+variant_name (string)
+
+The name of the genetic variant identified in the test.
+
+variant_type (STRING)
+
+The variant type, such as 'Simple', 'Pharmacogenomic genotype', 'Negative', etc.
+
+assessment (STRING)
+
+The assessment of the variant, such as 'Detected', 'Not Detected', 'Negative', etc.
+
+genome_assembly (STRING)
+
+The genome assembly used for the variant, such as 'GRCh37', 'GRCh38', 'hg38', etc.
+
+chromosome (STRING)
+
+The chromosome on which the variant is located, such as '1', '2', 'X', 'Y', etc.
+
+transcript_ref_seq (STRING)
+
+The external identifier defining the Transcript Reference Sequence.
+
+dna_change (STRING)
+
+The change at the DNA level relative to the Transcript Reference Sequence.
+
+dna_var_type (STRING)
+
+The descriptive name for the DNA sequence variation type, such as 'Substitution', 'Copy number gain', 'Deletion', etc.
+
+amino_acid_change (STRING)
+
+The change at the amino acid (protein) level caused by the DNA change.
+
+variant_molecular_consequence (STRING)
+
+The descriptive name for the molecular consequence of the variant, such as 'Missense Variant', 'Nonsense', 'Frameshift Variant', etc.
+
+genomic_dna_change (STRING)
+
+The change at the DNA level relative to the Genomic Reference Sequence.
+
+allelic_frequency *(NUMERIC(18,5))*
+
+The percentage of all of the reads at this genomic location that were represented by the
+given allele. For homozygotes it will be close to 100%; for heterozygotes it will be close to 50%.
+It can be a smaller number when there are mosaics or multiple chromosomes, or mixtures of tumor cells
+and normal cells. It is stored in the system as a decimal between 0 and 1 - this is calculated by
+dividing the percentage by 100.
+
+copy_number_lower *(NUMERIC(9,2))*
+
+The lower bound of the copy number range for the variant.
+
+copy_number_upper *(NUMERIC(9,2))*
+
+The upper bound of the copy number range for the variant.
+
+gene_name (STRING)
+
+The name of the gene associated with the variant record, such as 'POLE', 'TP53', 'CYP2D6', etc.
+
+phenotype_spec_var_class (STRING)
+
+The descriptive name for the phenotype variant class, such as 'Pathogenic', 'Likely Pathogenic', 'Uncertain Significance', etc.
+
+interpretation (STRING)
+
+The full text interpretation associated with the variant record, aggregated from individual interpretation lines.
+
+accession_number (STRING)
+
+The specimen accession numbers associated with the ordered test, stored as a comma-separated string if multiple accession numbers are present.
+
+stamp_pipeline_version (STRING)
+
+The version of the STAMP pipeline used for the test associated with the variant record.
+
+specimen_type (STRING)
+
+The specimen type associated with the order for the variant record, such as 'Blood', 'Tissue/Bone - Biopsy', 'Existing Patient Material', etc.
+
+specimen_source (STRING)
+
+The specimen source associated with the order for the variant record, such as 'Blood, from Venipuncture', 'Saliva', 'Liver', etc.
+
+---
+
+## _WHOLE_SLIDE_IMAGING 
+
+OMOP extension table for whole slide imaging data from pathology specimens. It contains both information
+from the PHI-scrubbed whole slide imaging files (svs or isyntac) and source clarity. This table only contains
+information for slide images we have in GCP buckets with OMOP EHR information.
+
+whole_slide_imaging_id (int64)
+
+Unique identifier for the whole slide imaging record
+
+**Constraints:**
+
+- **Not Null**
+- **Primary Key**
+
+accession_number (string)
+
+Specimen accession number
+
+**Constraints:**
+
+- **Not Null**
+
+specimen (string)
+
+Specimen identifier
+
+**Constraints:**
+
+- **Not Null**
+
+block (string)
+
+Block identifier
+
+**Constraints:**
+
+- **Not Null**
+
+slide (string)
+
+Slide identifier
+
+**Constraints:**
+
+- **Not Null**
+
+person_id (int64)
+
+Reference to the person in the OMOP CDM
+
+**Constraints:**
+
+- **Not Null**
+
+acquisition_date (datetime)
+
+Date and time when the slide was scanned from the wsi file metadata.
+This field is null for Aperio Leica slides as these were manually scanned after slides had been created.
+
+procedure_start_time (datetime)
+
+Date and time when the associated procedure started.
+
+specimen_received_date (datetime)
+
+Date and time when the specimen was received by the lab. Closest date to acquisition_date
+for the Aperio Leica slides.
+
+brand (string)
+
+WSI scanner brand (Philips or Aperio Leica)
+
+scanner (string)
+
+Scanner model name
+
+mpp (float64)
+
+Microns per pixel - spatial resolution of the scan
+
+json_uri (string)
+
+GCP URI to the deidentified JSON metadata file
+
+tiff_uri (string)
+
+GCP URI to the deidentified TIFF file
+
+specimen_source_category_value (int64)
+
+Specimen source category value
+
+specimen_source (string)
+
+Specimen source description
+
+specimen_type_category_value (int64)
+
+Specimen type category value
+
+specimen_type (string)
+
+Specimen type description
+
+spec_task_list (array&lt;struct&lt;task_c int64, task_name string&gt;&gt;)
+
+List of specimen tasks
+
+note_id (int64)
+
+Note_id for associated pathology report. It is possible that a slide link to more than one note
+when this happens we bring in one line per note.
+
+---
+
+## CARE_SITE 
+
+The CARE_SITE table contains a list of uniquely identified institutional
+(physical or organizational) units where healthcare delivery is practiced
+(offices, wards, hospitals, clinics, etc.). For Stanford University, this
+includes a range of care sites from inpatient hospital facilities to outpatient
+clinics and specialized centers such as immunization and campus-specific health
+services.
+
+care_site_id (int64)
+
+Unique identifier for each care site.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+care_site_name (string)
+
+The name of the care site as it appears in the source data. This field is used
+to identify the specific name or title associated with the care site, formatted
+as "Care Site Name | Department Specialty." Examples of typical entries include:
+- "EHC PHARMACY | PHARMACY" - "INFUSION TREATMENT CENTER-SNHC | INFUSION" -
+"RADIATION THERAPY SPLTY | RADIATION ONCOLOGY" This format combines the
+department name with its specialty.
+
+place_of_service_concept_id (int64)
+
+This field summarizes the typical type of care provided at the site.
+Examples include Inpatient Hospital (ID: 8717), which covers overnight
+facilities like Stanford Hospital; Skilled Nursing Facility (ID: 8863),
+providing rehabilitative and nursing care; Outpatient Hospital on Campus (ID: 8756),
+representing campus-based outpatient services; Mass Immunization Center (ID: 8858),
+for mass vaccination programs; Home (ID: 0), representing healthcare in a patient’s residence;
+and Office (ID: 0), which refers to office-based outpatient care like physician offices
+
+Typically, if a care site provides multiple levels of care, assign the
+`place_of_service_concept_id` that represents the primary or most frequent type
+of care. For example, if most visits to a care site are inpatient, the
+`place_of_service_concept_id` should represent "Inpatient Hospital." The
+VISIT_OCCURRENCE table can further refine specific settings for individual
+visits.
+
+location_id (int64)
+
+The location_id from the LOCATION table representing the physical location of
+the care site. This ID connects to the LOCATION table to capture the exact
+address or physical space associated with the care site.
+
+care_site_source_value (string)
+
+The identifier of the care site as it appears in the source data. For STARR-OMOP, this is the Epic Clarity department ID.
+
+place_of_service_source_value (string)
+
+The source value representing the place of service of the care site as it
+appears in the original data. This value can reflect specific labels like
+"Inpatient Hospital," "Office," or "On Campus - Outpatient Hospital" that map to
+broader `place_of_service_concept_id` categories.
+
+---
+
+## CDM_SOURCE 
+
+The CDM_SOURCE table provides information about the source data and the process used to transform the data into the OMOP Common Data Model.
+
+cdm_source_name (STRING)
+
+Descriptive name for the data source.
+
+**Constraints:**
+
+- **Not Null**
+
+cdm_source_abbreviation (STRING)
+
+Abbreviated name of the data source.
+
+**Constraints:**
+
+- **Not Null**
+
+cdm_holder (STRING)
+
+The organization responsible for the CDM instance.
+
+**Constraints:**
+
+- **Not Null**
+
+source_description (STRING)
+
+Brief description of the source data.
+
+source_documentation_reference (STRING)
+
+Reference or URL for documentation of the source data.
+
+cdm_etl_reference (STRING)
+
+Reference or URL for documentation of the ETL process.
+
+source_release_date (DATE)
+
+The date when the source data was last refreshed or released.
+
+**Constraints:**
+
+- **Not Null**
+
+cdm_release_date (DATE)
+
+The date when the CDM instance was created or last updated.
+
+**Constraints:**
+
+- **Not Null**
+
+cdm_version (STRING)
+
+OMOP CDM version number (e.g., '5.4.2').
+
+cdm_version_concept_id (INT64)
+
+Concept ID representing the CDM version. For OMOP CDM v5.4, this is 705800.
+
+**Constraints:**
+
+- **Not Null**
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+vocabulary_version (STRING)
+
+Version of the OMOP Vocabulary used in this CDM instance.
+
+**Constraints:**
+
+- **Not Null**
+
+---
+
+## COHORT 
+
+The cohort table contains records identifying the subject(s) for defined cohort, during each period where they fit the cohort definition(s) defined in the cohort_definition table.
+Cohorts typically include patients diagnosed with a specific condition, patients exposed to a particular drug, but can also be Providers who have performed a specific Procedure.
+The subject of a cohort can have multiple, discrete records in the cohort table per cohort_definition_id, subject_id, and non-overlapping time periods.
+The definition of the cohort is contained within the COHORT_DEFINITION table.
+This table is not currently populated in STARR OMOP.
+
+cohort_definition_id (INT64)
+
+This is the identifier given to the cohort, usually by the ATLAS application.
+This can be used to link to the cohort_definition table for further information on the programmatic generation of the cohort, however it is not explicitly listed as being a foreign key in the OMOP CDM v5.4 documentation.
+
+subject_id (INT64)
+
+A unique identifier for the subject associated with the cohort record. Cohort records in the OMOP CDM v5.4 must contain a Subject Id, which can refer to the Person, Provider, Visit record or Care Site (though they are most often Person Ids).
+The corresponding cohort_definition_id record in the Cohort Definition table will define the type of subject through the subject_concept_id field.
+
+cohort_start_date (date)
+
+The start date for the time period during which the person is in the cohort.
+
+cohort_end_date (date)
+
+The end date for the time period during which the person is in the cohort.
+
+---
+
+## COHORT_DEFINITION 
+
+Cohorts are a set of subjects that satisfy a given combination of inclusion criteria for a duration of time.
+The COHORT_DEFINITION table provides a standardized structure for maintaining the rules governing the inclusion of a subject into a cohort, and can store operational programming code to instantiate the cohort within the OMOP Common Data Model.
+This table is not currently populated in STARR OMOP.
+
+cohort_definition_id (INT64)
+
+A unique identifier for each cohort definition.
+
+cohort_definition_name (string)
+
+A short description of the cohort.
+
+cohort_definition_description (string)
+
+A complete description of the cohort.
+
+definition_type_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the type of definition (e.g., Type defining what kind of Cohort Definition the record represents and how the syntax may be executed).
+
+cohort_definition_syntax (string)
+
+Syntax or code to operationalize the Cohort Definition.
+
+subject_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the domain of the subjects that are members of the cohort (e.g., Person, Provider, Visit).
+
+cohort_initiation_date (date)
+
+A date to indicate when the Cohort was initiated in the COHORT table.
+
+---
+
+## CONCEPT 
+
+The primary purpose of the CONCEPT table is to provide a standardized representation of medical Concepts, allowing for consistent querying and analysis across the healthcare databases.
+Users can join the CONCEPT table with other tables in the CDM to enrich clinical data with standardized Concept information or use the CONCEPT table as a reference for mapping clinical data from source terminologies to Standard Concepts.
+Each concept is uniquely identified by a concept_id and has a concept_name, which describes the concept.
+Concepts can be classified into different domains, such as drug, procedure, condition, etc., and can have relationships with other concepts.
+
+concept_id (int64)
+
+A unique identifier for each Concept across all domains.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+concept_name (string)
+
+An unambiguous, meaningful and descriptive name for the Concept.
+
+**Constraints:**
+
+- **Not Null**
+
+domain_id (string)
+
+The domain_id indicates the domain to which the Concept belongs.
+The domain_id is a foreign key to the DOMAIN table.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('domain')(domain_id)`
+- **Not Null**
+
+vocabulary_id (string)
+
+A foreign key to the VOCABULARY table indicating from which source the Concept has been adapted.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('vocabulary')(vocabulary_id)`
+- **Not Null**
+
+concept_class_id (string)
+
+The attribute or concept class of the Concept. Examples are ‘Clinical Drug’, ‘Ingredient’, ‘Clinical Finding’ etc.
+The concept_class_id is a foreign key to the CONCEPT_CLASS table.
+
+**Constraints:**
+
+- **Not Null**
+
+standard_concept (string)
+
+This flag determines where a Concept is a Standard Concept, i.e. is used in the data, a Classification Concept, or a non-standard Source Concept.
+The allowable values are S (Standard Concept) and C (Classification Concept), otherwise the content is NULL.
+
+concept_code (string)
+
+The concept code represents the identifier of the Concept in the source vocabulary, such as SNOMED-CT concept IDs, RxNorm RXCUIs etc.
+Note that concept codes are not unique across vocabularies.
+
+**Constraints:**
+
+- **Not Null**
+
+valid_start_date (date)
+
+The date when the Concept was first recorded.
+The default value is 1-Jan-1970, meaning the Concept has no (known) date of inception.
+
+**Constraints:**
+
+- **Not Null**
+
+valid_end_date (date)
+
+The date when the Concept became invalid because it was deleted or superseded (updated) by a new concept.
+The default value is 31-Dec-2099, meaning the Concept is valid until it becomes deprecated.
+
+**Constraints:**
+
+- **Not Null**
+
+invalid_reason (string)
+
+Reason the Concept was invalidated. Possible values are D (deleted), U (replaced with an update) or NULL when valid_end_date has the default value.
+
+---
+
+## CONCEPT_ANCESTOR 
+
+The CONCEPT_ANCESTOR table is designed to simplify observational analysis by providing the complete hierarchical relationships between Concepts.
+Only direct parent-child relationships between Concepts are stored in the CONCEPT_RELATIONSHIP table.
+To determine higher-level ancestry connections, all individual direct relationships would have to be navigated at analysis time.
+The CONCEPT_ANCESTOR table includes records for all parent-child relationships, as well as grandparent-grandchild relationships and those of any other level of lineage for Standard or Classification concepts.
+Using the CONCEPT_ANCESTOR table allows for querying for all descendants of a hierarchical concept, and the other way around.
+For example, drug ingredients and drug products, beneath them in the hierarchy, are all descendants of a drug class ancestor.
+This table is entirely derived from the CONCEPT, CONCEPT_RELATIONSHIP, and RELATIONSHIP tables.
+
+ancestor_concept_id (int64)
+
+The Concept Id for the higher-level concept that forms the ancestor in the relationship.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+descendant_concept_id (int64)
+
+The Concept Id for the lower-level concept that forms the descendant in the relationship.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+min_levels_of_separation (int64)
+
+The minimum separation in number of levels of hierarchy between ancestor and descendant concepts.
+This is an attribute that is used to simplify hierarchic analysis.
+
+**Constraints:**
+
+- **Not Null**
+
+max_levels_of_separation (int64)
+
+The maximum separation in number of levels of hierarchy between ancestor and descendant concepts.
+This is an attribute that is used to simplify hierarchic analysis.
+
+**Constraints:**
+
+- **Not Null**
+
+---
+
+## CONCEPT_CLASS 
+
+The CONCEPT_CLASS table includes semantic categories that reference the source structure of each Vocabulary.
+Concept Classes represent so-called horizontal (e.g. MedDRA, RxNorm) or vertical levels (e.g. SNOMED) of the vocabulary structure.
+Vocabularies without any Concept Classes, such as HCPCS, use the vocabulary_id as the Concept Class.
+This reference table is populated with a single record for each Concept Class, which includes a Concept Class ID and a fully specified Concept Class name.
+
+concept_class_id (string)
+
+A unique identifier for each concept class in the OMOP CDM.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+concept_class_name (string)
+
+The name describing the Concept Class, e.g. Clinical Finding, Ingredient, etc.
+
+**Constraints:**
+
+- **Not Null**
+
+concept_class_concept_id (int64)
+
+An identifier for the concept that represents the Concept Class.
+The concept_class_concept_id is a foreign key to the CONCEPT table.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+---
+
+## CONCEPT_RELATIONSHIP 
+
+The CONCEPT_RELATIONSHIP table contains records that define relationships between any two Concepts and the nature or type of the relationship.
+This table captures various types of relationships, including hierarchical, associative, and other semantic connections, enabling comprehensive analysis and interpretation of clinical concepts.
+Each relationship type is defined in the RELATIONSHIP table.
+
+concept_id_1 (int64)
+
+A foreign key to the CONCEPT table indicating the first Concept in the relationship.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+concept_id_2 (int64)
+
+A foreign key to the CONCEPT table indicating the second Concept in the relationship.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+relationship_id (string)
+
+A foreign key to the RELATIONSHIP table indicating the type of relationship between concept_id_1 and concept_id_2.
+It contains an alphanumerical identifier, that can also be used as the abbreviation of the Relationship.
+The relationship_id defines the nature of the relationship, such as 'is a', 'maps to', 'related to', etc.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('relationship')(relationship_id)`
+- **Not Null**
+
+valid_start_date (date)
+
+The date when the Relationship was first recorded.
+The default value is 1-Jan-1970, meaning the Concept has no (known) date of inception.
+
+**Constraints:**
+
+- **Not Null**
+
+valid_end_date (date)
+
+The date when the Relationship is invalidated.
+The default value is 31-Dec-2099, meaning the Relationship is valid until it becomes deprecated.
+
+**Constraints:**
+
+- **Not Null**
+
+invalid_reason (string)
+
+Reason the Concept was invalidated. Possible values are D (deleted), U (replaced with an update), or NULL (when the valid_end_date is the default value).
+
+---
+
+## CONCEPT_SYNONYM 
+
+The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations of Concept Name into various languages linked to specific concepts, providing researchers with a comprehensive view of how Concepts may be expressed or referenced.
+Researchers can leverage the CONCEPT_SYNONYM table to expand search capabilities and improve query accuracy by incorporating synonymous terms into data analysis and retrieval processes.
+Also, researchers can enhance their mapping efforts between local terminologies and standardized concepts by identifying synonymous terms associated with concepts in the CONCEPT_SYNONYM table.
+
+concept_id (int64)
+
+A foreign key to the CONCEPT table indicating the Concept to which the synonym belongs.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+concept_synonym_name (string)
+
+Name of the synonym for the Concept.
+
+**Constraints:**
+
+- **Not Null**
+
+language_concept_id (int64)
+
+Foreign key to the CONCEPT table indicating the language to which the Concept Synonym belongs.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+---
+
+## CONDITION_ERA 
+
+condition_era_id (INT64)
+
+The unique identifier for each condition era.
+
+person_id (INT64)
+
+A foreign key identifier to the person_id in the person table for whom the condition era is recorded.
+
+condition_concept_id (INT64)
+
+A foreign key identifier to the standard concept_id in the concept table for the condition
+recorded.
+
+condition_era_start_date (DATE)
+
+The start date of the condition era.
+
+condition_era_end_date (DATE)
+
+The end date of the condition era.
+
+condition_occurrence_count (INT64)
+
+The number of condition occurrences that contributed to this condition era.
+
+---
+
+## CONDITION_OCCURRENCE 
+
+condition_occurrence_id (INT64)
+
+The unique key given to each OMOP condition occurrence record. In STARR-OMOP,
+this ID is currently NOT stable across releases, so the same condition occurrence
+will likely have a different ID from one STARR-OMOP release to the next.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person_id in the person table for whom the condition is recorded.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+condition_concept_id (INT64)
+
+A foreign key identifier to the standard concept_id in the concept table for the condition
+recorded. This field is recommended for primary use in analyses and must be used for network studies.
+Only records whose source values map to concepts with a domain of 'Condition' (or unmapped concepts,
+aka '0' condition-concept_id) are allowed in this table.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+condition_start_date (DATE)
+
+The date when the condition was recorded. For problem list entries, this is the date the
+condition was first noted by the patient, or first entered into the problem list if the noted date is
+not available. See the condition_type_concept_id to identify the record provenance.
+
+condition_start_datetime (DATETIME)
+
+The date and time when the condition was recorded. For problem list entries, this is the date and time
+the condition was first noted by the patient, or first entered into the problem list if the noted date and
+time is not available. See the condition_type_concept_id to identify the record provenance.
+
+condition_end_date (DATE)
+
+The date when the condition was resolved or removed from the problem list. This field is null for all condition
+records that did not originate from the problem list (aka billing or encounter diagnoses).
+See the condition_type_concept_id to identify the record provenance.
+
+condition_end_datetime (DATETIME)
+
+The date and time when the condition was resolved or removed from the problem list. This field is null for all condition
+records that did not originate from the problem list (aka billing or encounter diagnoses).
+See the condition_type_concept_id to identify the record provenance.
+
+condition_type_concept_id (INT64)
+
+A foreign key identifier to the standard concept_id in the concept table for the provenance of the condition record, such
+as 'EHR billing record', 'EHR encounter record', or 'EHR problem list'.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+condition_status_concept_id (INT64)
+
+A foreign key identifier to the standard concept_id in the concept table for the status of the condition record, such as
+'primary diagnosis' or 'admission diagnosis', where available.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+stop_reason (STRING)
+
+The reason the condition is no longer valid. This information is unavailable in our EHR and this field is therefore null for all of STARR-OMOP.
+
+provider_id (INT64)
+
+A foreign key identifier to the provider_id in the provider table for the provider associated with the condition record.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+visit_occurrence_id (INT64)
+
+A foreign key identifier to the visit_occurrence_id in the visit_occurrence table for the visit during which the condition was recorded.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+visit_detail_id (INT64)
+
+A foreign key identifier to the visit_detail_id in the visit_detail table for the visit detail during which the condition was recorded.
+This field is currently not populated in STARR-OMOP.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_detail')(visit_detail_id)`
+
+condition_source_value (STRING)
+
+The verbatim value of the original condition information as it appears in the source data.
+In STARR-OMOP, this contains the dx_id (internal identifier), dx_name (description of the condition),
+and the ICD-9-CM or ICD-10-CM code(s) associated with that dx_id, separated by pipes.
+Note that there may be multiple ICD codes listed, in which case they will be separated by commas
+Example: "12345 | Uncontrolled type 2 diabetes mellitus with microalbuminuria, with long-term current use of insulin | E11.29, E11.65, R80.9, Z79.4"
+
+condition_source_concept_id (INT64)
+
+A foreign key identifier to the concept_id in the concept table for the condition as it appears in the source data.
+In STARR-OMOP, this field contains the concept_id corresponding to the ICD-9-CM or ICD-10-CM code associated with the condition
+if available. There will be one row per individual ICD-9-CM or ICD-10-CM code listed in the condition_source_value as described above.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+condition_status_source_value (STRING)
+
+The verbatim value of the original condition status information as it appears in the source data. In STARR-OMOP, this
+field is derived from a combination of the primary_dx flag and the source table name, and is not available for all records.
+
+---
+
+## COST 
+
+The cost table captures the various financial aspects of healthcare events. It includes the cost of procedures, drug exposures, visits, and other healthcare events, and can capture charges, payments, and adjustments for these events. This table is not currently populated in STARR OMOP.
+
+cost_id (INT64)
+
+A unique identifier for each cost record. One cost record is generated for each response by a payer. In a claims databases, the payment and payment terms reported by the payer for the goods or services billed will generate one cost record. If the source data has payment information for more than one payer (i.e. primary insurance and secondary insurance payment for one entity), then a cost record is created for each reporting payer.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+cost_event_id (INT64)
+
+A foreign key identifier to the event for which cost is recorded. This could be a procedure, drug exposure, visit, device exposure, measurement, observation, or other event.
+
+cost_domain_id (STRING)
+
+A foreign key to the predefined domain identifier in the Standardized Vocabularies representing the type of domain to which the cost record belongs.
+
+cost_type_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the type of cost, such as charge, payment, or adjustment.
+
+currency_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the currency, such as USD, EUR, etc.
+
+total_charge (FLOAT64)
+
+Overall total amount charged for the services associated with the cost record.
+
+total_cost (FLOAT64)
+
+Overall total cost of services associated with the cost record.
+
+total_paid (FLOAT64)
+
+Overall total amount paid for the services associated with the cost record.
+
+paid_by_payer (FLOAT64)
+
+Total amount contributed and/or reimbursed by the payer for the services associated with the cost record.
+
+paid_by_patient (FLOAT64)
+
+Total amount paid by the patient for the services associated with the cost record.
+
+paid_patient_copay (FLOAT64)
+
+Total copay amount (fixed amount paid by the patient) for the services associated with the cost record.
+
+paid_patient_coinsurance (FLOAT64)
+
+Total coinsurance (percentage of total medical cost covered by the patient - applicable only once patient has reached their deductible amount) for the services associated with the cost record.
+
+paid_patient_deductible (FLOAT64)
+
+Total deductible (upfront payment by patient before payer starts covering medical costs) associated with the cost record.
+
+paid_by_primary (FLOAT64)
+
+Total amount paid by patient's primary payer for services associated with the cost record.
+
+paid_ingredient_cost (FLOAT64)
+
+Total amount charged by the wholesale distributor or manufacturer if cost record reflects a drug cost.
+
+paid_dispensing_fee (FLOAT64)
+
+Total amount charged by the pharmacy and the sales tax if cost record reflects a drug cost.
+
+payer_plan_period_id (INT64)
+
+A foreign key identifier to the payer_plan_period table.
+
+amount_allowed (FLOAT64)
+
+Total amount allowed by the payer for services associated with the cost record.
+
+revenue_code_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the revenue code for services associated with the cost record. Revenue codes are a method to charge for a class of procedures and conditions in the U.S. hospital system.
+
+revenue_code_source_value (STRING)
+
+Revenue code for services associated with the cost record, as recorded in source data. Revenue codes are a method to charge for a class of procedures and conditions in the U.S. hospital system.
+
+drg_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the Diagnosis Related Group (DRG) associated with the cost record. Diagnosis Related Groups are US codes used to classify hospital cases into one of approximately 500 groups.
+
+drg_source_value (STRING)
+
+Diagnosis Related Group for the services associated with the cost record, as recorded in the source data. Diagnosis Related Groups are US codes used to classify hospital cases into one of approximately 500 groups.
+
+---
+
+## DEATH 
+
+OMOP CDM v5.4 DEATH table. Stores information about a Person's death, including the date/time, cause, and source type.
+
+In STARR-OMOP, the cause of death fields are not currently available from source systems and remain NULL.
+
+Patients are included in this table if they have a death date in the source EHR system (Epic), or if an external source (such as the Social Security Death Master File or California Death Certificate feed) provides evidence of death.
+
+However, external sources are not used to populate the death_date, death_datetime, and death_type_concept_id fields, as these sources are considered less reliable than the source EHR system due to challenges of linking patients outside the system.
+External death date sources are tracked in the custom _death_date_external field so that researchers can still consider this information if relevant to their work.
+This means that patients for whom only external death date information is available will have NULL values for death_date, death_datetime, and death_type_concept_id fields.
+
+person_id (INT64)
+
+A foreign key to the Person table. The ID of the Person for whom this
+death record belongs. This field serves as the de facto primary key for the
+table (validated via dbt `unique` and `not_null` data tests, as the OMOP CDM
+does not define a formal primary key for the DEATH table), since only one
+record per person_id is allowed.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+- **Not Null**
+- **Unique**
+
+death_date (DATE)
+
+The date the Person was deceased.
+
+Populated using priority order: SHC EHR > LPCH EHR. Non-EHR death sources are treated as probable deaths and are not used
+to populate this field directly. Instead, all external death sources are aggregated into the _death_date_external field for provenance.
+
+death_datetime (DATETIME)
+
+The date and time the Person was deceased, if available. If no time information is available or if
+the time appears in the source data as 00:00:00 (default time value), this field is NULL. The prioritization of death
+sources is the same as for death_date: SHC EHR > LPCH EHR. Non-EHR death sources are not used to populate this field directly.
+
+death_type_concept_id (INT64)
+
+A foreign key to the Type Concept in the Standardized Vocabularies reflecting
+the source of the DEATH record. A value of 32817 = EHR indicates the death was
+sourced from the Epic Clarity patient table, while a value of 32815 = Death Certificate
+indicates the death was sourced from the California Department of Public Health (CDPH)
+information as found in the Epic Clarity table external_death_reports.
+
+cause_concept_id (INT64)
+
+A foreign key to the Standard Concept representing the Person’s cause of death,
+if available. This information is not available in STARR-OMOP; always 0 (effectively NULL).
+
+cause_source_value (STRING)
+
+The source code representing the cause of death, if available.
+This information is not available in STARR-OMOP; always NULL.
+
+cause_source_concept_id (INT64)
+
+A foreign key to a concept representing the cause-of-death code,
+if the code belongs to a vocabulary in the OMOP Vocabularies.
+This information is not available in STARR-OMOP; always 0 (effectively NULL).
+
+_death_date_external (STRING)
+
+JSON array storing provenance for all external death sources aggregated per person. Each element contains a concept_id and death_date:
+
+  - concept_id 32885: Social Security Death Master File (DMF)
+  - concept_id 32815: California Death Certificate (CDPH)
+
+Example: '[{"concept_id":32885,"death_date":"2020-01-01"},{"concept_id":32815,"death_date":"2020-01-02"}]'
+
+This field is NULL for EHR-only deaths. When present, it provides full traceability for all external death sources for a person, ensuring no external death evidence is lost in the deduplication process. The primary death_date field will use the highest priority source, while this field preserves all external evidence.
+
+Users should use the concept_id in this field to determine the provenance of each external death record.
+
+---
+
+## DEVICE_EXPOSURE 
+
+The Device domain captures information about a persons exposure to a foreign physical object or instrument which is used for diagnostic or therapeutic purposes through a mechanism beyond chemical action.
+Devices include implantable objects (e.g. pacemakers, stents, artificial joints), medical equipment and supplies (e.g. bandages, crutches, syringes), other instruments used in medical procedures (e.g. sutures, defibrillators) and material used in clinical care (e.g. adhesives, body material, dental material, surgical material).
+The distinction between Devices or supplies and Procedures are sometimes blurry, but the former are physical objects while the latter are actions, often to apply a Device or supply.
+
+device_exposure_id (INT64)
+
+A unique identifier for each device exposure event.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person table identifying the person exposed to the device.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+- **Not Null**
+
+device_concept_id (INT64)
+
+A foreign key that refers to a standard device concept identifier in the Vocabulary. The DEVICE_CONCEPT_ID field is recommended for primary use in analyses, and must be used for network studies. This is the standard concept mapped from the source concept id which represents a foreign object or instrument the person was exposed to.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+device_exposure_start_date (DATE)
+
+Start date of the device exposure event.
+
+**Constraints:**
+
+- **Not Null**
+
+device_exposure_start_datetime (DATETIME)
+
+Datetime for the start of the device exposure event if available in the source data. This is not a required field.
+
+device_exposure_end_date (DATE)
+
+The DEVICE_EXPOSURE_END_DATE denotes the day the device exposure ended for the patient, if available in the source data. This is not a required field.
+
+device_exposure_end_datetime (DATETIME)
+
+Datetime for the end of the device exposure event if available in the source data. This is not a required field.
+
+device_type_concept_id (INT64)
+
+A foreign key to the predefined Type Concept identifier in the Vocabulary, which denotes the provenance of the record, as in whether the record is from administrative claims or EHR. This is has been set to 44818707 (EHR Detail) for all rows in the device_exposure table.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+unique_device_id (STRING)
+
+This is the Unique Device Identification (UDI-DI) number for devices regulated by the FDA. This field is not currently populated in STARR OMOP.
+
+production_id (STRING)
+
+This is the Production Identifier (UDI-PI) portion of the Unique Device Identification. This field is not currently populated in STARR OMOP.
+
+quantity (INT64)
+
+The number of individual devices used.
+
+provider_id (INT64)
+
+A foreign key to the provider in the PROVIDER table who is associated with the device_exposure record, e.g. the provider who wrote the prescription or the provider who implanted the device.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+visit_occurrence_id (INT64)
+
+A foreign key to the visit in the VISIT_OCCURRENCE table during which the device was prescribed or given.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+visit_detail_id (INT64)
+
+A foreign key to the visit detail in the VISIT_DETAIL table during which the device was prescribed or given. This is not currently populated in STARR OMOP at the moment. However researchers can use the visit_occurrence_id to link to the visit_detail table and view all visit_detail records associated with said visit_occurrence record.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_detail')(visit_detail_id)`
+
+device_source_value (STRING)
+
+This field houses the verbatim value from the source data representing the device exposure that occurred.
+
+device_source_concept_id (INT64)
+
+The source CONCEPT_ID that the DEVICE_SOURCE_VALUE maps to. This concept may not necessarily be standard. Please refer to the device_concept_id field for the standard concept.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+unit_concept_id (INT64)
+
+A foreign key to a standard concept identifier for the unit associated with the device exposure, if available in the source data. This is not a required field.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+unit_source_value (STRING)
+
+This field houses the verbatim value from the source data representing the unit of the Device. For example, blood transfusions are considered devices and can be given in mL quantities. This is not a required field.
+
+unit_source_concept_id (INT64)
+
+A foreign key to a concept representing the UNIT_SOURCE_VALUE and may not necessarily be standard. Please refer to the unit_concept_id field for the standard concept. This is not a required field.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+---
+
+## DOMAIN 
+
+The DOMAIN table includes a list of OMOP-defined Domains to which the Concepts of the Standardized Vocabularies can belong.
+A Domain represents a clinical definition whereby we assign matching Concepts for the standardized fields in the CDM tables.
+For example, the Condition Domain contains Concepts that describe a patient condition, and these Concepts can only be used in the condition_concept_id field of the CONDITION_OCCURRENCE and CONDITION_ERA tables.
+This reference table is populated with a single record for each Domain, including a Domain ID and a descriptive name for every Domain.
+
+domain_id (string)
+
+A unique identifier for each domain in the OMOP CDM.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+domain_name (string)
+
+The name describing the Domain, e.g. Condition, Procedure, Measurement etc.
+
+**Constraints:**
+
+- **Not Null**
+
+domain_concept_id (int64)
+
+An identifier representing the domain concept the DOMAIN record belongs to.
+The domain_concept_id is a foreign key to the CONCEPT table.
+
+**Constraints:**
+
+- **Not Null**
+
+---
+
+## DOSE_ERA 
+
+The dose_era table captures the time periods (eras) during which a person is exposed to a particular dose of a drug. A Dose Era is defined as a span of time when the Person is assumed to be exposed to a constant dose of a specific active ingredient. This table is not currently populated in STARR OMOP.
+
+dose_era_id (INT64)
+
+A unique identifier for each dose_era record.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person table for each dose_era record
+
+drug_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the drug that forms the dose_era record.
+
+unit_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the dose unit associated with the dose_era record.
+
+dose_value (FLOAT64)
+
+The numeric value of the dose associated with the dose_era record.
+
+dose_era_start_date (DATE)
+
+The start date of the dose era associated with the dose_era record.
+
+dose_era_end_date (DATE)
+
+The end date of the dose era associated with the dose_era record.
+
+---
+
+## DRUG_ERA 
+
+A Drug Era is defined as a span of time when the Person is assumed to be exposed to a particular
+active ingredient. A Drug Era is not the same as a Drug Exposure: Exposures are individual records
+corresponding to the source when Drug was delivered to the Person, while successive periods of Drug
+Exposures are combined under certain rules to produce continuous Drug Eras. Every record in the DRUG_EXPOSURE
+table should be part of a drug era based on the dates of exposure.
+
+drug_era_id (INT64)
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+drug_concept_id (INT64)
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+drug_era_start_date (DATE)
+
+drug_era_end_date (DATE)
+
+drug_exposure_count (INT64)
+
+gap_days (INT64)
+
+---
+
+## DRUG_EXPOSURE 
+
+The DRUG_EXPOSURE table captures records about the exposure to a Drug ingested or
+otherwise introduced into the body. A Drug is a biochemical substance formulated in
+such a way that when administered to a Person it will exert a certain biochemical
+effect on the metabolism. Drugs include prescription and over-the-counter medicines,
+vaccines, and large-molecule biologic therapies. Radiological devices ingested or
+applied locally do not count as Drugs. This table contains one record per exposure,
+preferentially bringing in administration records, then dispense records then order records.
+
+drug_exposure_id (int64)
+
+Unique identifier for each drug_exposure.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (int64)
+
+A foreign key identifier to the person in the person table who is the
+subject of the visit.
+
+drug_concept_id (int64)
+
+drug_concept_id
+
+drug_exposure_start_date (date)
+
+The date the drug was administered, dispensed or ordered
+
+drug_exposure_start_datetime (datetime)
+
+The datetime the drug was administered, dispensed or ordered
+
+drug_exposure_end_date (date)
+
+Drug end date, if no end date is available then this is equal to the start date
+
+drug_exposure_end_datetime (datetime)
+
+Drug end datetime, if no end date is available then this is equal to the start date
+
+verbatim_end_date (date)
+
+End date as it is shown in the source data
+
+drug_type_concept_id (int64)
+
+Shows the provenance of the record - e.g. 'EHR Administration', 'EHR Order',
+'Patient Reported' or 'EHR Dispense'
+
+stop_reason (string)
+
+The reason a person stopped a medication as it is represented in the source.
+Reasons include regimen completed, changed, removed, etc.
+
+refills (int64)
+
+This is filled in for prescriptions only and represents the number of refills at the
+time of prescription.
+
+quantity (float)
+
+The amount of drug received.
+
+days_supply (int64)
+
+Days supply as found in the source data. If there is no days supply then this is left blank.
+
+sig (string)
+
+Verbatim instructions for the drug as given by the provider
+
+route_concept_id (int64)
+
+The standard CONCEPT_ID that the ROUTE_SOURCE_VALUE maps to in the route domain
+
+lot_number (string)
+
+Lot number
+
+provider_id (int64)
+
+The Provider associated with drug record, e.g. the provider who wrote the prescription or the
+provider who administered the drug.
+
+visit_occurrence_id (int64)
+
+The Visit during which the drug was prescribed, administered or dispensed.
+
+visit_detail_id (int64)
+
+The VISIT_DETAIL record during which the drug exposure occurred. For example, if the person
+was in the ICU at the time of the drug administration the VISIT_OCCURRENCE record would
+reflect the overall hospital stay and the VISIT_DETAIL record would reflect the ICU stay
+during the hospital visit.
+
+drug_source_value (STRING)
+
+This field houses the verbatim value from the source data representing the drug exposure that occurred.
+In this case it is the in-house shc or lpch medication_id, not RxNorm code.
+
+drug_source_concept_id (int64)
+
+This is the concept representing the drug source value and may not necessarily be standard.
+
+route_source_value (string)
+
+This field houses the verbatim value from the source data representing the drug route.
+
+dose_unit_source_value (string)
+
+This field houses the verbatim value from the source data representing the dose unit of the drug given.
+
+---
+
+## DRUG_STRENGTH 
+
+The DRUG_STRENGTH table contains structured content about the amount or concentration and associated units of a specific ingredient contained within a particular drug product.
+This table is supplemental information to support standardized analysis of drug utilization.
+
+drug_concept_id (int64)
+
+Foreign key to the concept_id in CONCEPT table representing the Branded Drug or Clinical Drug Product.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+ingredient_concept_id (int64)
+
+Foreign key to the concept_id in CONCEPT table representing the active ingredient contained within the drug product.
+Note that Combination Drugs will have more than one record in this table, one for each active Ingredient.
+
+**Constraints:**
+
+- **Not Null**
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+amount_value (float64)
+
+The numeric value or the amount of active ingredient contained within the drug product.
+
+amount_unit_concept_id (int64)
+
+A foreign key to the concept_id in the CONCEPT table representing the Unit of measure for the amount of active ingredient contained within the drug product.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+numerator_value (float64)
+
+The concentration of the active ingredient contained within the drug product.
+
+numerator_unit_concept_id (int64)
+
+A foreign key to the concept_id in the CONCEPT table representing the Unit of measure for the concentration of active ingredient.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+denominator_value (float64)
+
+The amount of total liquid (or other divisible product, such as ointment, gel, spray, etc.).
+
+denominator_unit_concept_id (int64)
+
+A foreign key to the concept_id in the CONCEPT table representing the representing the denominator unit for the concentration of active ingredient.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+box_size (int64)
+
+The number of units of Clinical Branded Drug or Quantified Clinical or Branded Drug contained in a box as dispensed to the patient.
+
+valid_start_date (date)
+
+The date when the Concept was first recorded.
+The default value is 1-Jan-1970, meaning the Concept has no (known) date of inception.
+
+**Constraints:**
+
+- **Not Null**
+
+valid_end_date (date)
+
+The date when the Concept became invalid because it was deleted or superseded (updated) by a new concept.
+The default value is 31-Dec-2099, meaning the Concept is valid until it becomes deprecated.
+
+**Constraints:**
+
+- **Not Null**
+
+invalid_reason (string)
+
+Reason the Concept was invalidated. Possible values are D (deleted), U (replaced with an update) or NULL when valid_end_date has the default value.
+
+---
+
+## EPISODE 
+
+The episode table captures aggregated information about periods of continuous engagement with healthcare or health maintenance activities. An episode is intended to represent a meaningful period of time within a broader context, such as a hospital stay, a period of illness, or a treatment cycle.
+The EPISODE table aggregates lower-level clinical events (VISIT_OCCURRENCE, DRUG_EXPOSURE, PROCEDURE_OCCURRENCE, DEVICE_EXPOSURE) into a higher-level abstraction representing clinically and analytically relevant disease phases, outcomes and treatments.
+The EPISODE_EVENT table connects qualifying clinical events (VISIT_OCCURRENCE, DRUG_EXPOSURE, PROCEDURE_OCCURRENCE, DEVICE_EXPOSURE) to the appropriate EPISODE entry. For example, cancers including their development over time, their treatment, and final resolution.
+In STARR-OMOP, the EPISODE table is currently populated only with episodes representing treatment plans (primarily for cancer patients). The EPISODE_EVENT table is currently not populated in STARR-OMOP.
+
+episode_id (INT64)
+
+A unique identifier for each episode.
+
+**Constraints:**
+
+- **Primary Key**
+
+person_id (INT64)
+
+A foreign key identifier to the person table for each episode record.
+
+episode_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the episode.
+
+episode_start_date (date)
+
+The start date of the episode.
+
+episode_start_datetime (datetime)
+
+The start date and time of the episode.
+
+episode_end_date (date)
+
+The end date of the episode. If the episode is ongoing, this field can be NULL.
+
+episode_end_datetime (datetime)
+
+The end date and time of the episode. If the episode is ongoing, this field can be NULL.
+
+episode_parent_id (INT64)
+
+An identifier to the parent episode within which this episode occurs. This creates a hierarchical structure of episodes. This field is currently not populated in STARR-OMOP.
+
+episode_number (INT64)
+
+A number representing the order of occurrence of the episode within an individual person. This field is currently not populated in STARR-OMOP.
+
+episode_object_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the disease phase, outcome, or other abstraction of which the episode consists. This field is currently set to 0 for all rows in STARR-OMOP.
+
+episode_type_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies reflecting the type of episode.
+
+episode_source_value (string)
+
+The source code for the episode as it appears in the source data.
+
+episode_source_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the source value of the episode. This field is currently set to 0 for all rows in STARR-OMOP.
+
+---
+
+## EPISODE_EVENT 
+
+The episode_event table captures the events that are part of an episode. It includes various types of healthcare-related events such as condition occurrences, drug exposures, or procedures that occur as part of a single episode of care.
+The EPISODE_EVENT table connects qualifying clinical events (such as CONDITION_OCCURRENCE, DRUG_EXPOSURE, PROCEDURE_OCCURRENCE, MEASUREMENT) to the appropriate EPISODE entry.
+For example, linking the precise location of the metastasis (cancer modifier in MEASUREMENT) to the disease episode.
+This connecting table is used instead of the FACT_RELATIONSHIP table for linking low-level events to abstracted Episodes.
+This table is not currently populated in STARR OMOP.
+
+episode_id (INT64)
+
+A unique identifier for the episode to which this event belongs.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('episode')(episode_id)`
+
+event_id (INT64)
+
+This field is the primary key of the linked record in the database. For example, if the Episode Event is a Condition Occurrence, then the CONDITION_OCCURRENCE_ID of the linked record goes in this field.
+
+episode_event_field_concept_id (INT64)
+
+A foreign key to the Standardized Vocabularies that identifies the table and/or field that the event_id (primary key of the linked event record) came from.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+---
+
+## FACT_RELATIONSHIP 
+
+The FACT_RELATIONSHIP table contains records about the relationships between facts stored as records in any table of the CDM.
+Relationships can be defined between facts from the same domain, or different domains. Currently, this table contains relationships
+between systolic and diastolic blood pressures taken from the same patient encounter record, as well as mother-baby relationships
+for babies delivered at Stanford. Relationships are always present in both directions, so there are two rows for any given fact pairing.
+
+domain_concept_id_1 (INT64)
+
+The concept representing the domain of fact 1, from which the corresponding table and field can be inferred.
+This field identifies which field fact_id_1 originates from (e.g., measurement.measurement_id, person.person_id).
+Join to the concept table to retrieve the name and other information about the concept.
+
+**Constraints:**
+
+- **Not Null**
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+fact_id_1 (INT64)
+
+The unique identifier for fact 1.
+Use domain_concept_id_1 to determine which table and field this ID originates from (e.g., measurement_id from measurement table).
+This field can then be joined to that table to retrieve more information about the fact.
+
+**Constraints:**
+
+- **Not Null**
+
+domain_concept_id_2 (INT64)
+
+The concept representing the domain of fact 2, from which the corresponding table and field can be inferred.
+This field identifies which field fact_id_2 originates from (e.g., measurement.measurement_id, person.person_id).
+Join to the concept table to retrieve the name and other information about the concept.
+
+**Constraints:**
+
+- **Not Null**
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+fact_id_2 (INT64)
+
+The unique identifier for fact 2.
+Use domain_concept_id_2 to determine which table and field this ID originates from (e.g., measurement_id from measurement table).
+This field can then be joined to that table to retrieve more information about the fact.
+
+**Constraints:**
+
+- **Not Null**
+
+relationship_concept_id (INT64)
+
+A foreign key to the predefined concept in the Standardized Vocabularies reflecting the relationship between fact 1 and fact 2.
+Examples include 'systolic to diastolic', 'diastolic to systolic', 'parent to child', 'child to parent'.
+
+**Constraints:**
+
+- **Not Null**
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+---
+
+## IMAGE_OCCURRENCE 
+
+A record of image occurrences from the Vendor Neutral Archive (VNA). This does not include Echocardiograms, Ophthalmology images, or Pathology slides at present.
+We are also only including image occurrences that can be linked to the clarity procedure order information.
+
+image_occurrence_id (INT64)
+
+The unique key that is given to an imaging study record.
+
+person_id (INT64)
+
+A foreign key identifier to the person in the person table who is the subject of the image occurrence
+
+procedure_occurrence_id (INT64)
+
+A foreign key identifier to the OMOP procedure_occurrence table.
+
+visit_occurrence_id (INT64)
+
+A foreign key identifier to the OMOP visit_occurrence table
+
+anatomic_site_source_value (STRING)
+
+Text description of the part of the body examined as appears in the source DICOM metadata.
+
+wadors_uri (STRING)
+
+A Web Access to DICOM Objects.
+
+local_path (STRING)
+
+Local path to DICOM Object.
+
+image_occurrence_date (DATE)
+
+The date the series started.
+
+image_occurrence_datetime (DATETIME)
+
+The datetime the series started.
+
+image_study_uid (STRING)
+
+Unique identifier for the study. A study can be made up of multiple series.
+The combination of study_instance_uid and series_instance_uid is a unique identifier.
+
+image_series_uid (STRING)
+
+Unique identifier for the series. A series can be made up of multiple images.
+The combination of study_instance_uid and series_instance_uid is a unique identifier.
+
+modality_source_value (STRING)
+
+Type of device, process, or method that originally acquired or produced the data used to create the instances (images) in this series as appears in the source DICOM metadata.
+
+_accession_number (STRING)
+
+Accession number for the series, note that this is not guaranteed to be unique and must be combined with person_id to link between tables
+
+_study_description (STRING)
+
+Study description as it appears in the DICOM metadata
+
+_series_description (STRING)
+
+Series description as it appears in the DICOM metadata
+
+_note_id (INT64)
+
+A foreign key identifier to the OMOP NOTE table
+
+_number_of_series_related_instances (INT64)
+
+Number Composite Object Instances within a specific Series that match the search criteria when performing a Query/Retrieve operation
+
+---
+
+## LOCATION 
+
+The location table represents a generic way to capture physical location or address information of Persons and Care Sites.
+
+location_id (INT64)
+
+A unique identifier for each location in the Location table.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+address_1 (STRING)
+
+The first line of the street address.
+
+address_2 (STRING)
+
+The second line of the street address.
+
+city (STRING)
+
+The city of the address.
+
+state (STRING)
+
+The state of the address.
+
+zip (STRING)
+
+The 5-digit zip code of the address.
+
+county (STRING)
+
+The county of the address.
+
+location_source_value (STRING)
+
+The verbatim value for the location as it shows up in the source.
+
+country_source_value (STRING)
+
+The verbatim value for the country as it shows up in the source.
+
+country_concept_id (INT64)
+
+The standard concept ID representing the country. Join to the concept table for more information.
+
+latitude (FLOAT64)
+
+The latitude of the location.
+
+longitude (FLOAT64)
+
+The longitude of the location.
+
+_census_block_group (STRING)
+
+The census block group of the location.
+
+---
+
+## MEASUREMENT 
+
+The MEASUREMENT table contains records of Measurements, i.e. structured values (numerical or categorical) obtained through
+systematic and standardized examination or testing of a Person or Person’s sample.
+
+measurement_id (int64)
+
+The unique key given to a Measurement record for a Person. This is the primary key for this table.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (int64)
+
+A foreign key identifier to the person in the person table who is the
+subject of the visit.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+measurement_concept_id (int64)
+
+This is the field  recommended for primary use in analyses, and must be used for network studies.
+This is the standard concept mapped from the measurement_source value which represents a measurement
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+measurement_date (date)
+
+The date of the measurement
+
+measurement_datetime (datetime)
+
+This is the datetime of the measurement.
+If time is not available the convention is to set the time to midnight (00:00:0000).
+
+measurement_time (string)
+
+This is present for backwards compatibility and will be deprecated in an upcoming OMOP-CDM version.
+Is it set to NULL for STARR-OMOP
+
+measurement_type_concept_id (int64)
+
+This field can be used to determine the provenance of the Measurement record,
+as in whether the measurement was from an EHR system, insurance claim, registry, or other sources.
+For STARR-OMOP, it is set to EHR record (concept_id=32817)
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+operator_concept_id (int64)
+
+Operators are =, > and these concepts belong to the 'Meas Value Operator' domain.
+This is intended for measurments that are ranges and it is not expected to be populated for most measurements.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+value_as_number (float)
+
+This is the numerical value of the Result of the Measurement, if available.
+Note that measurements such as blood pressures will be split into their component parts
+i.e. one record for systolic, one record for diastolic.
+The relationship for the two records (systolic/diastolic) is captured in the FACT_RELATIONSHIP table.
+
+value_as_concept_id (int64)
+
+If the raw data gives a categorial result for measurements those values are captured and mapped to
+standard concepts in the 'Meas Value' domain.
+(e.g. 'normal', 'abnormal', 'positive', 'negative', 'detected', 'not detected', etc.)
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+unit_concept_id (int64)
+
+This concept represents the mapping of the UNIT_SOURCE_VALUE column.
+It is mapped to the Unit domain
+that best represents the unit as given in the source data
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+range_low (float)
+
+This represent the lower bound of the range of the value_as_number as presented in the source date. This data is not always available.
+Ranges have the same unit as the VALUE_AS_NUMBER. These ranges are provided by the source and will remain NULL if not given.
+
+range_high (float)
+
+This represent the upper bound of the range of the value_as_number as presented in the source date. This data is not always available.
+Ranges have the same unit as the VALUE_AS_NUMBER. These ranges are provided by the source and will remain NULL if not given.
+
+provider_id (int64)
+
+The provider associated with measurement record, e.g. the provider who ordered the test or the provider who recorded the result.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+visit_occurrence_id (int64)
+
+The encounter in which the Measurement occurred.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+visit_detail_id (int64)
+
+The VISIT_DETAIL record during which the Measurement occurred.
+For example, if the Person was in the ICU at the time the VISIT_OCCURRENCE record would reflect the overall hospital stay
+and the VISIT_DETAIL record would reflect the ICU stay during the hospital visit.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_detail')(visit_detail_id)`
+
+measurement_source_value (string)
+
+This field contains the exact value from the source data that represents the measurement that occurred.
+TODO: Update with more information about the column used.
+
+measurement_source_concept_id (int64)
+
+This is the concept representing the MEASUREMENT_SOURCE_VALUE and may not necessarily be standard.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+unit_source_value (string)
+
+This field contains the exact value from the source data that represents the unit of measurement used.
+
+unit_source_concept_id (int64)
+
+This is the concept representing the UNIT_SOURCE_VALUE and may not necessarily be standard.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+value_source_value (string)
+
+This field houses the verbatim result value of the Measurement from the source data. This includes numbers (e.g. 5.6), text (e.g. 'normal'), etc.
+
+measurement_event_id (int64)
+
+If the Measurement record is related to another record in the database, this field is the primary key of the linked record.
+
+meas_event_field_concept_id (int64)
+
+If the Measurement record is related to another record in the database, this field is the CONCEPT_ID that identifies
+which table the primary key of the linked record came from.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+---
+
+## METADATA 
+
+The metadata table metadata information about a dataset that has been transformed to the OMOP Common Data Model. At the moment for STARR OMOP, this table only contains a single entry specifying the OMOP CDM version (in this case, OMOP CDM version 5.4.2).
+
+metadata_id (INT64)
+
+The primary key for Metadata table, auto-incremented. At this moment there is a single row in this table so the metadata_id is populated with the number 0.
+
+**Constraints:**
+
+- **Primary Key**
+
+metadata_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the metadata record in question. For example, the concept_id 705800 which represents the metadata concept 'OMOP CDM version 5.4.2' is populated here.
+
+metadata_type_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the type concept for the metadata record in question.
+
+name (STRING)
+
+The concept_name for the metadata_concept_id representing the metadata record.
+
+value_as_string (STRING)
+
+This is the string value of the result of the Metadata, if applicable and available. It is not expected that all Metadata will have string results, rather, this field is here to house values should they exist.
+
+value_as_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the concept_id mapping for result of the Metadata, if applicable and available.
+
+value_as_number (FLOAT64)
+
+This is the numeric value of the result of the Metadata, if applicable and available. It is not expected that all Metadata will have numeric results, rather, this field is here to house values should they exist.
+
+metadata_date (DATE)
+
+The date when the metadata record was added to the dataset.
+
+metadata_datetime (DATETIME)
+
+The datetime when the metadata record was added to the dataset.
+
+---
+
+## NOTE 
+
+The NOTE table captures unstructured information that was recorded by a provider about a patient in free text notes on a given date.
+
+note_id (INT64)
+
+A unique identifier for each note in note table.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person in the person table who is the subject of the note.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+note_date (DATE)
+
+The date when the note was recorded. This field used colesce date fields from multiple date sources.
+
+note_datetime (DATETIME)
+
+The exact date and time when the note was recorded. This field used colesce date fields from multiple date sources.
+
+note_type_concept_id (INT64)
+
+Foreign key to the standard concept in the Concept table that specifies the provenance of the note like EHR.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+note_class_concept_id (INT64)
+
+The standard concept ID representing the note type from multiple note_source_value. Join to the concept table for more information.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+note_title (STRING)
+
+The title of the note. This is currently NULL in the OMOP CDM.
+
+note_text (STRING)
+
+The text of the note which was pulled by different rows corresponding to the most recent contact date for that note and concatenating new line characters.
+
+encoding_concept_id (INT64)
+
+This is the Concept representing the character encoding type.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+language_concept_id (INT64)
+
+The standard concept ID representing the language of the note.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+provider_id (INT64)
+
+The provider_id from the PROVIDER table representing the provider who recorded the note.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+visit_occurrence_id (INT64)
+
+A foreign key to the visit_occurrence_id in the VISIT_OCCURRENCE table.  not all the notes have a link to a visit_occurrence_id as the pat_csn_id is not always populated.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+visit_detail_id (INT64)
+
+A foreign key to the visit_detail_id in the VISIT_DETAIL table. Currently NULL in the OMOP CDM.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_detail')(visit_detail_id)`
+
+note_source_value (STRING)
+
+The type of note as it appears in the source data. This field is the note title such as progress_note, telephone encounter, ED notes, etc.
+
+note_event_id (INT64)
+
+A foreign key to the note_event_id in the NOTE_EVENT table. This field is not populated and it is currently NULL in the OMOP CDM.
+
+note_event_field_concept_id (INT64)
+
+The standard concept ID representing the note event field. Join to the concept table for more information. This field is not populated and it is currently NULL in the OMOP CDM.
+
+_accession_number (STRING)
+
+The accession number associated with the note, only available for pathology reports and radiology reports for images in the image_occurrence table.
+
+---
+
+## NOTE_NLP 
+
+The note_nlp table encodes all output of NLP on clinical notes. Each row represents a single extracted term from a note.The note_nlp table captures the detailed outputs of natural language processing (NLP) applied to the unstructured text found in the note table. This table contains the detailed annotations, the corresponding note identifiers, and the concepts identified through the NLP pipeline. This table is not currently populated in STARR OMOP.
+
+note_nlp_id (INT64)
+
+A unique identifier for each note_nlp entry.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+note_id (INT64)
+
+This is the NOTE_ID for the NOTE record the NLP record is associated to.
+
+section_concept_id (INT64)
+
+The SECTION_CONCEPT_ID should be used to represent the note section contained in the NOTE_NLP record.
+These concepts can be found as parts of document panels and are based on the type of note written, i.e. a discharge summary.
+These panels can be found as concepts with the relationship ‘Subsumes’ to CONCEPT_ID 45875957.
+
+snippet (string)
+
+A small window of text surrounding the term
+
+offset (string)
+
+Character offset of the extracted term in the input note
+
+lexical_variant (string)
+
+Raw text extracted from the NLP tool.
+
+note_nlp_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the concept table reflecting the normalized term output of the NLP pipeline.
+
+note_nlp_source_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the concept table reflecting the source term output of the NLP pipeline.
+
+nlp_system (string)
+
+Name and version of the NLP system that extracted the term. Useful for data provenance.
+
+nlp_date (date)
+
+Date of processing the note using the NLP system.
+
+nlp_datetime (datetime)
+
+Timestamp of processing the note using the NLP system.
+
+term_exists (string)
+
+Term_exists is defined as a flag that indicates if the patient actually has or had the condition.
+Any of the following modifiers would make Term_exists false -
+Negation = true
+Subject = [anything other than the patient]
+Conditional = true/li> Rule_out = true
+Uncertain = very low certainty or any lower certainties.
+A complete lack of modifiers would make Term_exists true.
+
+term_temporal (string)
+
+Term_temporal is to indicate if a condition is present or just in the past. The following would be past -
+History = true
+Concept_date = anything before the time of the report).
+
+term_modifiers (string)
+
+Various modification qualifiers for the term.
+Negation = false
+Subject = patient
+Conditional = false
+Rule_out = false
+Uncertain = true or high or moderate or even low (could argue about low).
+Term_modifiers will concatenate all modifiers for different types of entities (conditions, drugs, labs etc) into one string.
+Lab values will be saved as one of the modifiers.
+
+---
+
+## OBSERVATION 
+
+This table contains records of various observations made about individuals.
+It includes social history factors, ethnicity background, pregnancy and delivery observations,
+and other observations that are not captured in other tables.
+
+observation_id (INT64)
+
+A unique identifier for each observation in the observations table.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+The unique identifier for the person to whom the observation belongs.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+observation_concept_id (INT64)
+
+Foreign key to the standard concept in the Concept table representing the observation being made. This field is the primary id for analysis.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+observation_date (DATE)
+
+The date when the observation was made, in the format YYYY-MM-DD. For ethnicity background, the date is the latest date from visit occurrence.
+
+observation_datetime (DATETIME)
+
+The exact date and time when the observation was recorded.
+
+observation_type_concept_id (INT64)
+
+Foreign key to the standard concept in the Concept table that specifies the type of observation such as patient reported or EHR
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+value_as_number (FLOAT64)
+
+The quantitative value of the observation, represented as a number (float).
+
+value_as_string (STRING)
+
+The qualitative value of the observation, represented as a string such as the categories for ethinicty
+
+value_as_concept_id (INT64)
+
+Foreign key to the standard concept in the Concept table that represents the value of the observation.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+qualifier_concept_id (INT64)
+
+Optional qualifier for the observation, providing additional granularity. Currently all null values
+
+unit_concept_id (INT64)
+
+Foreign key to the standard concept in the Concept table representing the unit of measurement for the observation such as mL.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+provider_id (INT64)
+
+Foreign key to the provider who made the observation, representing healthcare personnel involved.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+visit_occurrence_id (INT64)
+
+A foreign key identifier for the visit during which the observation was made
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+visit_detail_id (INT64)
+
+A foreign key detailed identifier for the specific visit that generated the observation.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_detail')(visit_detail_id)`
+
+observation_source_value (STRING)
+
+The raw source value for the observation as provided in the source data.
+
+observation_source_concept_id (INT64)
+
+A foreign key identifier corresponding to the concept_id in the concept table for the observation's source concept in the source data.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+unit_source_value (STRING)
+
+The raw source value for the unit of measurement as provided in the source data.
+
+qualifier_source_value (STRING)
+
+The raw source value for the qualifier as provided in the source data, if applicable.
+
+value_source_value (STRING)
+
+The raw value of the observation from the source data. This field houses the verbatim result value of the Observation from the source data.
+
+observation_event_id (INT64)
+
+If the Observation record is related to another record in the database, this field is the primary key of the linked record.
+
+obs_event_field_concept_id (INT64)
+
+If the Observation record is related to another record in the database, this field is the CONCEPT_ID that identifies which table the primary key of the linked record came from.
+
+---
+
+## OBSERVATION_PERIOD 
+
+The observation period table is intended to contain records of spans of time in which a patient's
+clinical event history is considered observable, i.e. clinical events that happen to the person are
+recorded in the event tables, and absence of records indicate such events did not occur during this
+span of time. Please note that since STARR-OMOP only contains records of clinical events that are
+present in the Stanford EHR systems, it is not possible to determine if the absence of an event means
+that the event did not occur or if the patient was instead treated in a different healthcare system.
+
+observation_period_id (INT64)
+
+The unique key given to each OMOP observation period record. In STARR-OMOP,
+this ID is currently NOT stable across releases, so the same person's observation period
+may have a different ID from one STARR-OMOP release to the next. Instead, use the person_id
+to uniquely identify a given observation period, as each person only has one
+observation period using our current algorithm for defining observation periods.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+**Constraints:**
+
+- **Not Null**
+
+observation_period_start_date (DATE)
+
+The date on which the observation period for the person begins. This is calculated as the date
+of the earliest clinical event recorded for the person in the OMOP CDM tables visit_occurrence,
+condition_occurrence, procedure_occurrence, measurement, drug_exposure, device_exposure,
+and observation.
+
+**Constraints:**
+
+- **Not Null**
+
+observation_period_end_date (DATE)
+
+The date on which the observation period for the person ends. This is calculated as the earliest
+of the following three dates: 1) patient's death date + 60 day grace period, 2) source data cut date,
+3) date of the latest clinical event recorded for the person in the OMOP CDM tables visit_occurrence,
+condition_occurrence, procedure_occurrence, measurement, drug_exposure, device_exposure,
+and observation.
+
+**Constraints:**
+
+- **Not Null**
+
+period_type_concept_id (INT64)
+
+A foreign key identifier to a standard concept_id in the concept table for the type of observation
+period. In STARR-OMOP, this is set to 32882, 'Standard algorithm from EHR'.
+
+**Constraints:**
+
+- **Not Null**
+
+---
+
+## PAYER_PLAN_PERIOD 
+
+This table contains information about the period of time that a Person is continuously enrolled under a specific
+health Plan benefit structure from a given Payer. Each Person receiving healthcare is typically covered by a
+health benefit plan, which fully/partially pays for (or directly provides) the care (billable healthcare services).
+These benefit plans are provided by payers, such as health insurances or state or government agencies. In each plan
+the details of the health benefits are defined for the Person or her family, and the health benefit Plan might change
+over time with increasing utilization (reaching certain cost thresholds such as deductibles), plan availability
+and purchasing choices of the Person. The unique combinations of Payer organizations, health benefit Plans and
+time periods in which they are valid for a Person (Payer Plan Periods) are recorded in this table.
+
+payer_plan_period_id (INT64)
+
+A unique identifier for each record in the payer_plan_period table.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person table for the person covered by the plan detailed in each payer_plan_period record.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+payer_plan_period_start_date (DATE)
+
+Start date of the plan coverage described in each payer_plan_period record.
+This is obtained from the mem_eff_from_date in the STARR Common shc_payors and lpch_payors tables.
+
+payer_plan_period_end_date (DATE)
+
+End date of the plan coverage described in each payer_plan_period record.
+This is obtained from the mem_eff_to_date in the STARR Common shc_payors and lpch_payors tables.
+
+payer_concept_id (INT64)
+
+A foreign key identifier to the standard concept_id in the concept table. Upon mapping payer_concept_id
+to the standard concept_id in the concept table, this field represents the entity that would reimburse billable services
+for any provider(s) administering care to the person in each payer_plan_period record. It contains the standard concept
+obtained after mapping the qrda_sop_code_c field from STARR Common shc_payors and lpch_payors
+tables to the concept_code field in the concept table. The concept domain is 'Payer' and the vocabulary is 'SOPT'.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+payer_source_value (STRING)
+
+Payer information as it appears in the source data. The value is represented as an array containing the
+fin_class_name, qrda_sopt_code_c, and sop_code_name values from the STARR Common shc_payors and lpch_payors tables.
+
+payer_source_concept_id (INT64)
+
+A foreign key identifier to the source concept_id in the concept table. This field represents the entity that would
+reimburse billable services for any provider(s) administering care to the person in each payer_plan_period record, as it
+appears in the source data. It contains the source concept obtained after mapping the qrda_sop_code_c field from STARR
+Common shc_payors and lpch_payors tables to the concept_code field in the concept table. The concept domain is 'Payer'
+and the vocabulary is 'SOPT'.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+plan_concept_id (INT64)
+
+This field represents the specific health benefit plan that the person in each payer_plan_period record is enrolled in. This is not currently
+populated in STARR OMOP due to the need for custom mapping.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+plan_source_value (STRING)
+
+This field represents the specific health benefit plan that the person in each payer_plan_period record is enrolled in, as detailed in the source data.
+The value is represented as an array containing the benefit_plan_id and benefit_plan_name values from the STARR Common shc_payors and lpch_payors tables.
+
+plan_source_concept_id (INT64)
+
+This field represents the specific health benefit plan that the person in each payer_plan_period record is enrolled in, as mapped from the source data.
+This is not currenlty populated in STARR OMOP due to the need for custom mapping.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+sponsor_concept_id (INT64)
+
+This field represents the sponsor who finances the plan detailed in each payer_plan_period record. This includes self-insured, small group health plan and large group health plan.
+We are not populating this in STARR OMOP currently.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+sponsor_source_value (STRING)
+
+This is the plan sponsor as it appears in the source data. We are not populating this in STARR OMOP currently.
+
+sponsor_source_concept_id (INT64)
+
+This field represents the sponsor of the plan as mapped from the source data. We are not populating this in STARR OMOP currently.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+family_source_value (STRING)
+
+The common identifier for all people (often a family) that covered by the same policy. We are not populating this in STARR OMOP currently.
+
+stop_reason_concept_id (INT64)
+
+This field represents the reason the person left the plan detailed in each payer_plan_period record, if known. We are not populating this in STARR OMOP currently.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+stop_reason_source_value (STRING)
+
+This is the plan stop reason as it appears in the source data. We are not populating this in STARR OMOP currently.
+
+stop_reason_source_concept_id (INT64)
+
+This field represents the plan stop reason as mapped from the source data. We are not populating this in STARR OMOP currently.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+---
+
+## PERSON 
+
+This table serves as the central identity management for all Persons in the database.
+It contains records that uniquely identify each person or patient, and some demographic information.
+If the patient is present in both SHC and LPCH Clarity, the SHC patient record is used.
+
+person_id (INT64)
+
+A unique identifier for each person in the person table.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+gender_concept_id (INT64)
+
+Foreign key to the concept in the Concept table representing the patient's sex.
+The naming of this field as 'gender' is outdated; it should not be used to study the patient's gender identity.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+year_of_birth (INT64)
+
+Year of birth of the person, in the format YYYY.
+The year of birth is extracted from the person's date of birth.
+
+month_of_birth (INT64)
+
+Month of birth of the person, as an integer.
+The month of birth is extracted from the person's date of birth.
+
+day_of_birth (INT64)
+
+Day of birth of the person, as an integer.
+The day of birth is extracted from the person's date of birth.
+
+birth_datetime (datetime)
+
+Date and time of birth of the person. Time defaults to 00:00:00 if unavailable.
+
+race_concept_id (INT64)
+
+Foreign key to the concept in the Concept table representing the patient's race.
+If multiple races are recorded in the source data for that patient, this field will be set to 0, as there is currently no standard concept for multiple races.
+See the race_source_value field to determine if the patient has multiple races.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+ethnicity_concept_id (INT64)
+
+Foreign key to the concept in the Concept table representing the patient's ethnicity (Hispanic/Latino or Non-Hispanic/Non-Latino).
+Additional ethnic background information is available in the observation table.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+location_id (INT64)
+
+Foreign key to the location in the Location table representing the most recent known address for the patient.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('location')(location_id)`
+
+provider_id (INT64)
+
+Foreign key to the provider in the Provider table representing the patient's most recent primary care provider.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+care_site_id (INT64)
+
+Foreign key to the care site in the Care Site table representing the patient's most recent known care site.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('care_site')(care_site_id)`
+
+person_source_value (STRING)
+
+A unique identifier for each person as it appears in the source data.
+In identified STARR-OMOP, this field contains the patient's medical record number (MRN) and date of birth concatenated with a pipe, ex. "12345678 | 1900-01-01".
+
+gender_source_value (STRING)
+
+The verbatim value for the patient's sex as it appears in the source data.
+The naming of this field as 'gender' is outdated; it should not be used to study the patient's gender identity.
+
+gender_source_concept_id (INT64)
+
+Foreign key to the concept in the Concept table representing the patient's sex as it appears in the source data.
+The naming of this field as 'gender' is outdated; it should not be used to study the patient's gender identity.
+
+race_source_value (STRING)
+
+The verbatim value for the patient's race as it appears in the source data.
+ If multiple races are recorded in the source data for that patient, then this field will say 'Multiple'.
+
+race_source_concept_id (INT64)
+
+Foreign key to the concept in the Concept table representing the patient's race as it appears in the source data.
+
+ethnicity_source_value (STRING)
+
+The verbatim value for the patient's ethnicty (Hispanic/Latino or Non-Hispanic/Non-Latino) as it appears in the source data.
+Additional ethnic background information is available in the observation table.
+
+ethnicity_source_concept_id (INT64)
+
+Foreign key to the concept in the Concept table representing the patient's ethnicity (Hispanic/Latino or Non-Hispanic/Non-Latino) as it appears in the source data.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+---
+
+## PROCEDURE_OCCURRENCE 
+
+The PROCEDURE_OCCURRENCE table contains records of procedures that have been performed on patients.
+The procedures are typically performed by healthcare providers and are recorded in the source data.
+For STARR-OMOP this includes ordered procedures and billed procedures.
+
+procedure_occurrence_id (INT64)
+
+The unique key given to a procedure record for a person.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+The person_id of the person for whom the procedure is recorded.
+This can be used to join to the person table to find more information about the person
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+procedure_concept_id (INT64)
+
+The PROCEDURE_CONCEPT_ID field is recommended for primary use in analyses, and must be used for
+network studies. This is the standard concept mapped from the source value which represents
+a procedure
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+procedure_date (DATE)
+
+This is the date when the procedure was performed or ordered on the patient.
+This is the start date of the procedure.
+
+procedure_datetime (DATETIME)
+
+This is the date and time where the procedure was performed / ordered on the patient.
+
+procedure_end_date (DATE)
+
+This is the date where the procedure ended. If not available is set to the same as procedure_date.
+
+procedure_end_datetime (DATETIME)
+
+This is the date and time where the procedure ended.
+If not available is set to the same as procedure_datetime.
+
+procedure_type_concept_id (INT64)
+
+This field is used to determine the provenance of the Procedure record.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+modifier_concept_id (INT64)
+
+The modifiers are intended to give additional information about the procedure.
+In some cases up to 4 modifiers can be associated with a procedure in the source data.
+In this column we are selecting only the first modifier from the source data.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+quantity (INT64)
+
+This is the quantity of the procedure performed. If not available is set to 1.
+
+provider_id (INT64)
+
+The provider associated with the procedure record, e.g. the provider who ordered or performed the Procedure.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+visit_occurrence_id (INT64)
+
+The visit during which the procedure occurred.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+visit_detail_id (INT64)
+
+The VISIT_DETAIL record during which the Procedure occurred. For example, if the Person was in the ICU
+at the time of the Procedure the VISIT_OCCURRENCE record would reflect the overall hospital stay and
+the VISIT_DETAIL record would reflect the ICU stay during the hospital visit.
+Currently it is not populated for this table
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_detail')(visit_detail_id)`
+
+procedure_source_value (STRING)
+
+this is the source value as it appears in the source data.
+Includes a JSON string with the provenance of the data that includes names and codes.
+
+procedure_source_concept_id (INT64)
+
+This is the concept representing the procedure source value and may not necessarily be standard.
+This field is discouraged from use in analysis because it is not required to contain Standard Concepts
+that are used across the OHDSI community, and should only be used when Standard Concepts
+do not adequately represent the source detail for the Procedure necessary for a given analytic use case.
+Consider using PROCEDURE_CONCEPT_ID instead to enable standardized analytics that can be consistent
+across the network.
+
+modifier_source_value (STRING)
+
+This field houses the four possible modifiers found in the source data.
+It is a JSON string with the values of the four possible modifiers
+
+---
+
+## PROVIDER 
+
+The PROVIDER table contains a list of uniquely identified healthcare providers.
+These are individuals providing hands-on healthcare to patients, such as physicians, nurses, midwives, physical therapists etc.
+
+provider_id (int64)
+
+This is the primary key of the table. This is a unique identifier for every provider. It is assumed that every provider with a different unique identifier
+is in fact a different person and should be treated independently.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+provider_name (string)
+
+The name of the provider as it appears in the source data
+
+npi (string)
+
+This is the National Provider Number issued to health care providers
+in the US by the Centers for Medicare and Medicaid Services (CMS).
+
+dea (string)
+
+This is the identifier issued by the DEA, a US federal agency, that
+allows a provider to write prescriptions for controlled substances.
+
+specialty_concept_id (int64)
+
+This is the standardized specialty associated with the provider.
+For providers with multiple specialties, the first specialty that is listed  in Clarity is selected.
+This field includes physician specialties
+such as internal medicine, emergency medicine, etc. and allied health professionals
+such as nurses, midwives, and pharmacists.
+
+**Constraints:**
+
+- **Not Null**
+
+care_site_id (int64)
+
+This is the CARE_SITE_ID for the location that the provider primarily
+practices in.
+
+year_of_birth (int64)
+
+Year of birth of the provider
+
+gender_concept_id (int64)
+
+This is the standardized representation for the provider's sex. 8532 for Female, 8507 for Male.
+
+provider_source_value (string)
+
+This field contains a combination of the Clarity unique provider identifier and the source data (shc, lpch) (e.g. "12345678 | shc").
+This is the field that is used to derive the primary key of this table
+
+specialty_source_value (string)
+
+This is the kind of provider or specialty as it appears in the source
+data. This includes physician specialties such as internal medicine, emergency
+medicine, etc. and allied health professionals such as nurses, midwives, and
+pharmacists.
+
+specialty_source_concept_id (int64)
+
+The concept ID representing the source value, if available. This may be a custom concept (2,000,000,000 or higher) if the source value is not coded in an OMOP vocabulary. For now this is zero for all providers.
+
+gender_source_value (string)
+
+This is an integer representing provider's sex as it appears in the source data.
+1 for Female, 2 for Male
+
+gender_source_concept_id (int64)
+
+The concept ID representing the source value, if available. This may be a custom concept (2,000,000,000 or higher) if the source value is not coded in an OMOP vocabulary. For now this is zero for all providers.
+
+---
+
+## RELATIONSHIP 
+
+The RELATIONSHIP table provides a reference list of all types of relationships that can be used to associate any two Concepts in the CONCEPT_RELATIONSHIP table, the respective reverse relationships, and their hierarchical characteristics.
+Note that Concepts representing relationships between the clinical facts in the FACT_RELATIONSHIP table are stored in the CONCEPT table and belong to the Relationship Domain.
+
+relationship_id (string)
+
+The type of relationship captured by the relationship record.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+relationship_name (string)
+
+Relationship name.
+
+**Constraints:**
+
+- **Not Null**
+
+is_hierarchical (string)
+
+Defines whether a relationship defines concepts into classes or hierarchies.
+Values are 1 for hierarchical relationship or 0 if not.
+
+**Constraints:**
+
+- **Not Null**
+
+defines_ancestry (string)
+
+Defines whether a hierarchical relationship contributes to the concept_ancestor table.
+These are subsets of the hierarchical relationships. Valid values are 1 or 0.
+
+**Constraints:**
+
+- **Not Null**
+
+reverse_relationship_id (string)
+
+The identifier for the relationship used to define the reverse relationship between two concepts.
+
+**Constraints:**
+
+- **Not Null**
+
+relationship_concept_id (int64)
+
+A foreign key to the CONCEPT table for the unique relationship concept.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+- **Not Null**
+
+---
+
+## SPECIMEN 
+
+The specimen table captures data on biological samples, or specimens, from a person. A specimen record indicates characteristics, such as date/time, specimen type, specimen source, and anatomic site of origin, in which the specimen was collected. This table is not currently populated in STARR OMOP.
+
+specimen_id (INT64)
+
+A unique identifier for each specimen record.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person table for each specimen record.
+
+specimen_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies reflecting the type of specimen for the specimen record.
+
+specimen_type_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies reflecting the provenance of the specimen record, such as it being a fact or observation from an EHR or survey.
+
+specimen_date (DATE)
+
+The date when the specimen was collected from the Person.
+
+specimen_datetime (DATETIME)
+
+The date and time when the specimen was collected from the Person.
+
+quantity (FLOAT64)
+
+Quantity of the specimen collected.
+
+unit_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the unit of measure for the specimen quantity.
+
+anatomic_site_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the anatomic site from which the specimen was obtained.
+
+disease_status_concept_id (INT64)
+
+A foreign key to the predefined concept identifier in the Standardized Vocabularies representing the disease status associated with the specimen.
+
+specimen_source_id (STRING)
+
+The identifier for the specimen in the source data.
+
+specimen_source_value (STRING)
+
+The source code for the specimen as it appears in the source data.
+
+unit_source_value (STRING)
+
+The source code for the unit of measure of the specimen quantity as it appears in the source data.
+
+anatomic_site_source_value (STRING)
+
+The source code for the anatomic site of the specimen as it appears in the source data.
+
+disease_status_source_value (STRING)
+
+The source code for the disease status associated with the specimen as it appears in the source data.
+
+---
+
+## VISIT_DETAIL 
+
+The VISIT_DETAIL table is an optional table used to represents details of each record in the parent VISIT_OCCURRENCE table.
+A good example of this would be the movement between units in a hospital during an inpatient stay.
+For every record in the VISIT_OCCURRENCE table there may be 0 or more records in the VISIT_DETAIL table.
+The VISIT_DETAIL table is structurally very similar to VISIT_OCCURRENCE table and belongs to the visit domain.
+
+visit_detail_id (INT64)
+
+A unique identifier for each visit detail record.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person who is the subject of care during the visit.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+visit_detail_concept_id (INT64)
+
+A foreign key to the predefined concept in the Standardized Vocabularies reflecting the type of visit detail.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+visit_detail_start_date (date)
+
+The date when the visit detail event started.
+
+visit_detail_start_datetime (datetime)
+
+The date and time when the visit detail event started.
+
+visit_detail_end_date (date)
+
+The date when the visit detail event ended.
+
+visit_detail_end_datetime (datetime)
+
+The date and time when the visit detail event ended.
+
+visit_detail_type_concept_id (INT64)
+
+A foreign key to the predefined concept in the Standardized Vocabularies reflecting the provenance of the visit detail record. For STARR-OMOP, this is always 'EHR Encounter Record'
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+provider_id (INT64)
+
+A foreign key to the provider who is responsible for the visit detail event.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+care_site_id (INT64)
+
+A foreign key to the care site where the visit detail event occurred.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('care_site')(care_site_id)`
+
+visit_detail_source_value (STRING)
+
+The source value for the visit detail record.
+
+visit_detail_source_concept_id (INT64)
+
+A foreign key to the predefined concept in the Standardized Vocabularies reflecting the source of the visit detail record. For STARR-OMOP, this is 0 for all records.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+admitted_from_concept_id (INT64)
+
+A foreign key to the predefined concept in the Standardized Vocabularies reflecting the location of the patient prior to the current visit detail.
+In STARR-OMOP, this is populated based on the prior department within a given encounter.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+admitted_from_source_value (STRING)
+
+The source value for the location of the patient prior to the current visit detail.
+
+discharged_to_source_value (STRING)
+
+The source value for the location of the patient after the current visit detail.
+
+discharged_to_concept_id (INT64)
+
+A foreign key to the predefined concept in the Standardized Vocabularies reflecting the location of the patient after the current visit detail.
+In STARR-OMOP, this is populated based on the subsequent department within a given encounter.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+preceding_visit_detail_id (INT64)
+
+A foreign key to the visit detail record that immediately preceded the current visit detail record.
+
+parent_visit_detail_id (INT64)
+
+A foreign key to the visit detail record that is the parent of the current visit detail record.
+In STARR-OMOP, this is null for all records.
+
+visit_occurrence_id (INT64)
+
+A foreign key to the visit occurrence record that subsumes the visit detail record.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+---
+
+## VISIT_OCCURRENCE 
+
+This table contains Events where Persons engage with the healthcare system for a duration of time.
+They are often also called “Encounters”. Visits are defined by a configuration of circumstances
+under which they occur, such as (i) whether the patient comes to a healthcare institution,
+the other way around, or the interaction is remote, (ii) whether and what kind of trained medical
+staff is delivering the service during the Visit, and (iii) whether the Visit is transient or for
+a longer period involving a stay in bed.
+
+visit_occurrence_id (INT64)
+
+A unique identifier for each visit. This identifier is stable across STARR-OMOP releases.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person in the person table who is the subject of the visit.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+visit_concept_id (INT64)
+
+A foreign key identifier to the concept in the concept table representing the visit type (such as inpatient, outpatient, telehealth, etc.).
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+visit_start_date (DATE)
+
+The date when the visit started.
+
+visit_start_datetime (DATETIME)
+
+The date and time when the visit started. If no time information is available, the time is set to 00:00:00.
+
+visit_end_date (DATE)
+
+The date when the visit ended. If no end date is available, the end date is assumed to be the same as the start date.
+
+visit_end_datetime (DATETIME)
+
+The date and time when the visit ended. If no end datetime is available, the end datetime is assumed to be the
+same as the start datetime. If no time information is available, the time is set to 00:00:00.
+
+visit_type_concept_id (INT64)
+
+A foreign key identifier to the concept in the concept table representing the provenance of the visit record.
+For STARR-OMOP, this is always 'EHR encounter record'.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+provider_id (INT64)
+
+A foreign key identifier to the provider in the provider table who is the main care provider for the patient during the visit.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+care_site_id (INT64)
+
+A foreign key identifier to the care site in the care site table where the visit occurred.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('care_site')(care_site_id)`
+
+visit_source_value (STRING)
+
+Descriptors for the visit type as they appear in the source data stored in a JSON. The source fields are
+encounter type, ADT (admission/discharge/transfer) patient class, hospital admission type, and appointment
+procedure (aka visit type). Note that not all fields are populated for all visits.
+
+visit_source_concept_id (INT64)
+
+A foreign key identifier to the concept in the concept table representing the visit type as it appears in the source data.
+In STARR-OMOP, this is set to 0 as we derive the final visit type concept ID from the source information via an algorithm.
+
+admitted_from_concept_id (INT64)
+
+A foreign key identifier to the standard concept in the concept table representing the admitting source.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+admitted_from_source_value (STRING)
+
+The verbatim value for the admitting source as it appears in the source data.
+
+discharged_to_concept_id (INT64)
+
+A foreign key identifier to the standard concept in the concept table representing the discharge destination.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('concept')(concept_id)`
+
+discharged_to_source_value (STRING)
+
+The verbatim value for the discharge destination as it appears in the source data.
+
+preceding_visit_occurrence_id (INT64)
+
+A foreign key identifier to the visit in the visit table that immediately preceded the current visit for that patient.
+
+---
+
+## VOCABULARY 
+
+The VOCABULARY table includes a list of the Vocabularies integrated from various sources or created de novo in OMOP CDM.
+This reference table contains a single record for each Vocabulary and includes a descriptive name and other associated attributes for the Vocabulary.
+The primary purpose of the VOCABULARY table is to provide explicit information about specific vocabulary versions and the references to the sources from which they are asserted.
+Users can identify the version of a particular vocabulary used in the database, enabling consistency and reproducibility in data analysis.
+
+vocabulary_id (string)
+
+A unique identifier for each Vocabulary, such as ICD9CM, SNOMED, Visit.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+vocabulary_name (string)
+
+The name describing the vocabulary, for example, International Classification of Diseases, Ninth Revision, Clinical Modification, Volume 1 and 2 (NCHS) etc.
+
+**Constraints:**
+
+- **Not Null**
+
+vocabulary_reference (string)
+
+External reference to documentation or available download of the about the vocabulary.
+
+vocabulary_version (string)
+
+Version of the Vocabulary as indicated in the source.
+
+vocabulary_concept_id (int64)
+
+An identifier for the vocabulary that the VOCABULARY record belongs to.
+The vocabulary_concept_id is a foreign key to the CONCEPT table.
+
+**Constraints:**
+
+- **Not Null**
+
+---
+
+============================================================
+# FAQ
+Frequently Asked Questions for STARR-OMOP
+============================================================
+
+Below a list of frequently asked questions for STARR-OMOP v5.4.
+
+## How do I know which event is represented in each row
+
+### Question
+
+How do I know which events are represented by a single row in each one of the tables (e.g. `condition_occurrence`)? I only see numbers and dates but no other information.
+
+### Explanation
+
+The OMOP CDM tables use concept IDs to represent clinical events. These concept IDs are numeric identifiers that map to human-readable terms in the `concept` table. To understand what a row represents, you need to join the clinical event table with the `concept` table.
+
+In the `condition_occurrence` table, the `condition_concept_id` field contains the standardized concept representing the condition. To get the actual condition name, you join with the `concept` table.
+
+Let's demonstrate how to retrieve condition information with their human-readable names:
+
+1. Importing Python BigQuery package to interact with BigQuery.
+2. Setting the project ID for query execution.
+3. Creating the BigQuery Client to run queries.
+
+1. The person_id links to the patient who has this condition.
+2. The condition_concept_id is the numeric code representing the condition.
+3. The concept_name from the concept table provides the human-readable condition name.
+4. The vocabulary_id indicates which standardized vocabulary this concept comes from (e.g., SNOMED).
+5. The condition_start_date indicates when the condition was diagnosed or observed.
+6. The condition_occurrence table contains all condition records.
+7. The concept table contains the mapping from concept IDs to readable names.
+8. Joining on condition_concept_id = concept_id links the numeric code to its meaning.
+9. Select only the SNOMED concepts. They are the majority of the concepts in the condition_occurrence table.
+10. Execute the query and convert results to a pandas DataFrame.
+
+Now let's check the table
+
+You can apply this same pattern to any OMOP-CDM table that contains concept IDs. For example:
+
+- In `drug_exposure`, join `drug_concept_id` with the `concept` table
+- In `procedure_occurrence`, join `procedure_concept_id` with the `concept` table
+- In `measurement`, join `measurement_concept_id` with the `concept` table
+
+### Conclusion
+
+OMOP CDM tables store standardized numeric concept IDs to represent clinical events. To see what these numbers mean, you must join with the `concept` table using the appropriate concept_id field. This design allows for standardized, interoperable healthcare data analysis while maintaining semantic meaning through the vocabulary tables. The `concept` table acts as a central reference that translates all numeric codes into human-readable descriptions.
