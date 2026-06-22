@@ -97,9 +97,6 @@ website:
       - text: "FAQ"
         href: faq.qmd
     right:
-      - text: "STARR-Common Docs"
-        icon: box-arrow-up-right
-        href: https://vigilant-lamp-n3go165.pages.github.io/
       - text: "LLMs.txt"
         icon: robot
         menu:
