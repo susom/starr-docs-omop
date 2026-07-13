@@ -95,7 +95,7 @@ Patient identifiers remain stable between refreshes.
 
 ### Getting Access
 
-To access STARR-OMOP-confidential and STARR-OMOP-confidential-lite databases please follow the steps [here](getting_access.qmd). 
+To access STARR-OMOP-confidential and STARR-OMOP-confidential-lite databases, please follow the steps [here](getting_access.qmd).
 
 ### Consultation Services
 

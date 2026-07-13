@@ -8,7 +8,7 @@ We are pleased to release the first **STARR-OMOP CDM 5.4 dataset,** using the **
 * **OMOP 5.3: som-rit-phi-starr-prod.starr\_omop\_cdm5\_confidential\_2026\_01\_18**   
 * **OMOP 5.4: som-rit-phi-starr-prod.starr\_omop\_cdm54\_confidential\_2026\_01\_18**
 
-We strongly encourage users to **compare their cohorts and analyses between the 5.3 and 5.4 datasets** and review any differences. Changes in vocabulary, mappings, and ETL logic may require adjustments in your downstream work in order to achieve the same study goals. We welcome feedback from users and ask that you please report any unexpected issues or questions to the STARR-OMOP team as soon as possible (email: [***starr-omop-support@stanford.edu***](mailto:starr-omop-support@stanford.edu)***)*** 
+We strongly encourage users to **compare their cohorts and analyses between the 5.3 and 5.4 datasets** and review any differences. Changes in vocabulary, mappings, and ETL logic may require adjustments in your downstream work in order to achieve the same study goals. We welcome feedback from users and ask that you please report any unexpected issues or questions to the STARR-OMOP team as soon as possible (email: [starr-omop-support@stanford.edu](mailto:starr-omop-support@stanford.edu)).
 
 Based on user feedback during this transition period, we plan to **maintain both 5.3 and 5.4 in parallel for ONE additional release cycle** before fully transitioning to 5.4 and retiring 5.3. If your project requires a **static dataset using the previous CDM/vocabulary**, please copy the dataset into your own Nero GCP project to ensure long-term reproducibility. 
 
@@ -27,7 +27,7 @@ The release notes below are divided into the following sections for readability:
 | :---- | :---- | :---- | :---- | :---- |
 | 1\. | CDM Version Upgrade | Dataset upgraded from OMOP CDM 5.3 → 5.4, including new fields and some renamed columns per OMOP standards. | Most queries will continue to work, but queries referencing renamed fields or schema elements may require updates. | Review queries referencing CDM schema fields, please report to us if errors occur. |
 | 2\. | Vocabulary Update | Vocabulary updated to the August 2025 OHDSI Standardized Vocabularies. OHDSI vocabularies are updated twice per year.  | Concept mappings, concept hierarchies, and domain assignments may change. Cohort definitions, concept sets, and event counts may differ. | Re-run cohorts and validate concept sets using the updated vocabulary. Update concepts sets as needed to maintain consistency.  |
-| 3\. | Source Value Transparency | \*\_source\_value fields now stored as JSON strings containing additional context about the originating source fields and values. | Queries treating source values as simple strings may capture different rows due to changes in what information is included.. More detailed source-level analysis is now possible. | Review queries using \*\_source\_value and consider using JSON functions (e.g., JSON\_VALUE) for targeted retrieval. |
+| 3\. | Source Value Transparency | \*\_source\_value fields now stored as JSON strings containing additional context about the originating source fields and values. | Queries treating source values as simple strings may capture different rows due to changes in what information is included. More detailed source-level analysis is now possible. | Review queries using \*\_source\_value and consider using JSON functions (e.g., JSON\_VALUE) for targeted retrieval. |
 | 4\. | Date & Data Quality Filtering | Clinical events before Jan 1, 2000 have been filtered out across all clinical event tables, not just the visit tables. Data quality filters (such as removal of cancelled events) have been standardized across domains.  | Some events previously included may now be removed, while others may be newly included due to more consistent filtering. Persons may no longer qualify for OMOP if all their clinical events are filtered out. | Validate event counts and cohort sizes when comparing 5.3 vs 5.4. Ensure study period start dates are 2000 or later.  |
 | 5\. | Diagnosis Mapping Strategy | Diagnosis mappings now use a consistent strategy to map from a source EHR dx\_id to an ICD code across all diagnosis sources | Some diagnosis records may map to different standard concepts or domains compared to prior releases. | Revalidate cohorts or phenotypes based on diagnosis codes. |
 | 6\. | Expanded Procedure & Device Mapping | Expanded mappings now incorporate HCPCS codes and billing procedure data, improving representation of procedures and devices. | Procedure and device counts have increased due to additional mapped records. | Review cohorts and analyses relying on procedure or device counts. |
@@ -71,7 +71,7 @@ The release notes below are divided into the following sections for readability:
   The logic we are applying across all source tables that contain dx\_ids in OMOP CDM 5.4 is to try to use the ICD-9 or ICD-10 mapping that is consistent with the date of diagnosis (i.e., look for the diagnosis date to be between the start and end dates of the mapping from the edg\_hx\_icd…\_list tables). 
 
 * If we don’t have a mapping for that time period, then we use the current\_icd9\_list field from clarity\_edg if the dx\_date is on or before September 30th, 2015 (which is the last date that ICD-9-CM was supposed to be used), or the current\_icd\_10\_list field if the date is on or after October 1st, 2016 (the first date of ICD-10).  
-*  If we still don’t have an ICD mapping, we’ll resort to using a populated current\_icd\<x\>\_list, regardless of whether it's for the correct time period.   
+*  If we still don’t have an ICD mapping, we’ll resort to using a populated `current_icd<x>_list`, regardless of whether it's for the correct time period.   
 * If we don’t have a dx\_date, we assume an ICD-10 period and use the current ICD-10 list. 
 
   The goal with this approach was to keep the ICD mappings time-appropriate and stable as much as possible (the historical mappings shouldn’t be changing anymore), but to still use the ‘current’ code list (which may be updated at any point in time) if we don’t have the correct historical information, because it facilitates the mapping to a reasonable OMOP concept\_id. We find that we achieve very good coverage of dx\_id-to-ICD mappings using this approach (\>99.99% of records with a dx\_id have a corresponding ICD code).
@@ -308,7 +308,7 @@ The release notes below are divided into the following sections for readability:
 
 * #### **Row Count Impact** 
 
-  Overall reduction in row cunts as events coming from history encounters are linked to the actual patient encounter, so many history encounters no longer have associated events and are therefore filtered out
+  Overall reduction in row counts as events coming from history encounters are linked to the actual patient encounter, so many history encounters no longer have associated events and are therefore filtered out
 
 
 ### **16\. Visit\_detail**
