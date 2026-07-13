@@ -3,7 +3,7 @@ project:
   pre-render:
     - ../scripts/generate_docs.py omop
     - ../scripts/generate_faq.py
-    - ../scripts/generate_llms_txt.py --base-url "https://shiny-funicular-j1po82z.pages.github.io/"
+    - ../scripts/generate_llms_txt.py --base-url "https://shiny-funicular-j1po82z.pages.github.io/about/"
   render:
     - starr_omop54.qmd
     - omop_data_model.qmd

@@ -5,7 +5,7 @@ description: "Detailed table and column definitions"
 
 ## Overview
 
-This page documents all tables in the STARR-OMOP CDM v5.4 implementation, extracted from the dbt model definitions. Each table includes Stanford-specific implementation notes and detailed column descriptions.
+This page documents all tables in the STARR-OMOP CDM v5.4 implementation. Each table includes Stanford-specific implementation notes and detailed column descriptions.
 
 **Total Tables:** 41
 

@@ -75,15 +75,15 @@ For comprehensive OMOP CDM v5.4 documentation, visit the official OHDSI document
 
 Research IT receives raw Clarity from each of the two hospitals and builds a filtered Clarity for each. These filtered Clarity databases then become the source for OMOP ETLs. Patients at the two hospitals are linked via their MRN.
 
-We first build an OMOP database with all PHI present. Then, we build two PHI scrubbed databases that are accessible to Stanford researchers without an IRB:
+We first build an OMOP database with all PHI present. Then, we build two PHI-scrubbed databases that are accessible to Stanford researchers without an IRB:
 
-- **STARR-OMOP-deid** - Contains PHI scrubbed clinical text (NOTES) using TiDE
-- **STARR-OMOP-deid-lite** - Subset without clinical notes, used by ATLAS and ACE (Advanced Cohort Engine)
+- **STARR-OMOP-confidential** - Contains PHI scrubbed clinical text (NOTES) using TiDE
+- **STARR-OMOP-confidential-lite** - Subset without clinical notes, used by ATLAS and ACE (Advanced Cohort Engine)
 
 ### Refresh Schedule
 
-- **STARR-OMOP-deid**: Monthly refresh
-- **STARR-OMOP-deid-lite**: Weekly refresh
+- **STARR-OMOP-confidential**: Monthly refresh
+- **STARR-OMOP-confidential-lite**: Monthly refresh
 
 Patient identifiers remain stable between refreshes.
 
@@ -91,7 +91,7 @@ Patient identifiers remain stable between refreshes.
 
 ### Getting Access
 
-To access STARR-OMOP-confidential and STARR-OMOP-confidential-lite databases please follow the steps here. 
+To access STARR-OMOP-confidential and STARR-OMOP-confidential-lite databases, please follow the steps here.
 
 ### Consultation Services
 
@@ -120,278 +120,14 @@ View FAQ →
 
 ============================================================
 # OMOP CDM v5.4 Data Model
-Detailed table and column definitions from dbt models
+Detailed table and column definitions
 ============================================================
 
 ## Overview
 
-This page documents all tables in the STARR-OMOP CDM v5.4 implementation, extracted from the dbt model definitions. Each table includes Stanford-specific implementation notes and detailed column descriptions.
+This page documents all tables in the STARR-OMOP CDM v5.4 implementation. Each table includes Stanford-specific implementation notes and detailed column descriptions.
 
 **Total Tables:** 41
-
----
-
-## _VARIANT_OCCURRENCE 
-
-The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing.
-This table is custom to STARR-OMOP and is not part of the standard OMOP CDM.
-Currently, it only contains variants identified via the STANFORD ACTIONABLE MUTATION PANEL FOR SOLID TUMORS (STAMP) test.
-The data is sourced from the Epic Genomics Suite, which incorporated STAMP tests starting in August of 2025.
-STAMP tests performed prior to this date are not currently included in this table.
-
-variant_occurrence_id (int64)
-
-This is the primary key of the table. This is a unique identifier for every variant occurrence. It is assumed that every variant occurrence with a different unique identifier
-is in fact a different event and should be treated independently.
-
-**Constraints:**
-
-- **Primary Key**
-- **Not Null**
-
-person_id (INT64)
-
-A foreign key identifier to the person_id in the person table for whom the condition is recorded.
-
-**Constraints:**
-
-- **Foreign Key** → `ref('person')(person_id)`
-
-visit_occurrence_id (INT64)
-
-A foreign key identifier to the visit_occurrence_id in the visit_occurrence table for the visit associated with the ordered test.
-
-**Constraints:**
-
-- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
-
-procedure_occurrence_id (INT64)
-
-A foreign key identifier to the OMOP procedure_occurrence table for the procedure order for the variant test.
-
-**Constraints:**
-
-- **Foreign Key** → `ref('procedure_occurrence')(procedure_occurrence_id)`
-
-provider_id (INT64)
-
-A foreign key identifier to the provider in the provider table who authorized the order for the variant test.
-
-**Constraints:**
-
-- **Foreign Key** → `ref('provider')(provider_id)`
-
-order_datetime (DATETIME)
-
-The datetime when the test was ordered.
-
-test_name (string)
-
-The name of the test associated with the variant record.
-
-variant_name (string)
-
-The name of the genetic variant identified in the test.
-
-variant_type (STRING)
-
-The variant type, such as 'Simple', 'Pharmacogenomic genotype', 'Negative', etc.
-
-assessment (STRING)
-
-The assessment of the variant, such as 'Detected', 'Not Detected', 'Negative', etc.
-
-genome_assembly (STRING)
-
-The genome assembly used for the variant, such as 'GRCh37', 'GRCh38', 'hg38', etc.
-
-chromosome (STRING)
-
-The chromosome on which the variant is located, such as '1', '2', 'X', 'Y', etc.
-
-transcript_ref_seq (STRING)
-
-The external identifier defining the Transcript Reference Sequence.
-
-dna_change (STRING)
-
-The change at the DNA level relative to the Transcript Reference Sequence.
-
-dna_var_type (STRING)
-
-The descriptive name for the DNA sequence variation type, such as 'Substitution', 'Copy number gain', 'Deletion', etc.
-
-amino_acid_change (STRING)
-
-The change at the amino acid (protein) level caused by the DNA change.
-
-variant_molecular_consequence (STRING)
-
-The descriptive name for the molecular consequence of the variant, such as 'Missense Variant', 'Nonsense', 'Frameshift Variant', etc.
-
-genomic_dna_change (STRING)
-
-The change at the DNA level relative to the Genomic Reference Sequence.
-
-allelic_frequency *(NUMERIC(18,5))*
-
-The percentage of all of the reads at this genomic location that were represented by the
-given allele. For homozygotes it will be close to 100%; for heterozygotes it will be close to 50%.
-It can be a smaller number when there are mosaics or multiple chromosomes, or mixtures of tumor cells
-and normal cells. It is stored in the system as a decimal between 0 and 1 - this is calculated by
-dividing the percentage by 100.
-
-copy_number_lower *(NUMERIC(9,2))*
-
-The lower bound of the copy number range for the variant.
-
-copy_number_upper *(NUMERIC(9,2))*
-
-The upper bound of the copy number range for the variant.
-
-gene_name (STRING)
-
-The name of the gene associated with the variant record, such as 'POLE', 'TP53', 'CYP2D6', etc.
-
-phenotype_spec_var_class (STRING)
-
-The descriptive name for the phenotype variant class, such as 'Pathogenic', 'Likely Pathogenic', 'Uncertain Significance', etc.
-
-interpretation (STRING)
-
-The full text interpretation associated with the variant record, aggregated from individual interpretation lines.
-
-accession_number (STRING)
-
-The specimen accession numbers associated with the ordered test, stored as a comma-separated string if multiple accession numbers are present.
-
-stamp_pipeline_version (STRING)
-
-The version of the STAMP pipeline used for the test associated with the variant record.
-
-specimen_type (STRING)
-
-The specimen type associated with the order for the variant record, such as 'Blood', 'Tissue/Bone - Biopsy', 'Existing Patient Material', etc.
-
-specimen_source (STRING)
-
-The specimen source associated with the order for the variant record, such as 'Blood, from Venipuncture', 'Saliva', 'Liver', etc.
-
----
-
-## _WHOLE_SLIDE_IMAGING 
-
-OMOP extension table for whole slide imaging data from pathology specimens. It contains both information
-from the PHI-scrubbed whole slide imaging files (svs or isyntac) and source clarity. This table only contains
-information for slide images we have in GCP buckets with OMOP EHR information.
-
-whole_slide_imaging_id (int64)
-
-Unique identifier for the whole slide imaging record
-
-**Constraints:**
-
-- **Not Null**
-- **Primary Key**
-
-accession_number (string)
-
-Specimen accession number
-
-**Constraints:**
-
-- **Not Null**
-
-specimen (string)
-
-Specimen identifier
-
-**Constraints:**
-
-- **Not Null**
-
-block (string)
-
-Block identifier
-
-**Constraints:**
-
-- **Not Null**
-
-slide (string)
-
-Slide identifier
-
-**Constraints:**
-
-- **Not Null**
-
-person_id (int64)
-
-Reference to the person in the OMOP CDM
-
-**Constraints:**
-
-- **Not Null**
-
-acquisition_date (datetime)
-
-Date and time when the slide was scanned from the wsi file metadata.
-This field is null for Aperio Leica slides as these were manually scanned after slides had been created.
-
-procedure_start_time (datetime)
-
-Date and time when the associated procedure started.
-
-specimen_received_date (datetime)
-
-Date and time when the specimen was received by the lab. Closest date to acquisition_date
-for the Aperio Leica slides.
-
-brand (string)
-
-WSI scanner brand (Philips or Aperio Leica)
-
-scanner (string)
-
-Scanner model name
-
-mpp (float64)
-
-Microns per pixel - spatial resolution of the scan
-
-json_uri (string)
-
-GCP URI to the deidentified JSON metadata file
-
-tiff_uri (string)
-
-GCP URI to the deidentified TIFF file
-
-specimen_source_category_value (int64)
-
-Specimen source category value
-
-specimen_source (string)
-
-Specimen source description
-
-specimen_type_category_value (int64)
-
-Specimen type category value
-
-specimen_type (string)
-
-Specimen type description
-
-spec_task_list (array&lt;struct&lt;task_c int64, task_name string&gt;&gt;)
-
-List of specimen tasks
-
-note_id (int64)
-
-Note_id for associated pathology report. It is possible that a slide link to more than one note
-when this happens we bring in one line per note.
 
 ---
 
@@ -3439,12 +3175,276 @@ The vocabulary_concept_id is a foreign key to the CONCEPT table.
 
 ---
 
+## \_VARIANT_OCCURRENCE 
+
+The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing.
+This table is custom to STARR-OMOP and is not part of the standard OMOP CDM.
+Currently, it only contains variants identified via the STANFORD ACTIONABLE MUTATION PANEL FOR SOLID TUMORS (STAMP) test.
+The data is sourced from the Epic Genomics Suite, which incorporated STAMP tests starting in August of 2025.
+STAMP tests performed prior to this date are not currently included in this table.
+
+variant_occurrence_id (int64)
+
+This is the primary key of the table. This is a unique identifier for every variant occurrence. It is assumed that every variant occurrence with a different unique identifier
+is in fact a different event and should be treated independently.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+person_id (INT64)
+
+A foreign key identifier to the person_id in the person table for whom the condition is recorded.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+visit_occurrence_id (INT64)
+
+A foreign key identifier to the visit_occurrence_id in the visit_occurrence table for the visit associated with the ordered test.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+procedure_occurrence_id (INT64)
+
+A foreign key identifier to the OMOP procedure_occurrence table for the procedure order for the variant test.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('procedure_occurrence')(procedure_occurrence_id)`
+
+provider_id (INT64)
+
+A foreign key identifier to the provider in the provider table who authorized the order for the variant test.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+order_datetime (DATETIME)
+
+The datetime when the test was ordered.
+
+test_name (string)
+
+The name of the test associated with the variant record.
+
+variant_name (string)
+
+The name of the genetic variant identified in the test.
+
+variant_type (STRING)
+
+The variant type, such as 'Simple', 'Pharmacogenomic genotype', 'Negative', etc.
+
+assessment (STRING)
+
+The assessment of the variant, such as 'Detected', 'Not Detected', 'Negative', etc.
+
+genome_assembly (STRING)
+
+The genome assembly used for the variant, such as 'GRCh37', 'GRCh38', 'hg38', etc.
+
+chromosome (STRING)
+
+The chromosome on which the variant is located, such as '1', '2', 'X', 'Y', etc.
+
+transcript_ref_seq (STRING)
+
+The external identifier defining the Transcript Reference Sequence.
+
+dna_change (STRING)
+
+The change at the DNA level relative to the Transcript Reference Sequence.
+
+dna_var_type (STRING)
+
+The descriptive name for the DNA sequence variation type, such as 'Substitution', 'Copy number gain', 'Deletion', etc.
+
+amino_acid_change (STRING)
+
+The change at the amino acid (protein) level caused by the DNA change.
+
+variant_molecular_consequence (STRING)
+
+The descriptive name for the molecular consequence of the variant, such as 'Missense Variant', 'Nonsense', 'Frameshift Variant', etc.
+
+genomic_dna_change (STRING)
+
+The change at the DNA level relative to the Genomic Reference Sequence.
+
+allelic_frequency *(NUMERIC(18,5))*
+
+The percentage of all of the reads at this genomic location that were represented by the
+given allele. For homozygotes it will be close to 100%; for heterozygotes it will be close to 50%.
+It can be a smaller number when there are mosaics or multiple chromosomes, or mixtures of tumor cells
+and normal cells. It is stored in the system as a decimal between 0 and 1 - this is calculated by
+dividing the percentage by 100.
+
+copy_number_lower *(NUMERIC(9,2))*
+
+The lower bound of the copy number range for the variant.
+
+copy_number_upper *(NUMERIC(9,2))*
+
+The upper bound of the copy number range for the variant.
+
+gene_name (STRING)
+
+The name of the gene associated with the variant record, such as 'POLE', 'TP53', 'CYP2D6', etc.
+
+phenotype_spec_var_class (STRING)
+
+The descriptive name for the phenotype variant class, such as 'Pathogenic', 'Likely Pathogenic', 'Uncertain Significance', etc.
+
+interpretation (STRING)
+
+The full text interpretation associated with the variant record, aggregated from individual interpretation lines.
+
+accession_number (STRING)
+
+The specimen accession numbers associated with the ordered test, stored as a comma-separated string if multiple accession numbers are present.
+
+stamp_pipeline_version (STRING)
+
+The version of the STAMP pipeline used for the test associated with the variant record.
+
+specimen_type (STRING)
+
+The specimen type associated with the order for the variant record, such as 'Blood', 'Tissue/Bone - Biopsy', 'Existing Patient Material', etc.
+
+specimen_source (STRING)
+
+The specimen source associated with the order for the variant record, such as 'Blood, from Venipuncture', 'Saliva', 'Liver', etc.
+
+---
+
+## \_WHOLE_SLIDE_IMAGING 
+
+OMOP extension table for whole slide imaging data from pathology specimens. It contains both information
+from the PHI-scrubbed whole slide imaging files (svs or isyntac) and source clarity. This table only contains
+information for slide images we have in GCP buckets with OMOP EHR information.
+
+whole_slide_imaging_id (int64)
+
+Unique identifier for the whole slide imaging record
+
+**Constraints:**
+
+- **Not Null**
+- **Primary Key**
+
+accession_number (string)
+
+Specimen accession number
+
+**Constraints:**
+
+- **Not Null**
+
+specimen (string)
+
+Specimen identifier
+
+**Constraints:**
+
+- **Not Null**
+
+block (string)
+
+Block identifier
+
+**Constraints:**
+
+- **Not Null**
+
+slide (string)
+
+Slide identifier
+
+**Constraints:**
+
+- **Not Null**
+
+person_id (int64)
+
+Reference to the person in the OMOP CDM
+
+**Constraints:**
+
+- **Not Null**
+
+acquisition_date (datetime)
+
+Date and time when the slide was scanned from the wsi file metadata.
+This field is null for Aperio Leica slides as these were manually scanned after slides had been created.
+
+procedure_start_time (datetime)
+
+Date and time when the associated procedure started.
+
+specimen_received_date (datetime)
+
+Date and time when the specimen was received by the lab. Closest date to acquisition_date
+for the Aperio Leica slides.
+
+brand (string)
+
+WSI scanner brand (Philips or Aperio Leica)
+
+scanner (string)
+
+Scanner model name
+
+mpp (float64)
+
+Microns per pixel - spatial resolution of the scan
+
+json_uri (string)
+
+GCP URI to the deidentified JSON metadata file
+
+tiff_uri (string)
+
+GCP URI to the deidentified TIFF file
+
+specimen_source_category_value (int64)
+
+Specimen source category value
+
+specimen_source (string)
+
+Specimen source description
+
+specimen_type_category_value (int64)
+
+Specimen type category value
+
+specimen_type (string)
+
+Specimen type description
+
+spec_task_list (array&lt;struct&lt;task_c int64, task_name string&gt;&gt;)
+
+List of specimen tasks
+
+note_id (int64)
+
+Note_id for associated pathology report. It is possible that a slide link to more than one note
+when this happens we bring in one line per note.
+
+---
+
 ============================================================
 # FAQ
 Frequently Asked Questions for STARR-OMOP
 ============================================================
 
-Below a list of frequently asked questions for STARR-OMOP v5.4.
+Below is a list of frequently asked questions for STARR-OMOP v5.4.
 
 ## How do I know which event is represented in each row
 
@@ -3525,7 +3525,7 @@ We are pleased to release the first **STARR-OMOP CDM 5.4 dataset,** using the **
 * **OMOP 5.3: som-rit-phi-starr-prod.starr\_omop\_cdm5\_confidential\_2026\_01\_18**   
 * **OMOP 5.4: som-rit-phi-starr-prod.starr\_omop\_cdm54\_confidential\_2026\_01\_18**
 
-We strongly encourage users to **compare their cohorts and analyses between the 5.3 and 5.4 datasets** and review any differences. Changes in vocabulary, mappings, and ETL logic may require adjustments in your downstream work in order to achieve the same study goals. We welcome feedback from users and ask that you please report any unexpected issues or questions to the STARR-OMOP team as soon as possible (email: ***starr-omop-support@stanford.edu******)*** 
+We strongly encourage users to **compare their cohorts and analyses between the 5.3 and 5.4 datasets** and review any differences. Changes in vocabulary, mappings, and ETL logic may require adjustments in your downstream work in order to achieve the same study goals. We welcome feedback from users and ask that you please report any unexpected issues or questions to the STARR-OMOP team as soon as possible (email: starr-omop-support@stanford.edu).
 
 Based on user feedback during this transition period, we plan to **maintain both 5.3 and 5.4 in parallel for ONE additional release cycle** before fully transitioning to 5.4 and retiring 5.3. If your project requires a **static dataset using the previous CDM/vocabulary**, please copy the dataset into your own Nero GCP project to ensure long-term reproducibility. 
 
@@ -3544,7 +3544,7 @@ The release notes below are divided into the following sections for readability:
 | :---- | :---- | :---- | :---- | :---- |
 | 1\. | CDM Version Upgrade | Dataset upgraded from OMOP CDM 5.3 → 5.4, including new fields and some renamed columns per OMOP standards. | Most queries will continue to work, but queries referencing renamed fields or schema elements may require updates. | Review queries referencing CDM schema fields, please report to us if errors occur. |
 | 2\. | Vocabulary Update | Vocabulary updated to the August 2025 OHDSI Standardized Vocabularies. OHDSI vocabularies are updated twice per year.  | Concept mappings, concept hierarchies, and domain assignments may change. Cohort definitions, concept sets, and event counts may differ. | Re-run cohorts and validate concept sets using the updated vocabulary. Update concepts sets as needed to maintain consistency.  |
-| 3\. | Source Value Transparency | \*\_source\_value fields now stored as JSON strings containing additional context about the originating source fields and values. | Queries treating source values as simple strings may capture different rows due to changes in what information is included.. More detailed source-level analysis is now possible. | Review queries using \*\_source\_value and consider using JSON functions (e.g., JSON\_VALUE) for targeted retrieval. |
+| 3\. | Source Value Transparency | \*\_source\_value fields now stored as JSON strings containing additional context about the originating source fields and values. | Queries treating source values as simple strings may capture different rows due to changes in what information is included. More detailed source-level analysis is now possible. | Review queries using \*\_source\_value and consider using JSON functions (e.g., JSON\_VALUE) for targeted retrieval. |
 | 4\. | Date & Data Quality Filtering | Clinical events before Jan 1, 2000 have been filtered out across all clinical event tables, not just the visit tables. Data quality filters (such as removal of cancelled events) have been standardized across domains.  | Some events previously included may now be removed, while others may be newly included due to more consistent filtering. Persons may no longer qualify for OMOP if all their clinical events are filtered out. | Validate event counts and cohort sizes when comparing 5.3 vs 5.4. Ensure study period start dates are 2000 or later.  |
 | 5\. | Diagnosis Mapping Strategy | Diagnosis mappings now use a consistent strategy to map from a source EHR dx\_id to an ICD code across all diagnosis sources | Some diagnosis records may map to different standard concepts or domains compared to prior releases. | Revalidate cohorts or phenotypes based on diagnosis codes. |
 | 6\. | Expanded Procedure & Device Mapping | Expanded mappings now incorporate HCPCS codes and billing procedure data, improving representation of procedures and devices. | Procedure and device counts have increased due to additional mapped records. | Review cohorts and analyses relying on procedure or device counts. |
@@ -3587,7 +3587,7 @@ The release notes below are divided into the following sections for readability:
   The logic we are applying across all source tables that contain dx\_ids in OMOP CDM 5.4 is to try to use the ICD-9 or ICD-10 mapping that is consistent with the date of diagnosis (i.e., look for the diagnosis date to be between the start and end dates of the mapping from the edg\_hx\_icd…\_list tables). 
 
 * If we don’t have a mapping for that time period, then we use the current\_icd9\_list field from clarity\_edg if the dx\_date is on or before September 30th, 2015 (which is the last date that ICD-9-CM was supposed to be used), or the current\_icd\_10\_list field if the date is on or after October 1st, 2016 (the first date of ICD-10).  
-*  If we still don’t have an ICD mapping, we’ll resort to using a populated current\_icd\\_list, regardless of whether it's for the correct time period.   
+*  If we still don’t have an ICD mapping, we’ll resort to using a populated `current_icd_list`, regardless of whether it's for the correct time period.   
 * If we don’t have a dx\_date, we assume an ICD-10 period and use the current ICD-10 list. 
 
   The goal with this approach was to keep the ICD mappings time-appropriate and stable as much as possible (the historical mappings shouldn’t be changing anymore), but to still use the ‘current’ code list (which may be updated at any point in time) if we don’t have the correct historical information, because it facilitates the mapping to a reasonable OMOP concept\_id. We find that we achieve very good coverage of dx\_id-to-ICD mappings using this approach (\>99.99% of records with a dx\_id have a corresponding ICD code).
@@ -3801,7 +3801,7 @@ The release notes below are divided into the following sections for readability:
 
 * #### **Row Count Impact** 
 
-  Overall reduction in row cunts as events coming from history encounters are linked to the actual patient encounter, so many history encounters no longer have associated events and are therefore filtered out
+  Overall reduction in row counts as events coming from history encounters are linked to the actual patient encounter, so many history encounters no longer have associated events and are therefore filtered out
 
 ### **16\. Visit\_detail**
 
