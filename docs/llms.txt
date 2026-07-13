@@ -1,4 +1,4 @@
-# STARR-OMOP Documentation
+# STARR-OMOP Docs
 
 > Stanford Electronic Health Record data in OMOP Common Data Model version 5.4
 
@@ -7,6 +7,11 @@
 - [STARR-OMOP v5.4](https://shiny-funicular-j1po82z.pages.github.io/starr_omop54.html): Stanford Electronic Health Record data in OMOP Common Data Model version 5.4
 - [OMOP CDM v5.4 Data Model](https://shiny-funicular-j1po82z.pages.github.io/omop_data_model.html): Detailed table and column definitions from dbt models
 - [FAQ](https://shiny-funicular-j1po82z.pages.github.io/faq.html): Frequently Asked Questions for STARR-OMOP
+- [About](https://shiny-funicular-j1po82z.pages.github.io/about.html)
+- [Page Not Found](https://shiny-funicular-j1po82z.pages.github.io/404.html)
+- [Changes from OMOP-CDM 5.3 to 5.4](https://shiny-funicular-j1po82z.pages.github.io/changes_53_to_54.html)
+- [Released Datasets](https://shiny-funicular-j1po82z.pages.github.io/released_datasets.html)
+- [Getting Access to STARR-OMOP v5.4](https://shiny-funicular-j1po82z.pages.github.io/getting_access.html)
 
 ## Data Model Tables
 

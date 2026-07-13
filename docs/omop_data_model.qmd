@@ -1,6 +1,6 @@
 ---
 title: "OMOP CDM v5.4 Data Model"
-description: "Detailed table and column definitions from dbt models"
+description: "Detailed table and column definitions"
 ---
 
 ## Overview
@@ -8,414 +8,6 @@ description: "Detailed table and column definitions from dbt models"
 This page documents all tables in the STARR-OMOP CDM v5.4 implementation, extracted from the dbt model definitions. Each table includes Stanford-specific implementation notes and detailed column descriptions.
 
 **Total Tables:** 41
-
----
-
-## _VARIANT_OCCURRENCE {#_variant_occurrence}
-
-The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing.
-This table is custom to STARR-OMOP and is not part of the standard OMOP CDM.
-Currently, it only contains variants identified via the STANFORD ACTIONABLE MUTATION PANEL FOR SOLID TUMORS (STAMP) test.
-The data is sourced from the Epic Genomics Suite, which incorporated STAMP tests starting in August of 2025.
-STAMP tests performed prior to this date are not currently included in this table.
-
-<details>
-<summary>**`variant_occurrence_id`** *(int64)*</summary>
-
-This is the primary key of the table. This is a unique identifier for every variant occurrence. It is assumed that every variant occurrence with a different unique identifier
-is in fact a different event and should be treated independently.
-
-**Constraints:**
-
-- **Primary Key**
-- **Not Null**
-
-</details>
-
-<details>
-<summary>**`person_id`** *(INT64)*</summary>
-
-A foreign key identifier to the person_id in the person table for whom the condition is recorded.
-
-**Constraints:**
-
-- **Foreign Key** → `ref('person')(person_id)`
-
-</details>
-
-<details>
-<summary>**`visit_occurrence_id`** *(INT64)*</summary>
-
-A foreign key identifier to the visit_occurrence_id in the visit_occurrence table for the visit associated with the ordered test.
-
-**Constraints:**
-
-- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
-
-</details>
-
-<details>
-<summary>**`procedure_occurrence_id`** *(INT64)*</summary>
-
-A foreign key identifier to the OMOP procedure_occurrence table for the procedure order for the variant test.
-
-**Constraints:**
-
-- **Foreign Key** → `ref('procedure_occurrence')(procedure_occurrence_id)`
-
-</details>
-
-<details>
-<summary>**`provider_id`** *(INT64)*</summary>
-
-A foreign key identifier to the provider in the provider table who authorized the order for the variant test.
-
-**Constraints:**
-
-- **Foreign Key** → `ref('provider')(provider_id)`
-
-</details>
-
-<details>
-<summary>**`order_datetime`** *(DATETIME)*</summary>
-
-The datetime when the test was ordered.
-
-</details>
-
-<details>
-<summary>**`test_name`** *(string)*</summary>
-
-The name of the test associated with the variant record.
-
-</details>
-
-<details>
-<summary>**`variant_name`** *(string)*</summary>
-
-The name of the genetic variant identified in the test.
-
-</details>
-
-<details>
-<summary>**`variant_type`** *(STRING)*</summary>
-
-The variant type, such as 'Simple', 'Pharmacogenomic genotype', 'Negative', etc.
-
-</details>
-
-<details>
-<summary>**`assessment`** *(STRING)*</summary>
-
-The assessment of the variant, such as 'Detected', 'Not Detected', 'Negative', etc.
-
-</details>
-
-<details>
-<summary>**`genome_assembly`** *(STRING)*</summary>
-
-The genome assembly used for the variant, such as 'GRCh37', 'GRCh38', 'hg38', etc.
-
-</details>
-
-<details>
-<summary>**`chromosome`** *(STRING)*</summary>
-
-The chromosome on which the variant is located, such as '1', '2', 'X', 'Y', etc.
-
-</details>
-
-<details>
-<summary>**`transcript_ref_seq`** *(STRING)*</summary>
-
-The external identifier defining the Transcript Reference Sequence.
-
-</details>
-
-<details>
-<summary>**`dna_change`** *(STRING)*</summary>
-
-The change at the DNA level relative to the Transcript Reference Sequence.
-
-</details>
-
-<details>
-<summary>**`dna_var_type`** *(STRING)*</summary>
-
-The descriptive name for the DNA sequence variation type, such as 'Substitution', 'Copy number gain', 'Deletion', etc.
-
-</details>
-
-<details>
-<summary>**`amino_acid_change`** *(STRING)*</summary>
-
-The change at the amino acid (protein) level caused by the DNA change.
-
-</details>
-
-<details>
-<summary>**`variant_molecular_consequence`** *(STRING)*</summary>
-
-The descriptive name for the molecular consequence of the variant, such as 'Missense Variant', 'Nonsense', 'Frameshift Variant', etc.
-
-</details>
-
-<details>
-<summary>**`genomic_dna_change`** *(STRING)*</summary>
-
-The change at the DNA level relative to the Genomic Reference Sequence.
-
-</details>
-
-<details>
-<summary>**`allelic_frequency`** *(NUMERIC(18,5))*</summary>
-
-The percentage of all of the reads at this genomic location that were represented by the
-given allele. For homozygotes it will be close to 100%; for heterozygotes it will be close to 50%.
-It can be a smaller number when there are mosaics or multiple chromosomes, or mixtures of tumor cells
-and normal cells. It is stored in the system as a decimal between 0 and 1 - this is calculated by
-dividing the percentage by 100.
-
-</details>
-
-<details>
-<summary>**`copy_number_lower`** *(NUMERIC(9,2))*</summary>
-
-The lower bound of the copy number range for the variant.
-
-</details>
-
-<details>
-<summary>**`copy_number_upper`** *(NUMERIC(9,2))*</summary>
-
-The upper bound of the copy number range for the variant.
-
-</details>
-
-<details>
-<summary>**`gene_name`** *(STRING)*</summary>
-
-The name of the gene associated with the variant record, such as 'POLE', 'TP53', 'CYP2D6', etc.
-
-</details>
-
-<details>
-<summary>**`phenotype_spec_var_class`** *(STRING)*</summary>
-
-The descriptive name for the phenotype variant class, such as 'Pathogenic', 'Likely Pathogenic', 'Uncertain Significance', etc.
-
-</details>
-
-<details>
-<summary>**`interpretation`** *(STRING)*</summary>
-
-The full text interpretation associated with the variant record, aggregated from individual interpretation lines.
-
-</details>
-
-<details>
-<summary>**`accession_number`** *(STRING)*</summary>
-
-The specimen accession numbers associated with the ordered test, stored as a comma-separated string if multiple accession numbers are present.
-
-</details>
-
-<details>
-<summary>**`stamp_pipeline_version`** *(STRING)*</summary>
-
-The version of the STAMP pipeline used for the test associated with the variant record.
-
-</details>
-
-<details>
-<summary>**`specimen_type`** *(STRING)*</summary>
-
-The specimen type associated with the order for the variant record, such as 'Blood', 'Tissue/Bone - Biopsy', 'Existing Patient Material', etc.
-
-</details>
-
-<details>
-<summary>**`specimen_source`** *(STRING)*</summary>
-
-The specimen source associated with the order for the variant record, such as 'Blood, from Venipuncture', 'Saliva', 'Liver', etc.
-
-</details>
-
----
-
-## _WHOLE_SLIDE_IMAGING {#_whole_slide_imaging}
-
-OMOP extension table for whole slide imaging data from pathology specimens. It contains both information
-from the PHI-scrubbed whole slide imaging files (svs or isyntac) and source clarity. This table only contains
-information for slide images we have in GCP buckets with OMOP EHR information.
-
-<details>
-<summary>**`whole_slide_imaging_id`** *(int64)*</summary>
-
-Unique identifier for the whole slide imaging record
-
-**Constraints:**
-
-- **Not Null**
-- **Primary Key**
-
-</details>
-
-<details>
-<summary>**`accession_number`** *(string)*</summary>
-
-Specimen accession number
-
-**Constraints:**
-
-- **Not Null**
-
-</details>
-
-<details>
-<summary>**`specimen`** *(string)*</summary>
-
-Specimen identifier
-
-**Constraints:**
-
-- **Not Null**
-
-</details>
-
-<details>
-<summary>**`block`** *(string)*</summary>
-
-Block identifier
-
-**Constraints:**
-
-- **Not Null**
-
-</details>
-
-<details>
-<summary>**`slide`** *(string)*</summary>
-
-Slide identifier
-
-**Constraints:**
-
-- **Not Null**
-
-</details>
-
-<details>
-<summary>**`person_id`** *(int64)*</summary>
-
-Reference to the person in the OMOP CDM
-
-**Constraints:**
-
-- **Not Null**
-
-</details>
-
-<details>
-<summary>**`acquisition_date`** *(datetime)*</summary>
-
-Date and time when the slide was scanned from the wsi file metadata.
-This field is null for Aperio Leica slides as these were manually scanned after slides had been created.
-
-</details>
-
-<details>
-<summary>**`procedure_start_time`** *(datetime)*</summary>
-
-Date and time when the associated procedure started.
-
-</details>
-
-<details>
-<summary>**`specimen_received_date`** *(datetime)*</summary>
-
-Date and time when the specimen was received by the lab. Closest date to acquisition_date
-for the Aperio Leica slides.
-
-</details>
-
-<details>
-<summary>**`brand`** *(string)*</summary>
-
-WSI scanner brand (Philips or Aperio Leica)
-
-</details>
-
-<details>
-<summary>**`scanner`** *(string)*</summary>
-
-Scanner model name
-
-</details>
-
-<details>
-<summary>**`mpp`** *(float64)*</summary>
-
-Microns per pixel - spatial resolution of the scan
-
-</details>
-
-<details>
-<summary>**`json_uri`** *(string)*</summary>
-
-GCP URI to the deidentified JSON metadata file
-
-</details>
-
-<details>
-<summary>**`tiff_uri`** *(string)*</summary>
-
-GCP URI to the deidentified TIFF file
-
-</details>
-
-<details>
-<summary>**`specimen_source_category_value`** *(int64)*</summary>
-
-Specimen source category value
-
-</details>
-
-<details>
-<summary>**`specimen_source`** *(string)*</summary>
-
-Specimen source description
-
-</details>
-
-<details>
-<summary>**`specimen_type_category_value`** *(int64)*</summary>
-
-Specimen type category value
-
-</details>
-
-<details>
-<summary>**`specimen_type`** *(string)*</summary>
-
-Specimen type description
-
-</details>
-
-<details>
-<summary>**`spec_task_list`** *(array&lt;struct&lt;task_c int64, task_name string&gt;&gt;)*</summary>
-
-List of specimen tasks
-
-</details>
-
-<details>
-<summary>**`note_id`** *(int64)*</summary>
-
-Note_id for associated pathology report. It is possible that a slide link to more than one note
-when this happens we bring in one line per note.
-
-</details>
 
 ---
 
@@ -4787,6 +4379,414 @@ The vocabulary_concept_id is a foreign key to the CONCEPT table.
 **Constraints:**
 
 - **Not Null**
+
+</details>
+
+---
+
+## \_VARIANT_OCCURRENCE {#variant_occurrence}
+
+The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing.
+This table is custom to STARR-OMOP and is not part of the standard OMOP CDM.
+Currently, it only contains variants identified via the STANFORD ACTIONABLE MUTATION PANEL FOR SOLID TUMORS (STAMP) test.
+The data is sourced from the Epic Genomics Suite, which incorporated STAMP tests starting in August of 2025.
+STAMP tests performed prior to this date are not currently included in this table.
+
+<details>
+<summary>**`variant_occurrence_id`** *(int64)*</summary>
+
+This is the primary key of the table. This is a unique identifier for every variant occurrence. It is assumed that every variant occurrence with a different unique identifier
+is in fact a different event and should be treated independently.
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+</details>
+
+<details>
+<summary>**`person_id`** *(INT64)*</summary>
+
+A foreign key identifier to the person_id in the person table for whom the condition is recorded.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+
+</details>
+
+<details>
+<summary>**`visit_occurrence_id`** *(INT64)*</summary>
+
+A foreign key identifier to the visit_occurrence_id in the visit_occurrence table for the visit associated with the ordered test.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('visit_occurrence')(visit_occurrence_id)`
+
+</details>
+
+<details>
+<summary>**`procedure_occurrence_id`** *(INT64)*</summary>
+
+A foreign key identifier to the OMOP procedure_occurrence table for the procedure order for the variant test.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('procedure_occurrence')(procedure_occurrence_id)`
+
+</details>
+
+<details>
+<summary>**`provider_id`** *(INT64)*</summary>
+
+A foreign key identifier to the provider in the provider table who authorized the order for the variant test.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('provider')(provider_id)`
+
+</details>
+
+<details>
+<summary>**`order_datetime`** *(DATETIME)*</summary>
+
+The datetime when the test was ordered.
+
+</details>
+
+<details>
+<summary>**`test_name`** *(string)*</summary>
+
+The name of the test associated with the variant record.
+
+</details>
+
+<details>
+<summary>**`variant_name`** *(string)*</summary>
+
+The name of the genetic variant identified in the test.
+
+</details>
+
+<details>
+<summary>**`variant_type`** *(STRING)*</summary>
+
+The variant type, such as 'Simple', 'Pharmacogenomic genotype', 'Negative', etc.
+
+</details>
+
+<details>
+<summary>**`assessment`** *(STRING)*</summary>
+
+The assessment of the variant, such as 'Detected', 'Not Detected', 'Negative', etc.
+
+</details>
+
+<details>
+<summary>**`genome_assembly`** *(STRING)*</summary>
+
+The genome assembly used for the variant, such as 'GRCh37', 'GRCh38', 'hg38', etc.
+
+</details>
+
+<details>
+<summary>**`chromosome`** *(STRING)*</summary>
+
+The chromosome on which the variant is located, such as '1', '2', 'X', 'Y', etc.
+
+</details>
+
+<details>
+<summary>**`transcript_ref_seq`** *(STRING)*</summary>
+
+The external identifier defining the Transcript Reference Sequence.
+
+</details>
+
+<details>
+<summary>**`dna_change`** *(STRING)*</summary>
+
+The change at the DNA level relative to the Transcript Reference Sequence.
+
+</details>
+
+<details>
+<summary>**`dna_var_type`** *(STRING)*</summary>
+
+The descriptive name for the DNA sequence variation type, such as 'Substitution', 'Copy number gain', 'Deletion', etc.
+
+</details>
+
+<details>
+<summary>**`amino_acid_change`** *(STRING)*</summary>
+
+The change at the amino acid (protein) level caused by the DNA change.
+
+</details>
+
+<details>
+<summary>**`variant_molecular_consequence`** *(STRING)*</summary>
+
+The descriptive name for the molecular consequence of the variant, such as 'Missense Variant', 'Nonsense', 'Frameshift Variant', etc.
+
+</details>
+
+<details>
+<summary>**`genomic_dna_change`** *(STRING)*</summary>
+
+The change at the DNA level relative to the Genomic Reference Sequence.
+
+</details>
+
+<details>
+<summary>**`allelic_frequency`** *(NUMERIC(18,5))*</summary>
+
+The percentage of all of the reads at this genomic location that were represented by the
+given allele. For homozygotes it will be close to 100%; for heterozygotes it will be close to 50%.
+It can be a smaller number when there are mosaics or multiple chromosomes, or mixtures of tumor cells
+and normal cells. It is stored in the system as a decimal between 0 and 1 - this is calculated by
+dividing the percentage by 100.
+
+</details>
+
+<details>
+<summary>**`copy_number_lower`** *(NUMERIC(9,2))*</summary>
+
+The lower bound of the copy number range for the variant.
+
+</details>
+
+<details>
+<summary>**`copy_number_upper`** *(NUMERIC(9,2))*</summary>
+
+The upper bound of the copy number range for the variant.
+
+</details>
+
+<details>
+<summary>**`gene_name`** *(STRING)*</summary>
+
+The name of the gene associated with the variant record, such as 'POLE', 'TP53', 'CYP2D6', etc.
+
+</details>
+
+<details>
+<summary>**`phenotype_spec_var_class`** *(STRING)*</summary>
+
+The descriptive name for the phenotype variant class, such as 'Pathogenic', 'Likely Pathogenic', 'Uncertain Significance', etc.
+
+</details>
+
+<details>
+<summary>**`interpretation`** *(STRING)*</summary>
+
+The full text interpretation associated with the variant record, aggregated from individual interpretation lines.
+
+</details>
+
+<details>
+<summary>**`accession_number`** *(STRING)*</summary>
+
+The specimen accession numbers associated with the ordered test, stored as a comma-separated string if multiple accession numbers are present.
+
+</details>
+
+<details>
+<summary>**`stamp_pipeline_version`** *(STRING)*</summary>
+
+The version of the STAMP pipeline used for the test associated with the variant record.
+
+</details>
+
+<details>
+<summary>**`specimen_type`** *(STRING)*</summary>
+
+The specimen type associated with the order for the variant record, such as 'Blood', 'Tissue/Bone - Biopsy', 'Existing Patient Material', etc.
+
+</details>
+
+<details>
+<summary>**`specimen_source`** *(STRING)*</summary>
+
+The specimen source associated with the order for the variant record, such as 'Blood, from Venipuncture', 'Saliva', 'Liver', etc.
+
+</details>
+
+---
+
+## \_WHOLE_SLIDE_IMAGING {#whole_slide_imaging}
+
+OMOP extension table for whole slide imaging data from pathology specimens. It contains both information
+from the PHI-scrubbed whole slide imaging files (svs or isyntac) and source clarity. This table only contains
+information for slide images we have in GCP buckets with OMOP EHR information.
+
+<details>
+<summary>**`whole_slide_imaging_id`** *(int64)*</summary>
+
+Unique identifier for the whole slide imaging record
+
+**Constraints:**
+
+- **Not Null**
+- **Primary Key**
+
+</details>
+
+<details>
+<summary>**`accession_number`** *(string)*</summary>
+
+Specimen accession number
+
+**Constraints:**
+
+- **Not Null**
+
+</details>
+
+<details>
+<summary>**`specimen`** *(string)*</summary>
+
+Specimen identifier
+
+**Constraints:**
+
+- **Not Null**
+
+</details>
+
+<details>
+<summary>**`block`** *(string)*</summary>
+
+Block identifier
+
+**Constraints:**
+
+- **Not Null**
+
+</details>
+
+<details>
+<summary>**`slide`** *(string)*</summary>
+
+Slide identifier
+
+**Constraints:**
+
+- **Not Null**
+
+</details>
+
+<details>
+<summary>**`person_id`** *(int64)*</summary>
+
+Reference to the person in the OMOP CDM
+
+**Constraints:**
+
+- **Not Null**
+
+</details>
+
+<details>
+<summary>**`acquisition_date`** *(datetime)*</summary>
+
+Date and time when the slide was scanned from the wsi file metadata.
+This field is null for Aperio Leica slides as these were manually scanned after slides had been created.
+
+</details>
+
+<details>
+<summary>**`procedure_start_time`** *(datetime)*</summary>
+
+Date and time when the associated procedure started.
+
+</details>
+
+<details>
+<summary>**`specimen_received_date`** *(datetime)*</summary>
+
+Date and time when the specimen was received by the lab. Closest date to acquisition_date
+for the Aperio Leica slides.
+
+</details>
+
+<details>
+<summary>**`brand`** *(string)*</summary>
+
+WSI scanner brand (Philips or Aperio Leica)
+
+</details>
+
+<details>
+<summary>**`scanner`** *(string)*</summary>
+
+Scanner model name
+
+</details>
+
+<details>
+<summary>**`mpp`** *(float64)*</summary>
+
+Microns per pixel - spatial resolution of the scan
+
+</details>
+
+<details>
+<summary>**`json_uri`** *(string)*</summary>
+
+GCP URI to the deidentified JSON metadata file
+
+</details>
+
+<details>
+<summary>**`tiff_uri`** *(string)*</summary>
+
+GCP URI to the deidentified TIFF file
+
+</details>
+
+<details>
+<summary>**`specimen_source_category_value`** *(int64)*</summary>
+
+Specimen source category value
+
+</details>
+
+<details>
+<summary>**`specimen_source`** *(string)*</summary>
+
+Specimen source description
+
+</details>
+
+<details>
+<summary>**`specimen_type_category_value`** *(int64)*</summary>
+
+Specimen type category value
+
+</details>
+
+<details>
+<summary>**`specimen_type`** *(string)*</summary>
+
+Specimen type description
+
+</details>
+
+<details>
+<summary>**`spec_task_list`** *(array&lt;struct&lt;task_c int64, task_name string&gt;&gt;)*</summary>
+
+List of specimen tasks
+
+</details>
+
+<details>
+<summary>**`note_id`** *(int64)*</summary>
+
+Note_id for associated pathology report. It is possible that a slide link to more than one note
+when this happens we bring in one line per note.
 
 </details>
 
