@@ -79,15 +79,15 @@ For comprehensive OMOP CDM v5.4 documentation, visit the [official OHDSI documen
 
 Research IT receives raw Clarity from each of the two hospitals and builds a filtered Clarity for each. These filtered Clarity databases then become the source for OMOP ETLs. Patients at the two hospitals are linked via their MRN.
 
-We first build an OMOP database with all PHI present. Then, we build two PHI scrubbed databases that are accessible to Stanford researchers without an IRB:
+We first build an OMOP database with all PHI present. Then, we build two PHI-scrubbed databases that are accessible to Stanford researchers without an IRB:
 
-- **STARR-OMOP-deid** - Contains PHI scrubbed clinical text (NOTES) using [TiDE](https://starr.stanford.edu/methods/tide-clinical-text-safe-harbor)
-- **STARR-OMOP-deid-lite** - Subset without clinical notes, used by ATLAS and ACE (Advanced Cohort Engine)
+- **STARR-OMOP-confidential** - Contains PHI scrubbed clinical text (NOTES) using [TiDE](https://starr.stanford.edu/methods/tide-clinical-text-safe-harbor)
+- **STARR-OMOP-confidential-lite** - Subset without clinical notes, used by ATLAS and ACE (Advanced Cohort Engine)
 
 ### Refresh Schedule
 
-- **STARR-OMOP-deid**: Monthly refresh
-- **STARR-OMOP-deid-lite**: Weekly refresh
+- **STARR-OMOP-confidential**: Monthly refresh
+- **STARR-OMOP-confidential-lite**: Monthly refresh
 
 Patient identifiers remain stable between refreshes.
 
@@ -95,7 +95,7 @@ Patient identifiers remain stable between refreshes.
 
 ### Self-Service Access
 
-STARR-OMOP-deid and STARR-OMOP-deid-lite are available through [self-service](https://starr.stanford.edu/self-service).
+STARR-OMOP-confidential and STARR-OMOP-confidential-lite are available through [self-service](https://starr.stanford.edu/self-service).
 
 ### Consultation Services
 
