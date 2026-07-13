@@ -68,14 +68,23 @@ def strip_to_plaintext(text):
 def extract_tables_summary(body):
     tables = []
     current_table = None
+    current_anchor = None
     columns = []
 
     for line in body.split("\n"):
-        match = re.match(r"^##\s+(\S+)", line)
+        match = re.match(r"^##\s+(\S+)(?:\s+\{#([^}]+)\})?", line)
         if match and not line.strip().startswith("## Overview"):
             if current_table:
-                tables.append({"name": current_table, "columns": columns})
-            current_table = match.group(1)
+                tables.append(
+                    {
+                        "name": current_table,
+                        "anchor": current_anchor,
+                        "columns": columns,
+                    }
+                )
+            # Strip Markdown escaping (e.g. `\_VARIANT_OCCURRENCE`) from the name.
+            current_table = match.group(1).replace("\\", "")
+            current_anchor = match.group(2)
             columns = []
             continue
 
@@ -84,7 +93,9 @@ def extract_tables_summary(body):
             columns.append(col_match.group(1))
 
     if current_table:
-        tables.append({"name": current_table, "columns": columns})
+        tables.append(
+            {"name": current_table, "anchor": current_anchor, "columns": columns}
+        )
 
     return tables
 
@@ -132,7 +143,8 @@ def generate_llms_txt(config, docs_dir, base_url):
             tables = extract_tables_summary(content["body"])
             for table in tables:
                 html_page = page.replace(".qmd", ".html")
-                anchor = table["name"].lower()
+                # Prefer the heading's explicit {#anchor}; fall back to the name.
+                anchor = table["anchor"] or table["name"].lower()
                 url = f"{base_url.rstrip('/')}/{html_page}#{anchor}" if base_url else f"{html_page}#{anchor}"
                 col_count = len(table["columns"])
                 lines.append(f"- [{table['name']}]({url}): {col_count} columns")

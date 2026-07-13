@@ -18,7 +18,7 @@ Steps 1 and 2 can be done in parallel.
 
 1. **Sign the Data Privacy Attestation (DPA).** Open the [Data Privacy Attestation](https://redcap.stanford.edu/plugins/approvals/privacy/index.php) form, click **New**, and under **Project Type** select **"STARR Nav deID data"**. ("Nav" stands for Navigator, a collection of pre-IRB clinical datasets.)
 
-2. **Request a Nero account.** [Request a Nero account](http://nero-docs.stanford.edu/index.html) and specify that you are requesting access for **STARR-OMOP-confidential**. A Stanford PI affiliation is required, and you will need a Nero GCP account.
+2. **Request a Nero account.** [Request a Nero account](https://nero-docs.stanford.edu/index.html) and specify that you are requesting access for **STARR-OMOP-confidential**. A Stanford PI affiliation is required, and you will need a Nero GCP account.
 
 3. **Wait for account provisioning.** Once your Nero project has been created, you will receive an email from the Stanford Research Computing Center (SRCC) confirming that access has been granted, along with some introductory information.
 
@@ -40,6 +40,6 @@ A limited data set or human-subject data in the OMOP CDM is available through a 
 
 - **Support:** [starr-omop-support@stanford.edu](mailto:starr-omop-support@stanford.edu)
 - **Data Privacy Attestation:** [redcap.stanford.edu](https://redcap.stanford.edu/plugins/approvals/privacy/index.php)
-- **Nero account request:** [nero-docs.stanford.edu](http://nero-docs.stanford.edu/index.html)
+- **Nero account request:** [nero-docs.stanford.edu](https://nero-docs.stanford.edu/index.html)
 - **Consultation request:** [starr.stanford.edu/consultation-services](https://starr.stanford.edu/consultation-services)
 

@@ -54,5 +54,5 @@
 - [VISIT_DETAIL](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#visit_detail): 19 columns
 - [VISIT_OCCURRENCE](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#visit_occurrence): 17 columns
 - [VOCABULARY](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#vocabulary): 5 columns
-- [\_VARIANT_OCCURRENCE](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#\_variant_occurrence): 28 columns
-- [\_WHOLE_SLIDE_IMAGING](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#\_whole_slide_imaging): 20 columns
+- [_VARIANT_OCCURRENCE](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#variant_occurrence): 28 columns
+- [_WHOLE_SLIDE_IMAGING](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#whole_slide_imaging): 20 columns

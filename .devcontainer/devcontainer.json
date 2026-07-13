@@ -1,5 +1,5 @@
 {
-  "name": "RStudio with renv",
+  "name": "STARR-OMOP Docs (Quarto + Python)",
   "build": {
     "dockerfile": "../Dockerfile"
   },
@@ -17,7 +17,7 @@
         "inferrinizzard.prettier-sql-vscode"
       ],
       "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash"
+        "terminal.integrated.defaultProfile.linux": "bash"
       }
     }
   },
