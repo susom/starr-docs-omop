@@ -8,13 +8,18 @@ project:
     - starr_omop54.qmd
     - omop_data_model.qmd
     - faq.qmd
+    - about.qmd
+    - 404.qmd
+    - changes_53_to_54.qmd
+    - released_datasets.qmd
+    - getting_access.qmd
   resources:
     - llms.txt
     - llms-full.txt
 
 website:
-  title: "STARR-OMOP Documentation"
-  site-path: "/"
+  title: "STARR-OMOP Docs"
+  site-path: "/about/"
   open-graph: true
   page-navigation: true
   back-to-top-navigation: false
@@ -22,6 +27,10 @@ website:
     collapse-level: 2
     show-item-context: true
     contents:
+      - text: About
+        href: about.qmd
+      - text: Getting Access
+        href: getting_access.qmd
       - section: "STARR-OMOP v5.4"
         href: starr_omop54.qmd
         contents:
@@ -84,16 +93,28 @@ website:
               href: omop_data_model.qmd#visit_detail
             - text: "visit_occurrence"
               href: omop_data_model.qmd#visit_occurrence
+            - text: "_variant_occurrence"
+              href: omop_data_model.qmd#variant_occurrence
+            - text: "_whole_slide_imaging"
+              href: omop_data_model.qmd#whole_slide_imaging
+      - text: "STARR-OMOP v5.3"
+        href: about.qmd#53_docs
       - text: "FAQ"
         href: faq.qmd
   navbar:
     left:
+      - text: About
+        href: about.qmd
+      - text: Getting Access
+        href: getting_access.qmd
       - text: "STARR-OMOP v5.4"
         menu:
           - text: "Overview"
             href: starr_omop54.qmd
           - text: "Data Model Tables"
             href: omop_data_model.qmd
+      - text: "STARR-OMOP v5.3"
+        href: about.qmd#53_docs
       - text: "FAQ"
         href: faq.qmd
     right:

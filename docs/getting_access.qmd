@@ -1,0 +1,45 @@
+---
+title: "Getting Access to STARR-OMOP v5.4"
+back-to-top-navigation: false
+---
+
+Launched in Q4 2019, the STARR-OMOP-confidential database provides pre-IRB direct SQL access to a phi-scrubbed High Risk dataset in the OMOP Common Data Model. It is a non-human-subjects dataset containing complete clinical text as well as clinical concepts derived from text processing, and it supports complex electronic phenotyping. The data is hosted on the Google Cloud Platform BigQuery analytical data warehouse, and researchers access it from their secure Nero workspace.
+
+#### Prerequisites
+
+Before you start, make sure you have:
+
+- A full Stanford **SUNetID**.
+- A **Stanford PI affiliation**. A Stanford PI must sponsor your access. In exceptional cases, Stanford Directors and C-suite executives can act as PI.
+
+#### Access Steps
+
+Steps 1 and 2 can be done in parallel.
+
+1. **Sign the Data Privacy Attestation (DPA).** Open the [Data Privacy Attestation](https://redcap.stanford.edu/plugins/approvals/privacy/index.php) form, click **New**, and under **Project Type** select **"STARR Nav deID data"**. ("Nav" stands for Navigator, a collection of pre-IRB clinical datasets.)
+
+2. **Request a Nero account.** [Request a Nero account](http://nero-docs.stanford.edu/index.html) and specify that you are requesting access for **STARR-OMOP-confidential**. A Stanford PI affiliation is required, and you will need a Nero GCP account.
+
+3. **Wait for account provisioning.** Once your Nero project has been created, you will receive an email from the Stanford Research Computing Center (SRCC) confirming that access has been granted, along with some introductory information.
+
+4. **Email the STARR-OMOP support team** to request the dataset in BigQuery. Include your **Nero GCP project name** and your **PI's ORCID**.
+
+   ::: {.callout-tip}
+   Email [starr-omop-support@stanford.edu](mailto:starr-omop-support@stanford.edu) with the exact subject line:
+
+   > Requesting STARR-OMOP-confidential data in BigQuery
+   :::
+
+#### Which Dataset Do I Need?
+
+If you are doing population health research or a network study, you likely never need identified data — use **STARR-OMOP-confidential** or **STARR-OMOP-confidential-lite** (the lite dataset has no clinical text in the NOTE table).
+
+A limited data set or human-subject data in the OMOP CDM is available through a data services [consultation request](https://starr.stanford.edu/consultation-services).
+
+#### Contacts & Links
+
+- **Support:** [starr-omop-support@stanford.edu](mailto:starr-omop-support@stanford.edu)
+- **Data Privacy Attestation:** [redcap.stanford.edu](https://redcap.stanford.edu/plugins/approvals/privacy/index.php)
+- **Nero account request:** [nero-docs.stanford.edu](http://nero-docs.stanford.edu/index.html)
+- **Consultation request:** [starr.stanford.edu/consultation-services](https://starr.stanford.edu/consultation-services)
+
