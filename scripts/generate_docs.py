@@ -42,7 +42,7 @@ MODEL_CONFIGS = {
         "title": "OMOP CDM v5.4 Data Model",
         "description": "Detailed table and column definitions",
         "overview": (
-            "This page documents all tables in the STARR-OMOP CDM v5.4 implementation, "
+            "This page documents all tables in the STARR-OMOP CDM v5.4 implementation. "
             "Each table includes Stanford-specific "
             "implementation notes and detailed column descriptions."
         ),

@@ -23,7 +23,7 @@ description: "Frequently Asked Questions for STARR-OMOP"
 code-annotations: hover
 ---
 
-Below a list of frequently asked questions for STARR-OMOP v5.4.
+Below is a list of frequently asked questions for STARR-OMOP v5.4.
 
 """
 
