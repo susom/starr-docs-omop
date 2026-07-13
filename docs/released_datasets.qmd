@@ -14,7 +14,7 @@ Each dataset name below links directly to the Google Cloud Console, pinned to th
 
 Every release ships in four variants. The suffix on the dataset name identifies each one:
 
-- **Core** (no suffix) — full phi-scrubbed dataset: structured data plus clinical text and text-derived NLP concepts.
+- **Core** (no suffix) — full PHI-scrubbed dataset: structured data plus clinical text and text-derived NLP concepts.
 - **`_1pcent`** — a random 1% sample of the core dataset, for testing and sandbox exploration.
 - **`_lite`** — structured data only; clinical text and NLP tables removed.
 - **`_1pcent_lite`** — a random 1% sample of the lite variant.

@@ -3985,7 +3985,7 @@ Each dataset name below links directly to the Google Cloud Console, pinned to th
 
 Every release ships in four variants. The suffix on the dataset name identifies each one:
 
-- **Core** (no suffix) — full phi-scrubbed dataset: structured data plus clinical text and text-derived NLP concepts.
+- **Core** (no suffix) — full PHI-scrubbed dataset: structured data plus clinical text and text-derived NLP concepts.
 - _1pcent — a random 1% sample of the core dataset, for testing and sandbox exploration.
 - _lite — structured data only; clinical text and NLP tables removed.
 - _1pcent_lite — a random 1% sample of the lite variant.
@@ -4027,7 +4027,7 @@ Snapshot cut on **January 18, 2026** (`_2026_01_18`).
 # Getting Access to STARR-OMOP v5.4
 ============================================================
 
-Launched in Q4 2019, the STARR-OMOP-confidential database provides pre-IRB direct SQL access to a phi-scrubbed High Risk dataset in the OMOP Common Data Model. It is a non-human-subjects dataset containing complete clinical text as well as clinical concepts derived from text processing, and it supports complex electronic phenotyping. The data is hosted on the Google Cloud Platform BigQuery analytical data warehouse, and researchers access it from their secure Nero workspace.
+Launched in Q4 2019, the STARR-OMOP-confidential database provides pre-IRB direct SQL access to a PHI-scrubbed High Risk dataset in the OMOP Common Data Model. It is a non-human-subjects dataset containing complete clinical text as well as clinical concepts derived from text processing, and it supports complex electronic phenotyping. The data is hosted on the Google Cloud Platform BigQuery analytical data warehouse, and researchers access it from their secure Nero workspace.
 
 #### Prerequisites
 
