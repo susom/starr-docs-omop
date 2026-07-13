@@ -40,10 +40,10 @@ MODEL_CONFIGS = {
         "manifest_path": None,
         "output_file": "docs/omop_data_model.qmd",
         "title": "OMOP CDM v5.4 Data Model",
-        "description": "Detailed table and column definitions from dbt models",
+        "description": "Detailed table and column definitions",
         "overview": (
             "This page documents all tables in the STARR-OMOP CDM v5.4 implementation, "
-            "extracted from the dbt model definitions. Each table includes Stanford-specific "
+            "Each table includes Stanford-specific "
             "implementation notes and detailed column descriptions."
         ),
         "bq_project": None,
@@ -194,7 +194,9 @@ class DocGenerator:
         """Process all YML files and collect table data."""
         for yml_file in self.find_yml_files(yml_path):
             self.tables_data.extend(self.parse_yml_file(yml_file))
-        self.tables_data.sort(key=lambda x: x["name"].lower())
+        self.tables_data.sort(
+            key=lambda x: (x["name"].startswith("_"), x["name"].lstrip("_").lower())
+        )
         print(f"Processed {len(self.tables_data)} tables")
 
     def generate_quarto_markdown(self) -> str:
@@ -220,8 +222,13 @@ class DocGenerator:
 
     def _generate_table_section(self, table: Dict[str, Any]) -> List[str]:
         """Generate markdown section for a single table."""
+        # Anchor id strips leading underscores so Quarto section links resolve.
+        anchor = table["name"].lstrip("_")
+        # Escape leading underscores in the heading text so they render literally.
+        heading = table["name"].upper().lstrip("_")
+        heading = "\\_" * (len(table["name"]) - len(table["name"].lstrip("_"))) + heading
         lines = [
-            f"## {table['name'].upper()} {{#{table['name']}}}",
+            f"## {heading} {{#{anchor}}}",
             "",
         ]
         bq_location = self.bq_locations.get(table["name"])
