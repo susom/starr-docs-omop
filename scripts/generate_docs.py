@@ -220,8 +220,9 @@ class DocGenerator:
 
     def _generate_table_section(self, table: Dict[str, Any]) -> List[str]:
         """Generate markdown section for a single table."""
+        anchor_id = table['name'].lstrip('_')
         lines = [
-            f"## {table['name'].upper()} {{#{table['name']}}}",
+            f"## {table['name'].upper()} {{#{anchor_id}}}",
             "",
         ]
         bq_location = self.bq_locations.get(table["name"])

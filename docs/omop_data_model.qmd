@@ -11,7 +11,7 @@ This page documents all tables in the STARR-OMOP CDM v5.4 implementation, extrac
 
 ---
 
-## _VARIANT_OCCURRENCE {#_variant_occurrence}
+## _VARIANT_OCCURRENCE {#variant_occurrence}
 
 The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing.
 This table is custom to STARR-OMOP and is not part of the standard OMOP CDM.
@@ -243,7 +243,7 @@ The specimen source associated with the order for the variant record, such as 'B
 
 ---
 
-## _WHOLE_SLIDE_IMAGING {#_whole_slide_imaging}
+## _WHOLE_SLIDE_IMAGING {#whole_slide_imaging}
 
 OMOP extension table for whole slide imaging data from pathology specimens. It contains both information
 from the PHI-scrubbed whole slide imaging files (svs or isyntac) and source clarity. This table only contains

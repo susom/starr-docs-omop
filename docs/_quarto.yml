@@ -28,6 +28,10 @@ website:
         - section: "Data Model Tables"
           href: omop_data_model.qmd
           contents:
+            - text: "_variant_occurrence"
+              href: omop_data_model.qmd#variant_occurrence
+            - text: "_whole_slide_imaging"
+              href: omop_data_model.qmd#whole_slide_imaging
             - text: "care_site"
               href: omop_data_model.qmd#care_site
             - text: "cdm_source"
@@ -36,6 +40,18 @@ website:
               href: omop_data_model.qmd#cohort
             - text: "cohort_definition"
               href: omop_data_model.qmd#cohort_definition
+            - text: "concept"
+              href: omop_data_model.qmd#concept
+            - text: "concept_ancestor"
+              href: omop_data_model.qmd#concept_ancestor
+            - text: "concept_class"
+              href: omop_data_model.qmd#concept_class
+            - text: "concept_relationship"
+              href: omop_data_model.qmd#concept_relationship
+            - text: "concept_synonym"
+              href: omop_data_model.qmd#concept_synonym
+            - text: "condition_era"
+              href: omop_data_model.qmd#condition_era
             - text: "condition_occurrence"
               href: omop_data_model.qmd#condition_occurrence
             - text: "cost"
@@ -44,16 +60,22 @@ website:
               href: omop_data_model.qmd#death
             - text: "device_exposure"
               href: omop_data_model.qmd#device_exposure
+            - text: "domain"
+              href: omop_data_model.qmd#domain
             - text: "dose_era"
               href: omop_data_model.qmd#dose_era
             - text: "drug_era"
               href: omop_data_model.qmd#drug_era
             - text: "drug_exposure"
               href: omop_data_model.qmd#drug_exposure
+            - text: "drug_strength"
+              href: omop_data_model.qmd#drug_strength
             - text: "episode"
               href: omop_data_model.qmd#episode
             - text: "episode_event"
               href: omop_data_model.qmd#episode_event
+            - text: "fact_relationship"
+              href: omop_data_model.qmd#fact_relationship
             - text: "image_occurrence"
               href: omop_data_model.qmd#image_occurrence
             - text: "location"
@@ -78,12 +100,16 @@ website:
               href: omop_data_model.qmd#procedure_occurrence
             - text: "provider"
               href: omop_data_model.qmd#provider
+            - text: "relationship"
+              href: omop_data_model.qmd#relationship
             - text: "specimen"
               href: omop_data_model.qmd#specimen
             - text: "visit_detail"
               href: omop_data_model.qmd#visit_detail
             - text: "visit_occurrence"
               href: omop_data_model.qmd#visit_occurrence
+            - text: "vocabulary"
+              href: omop_data_model.qmd#vocabulary
       - text: "FAQ"
         href: faq.qmd
   navbar:
