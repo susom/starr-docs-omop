@@ -132,7 +132,7 @@ def generate_llms_txt(config, docs_dir, base_url):
             tables = extract_tables_summary(content["body"])
             for table in tables:
                 html_page = page.replace(".qmd", ".html")
-                anchor = table["name"].lower()
+                anchor = table["name"].lower().lstrip("_")
                 url = f"{base_url.rstrip('/')}/{html_page}#{anchor}" if base_url else f"{html_page}#{anchor}"
                 col_count = len(table["columns"])
                 lines.append(f"- [{table['name']}]({url}): {col_count} columns")

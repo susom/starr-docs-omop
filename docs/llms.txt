@@ -10,8 +10,8 @@
 
 ## Data Model Tables
 
-- [_VARIANT_OCCURRENCE](https://shiny-funicular-j1po82z.pages.github.io/omop_data_model.html#_variant_occurrence): 28 columns
-- [_WHOLE_SLIDE_IMAGING](https://shiny-funicular-j1po82z.pages.github.io/omop_data_model.html#_whole_slide_imaging): 20 columns
+- [_VARIANT_OCCURRENCE](https://shiny-funicular-j1po82z.pages.github.io/omop_data_model.html#variant_occurrence): 28 columns
+- [_WHOLE_SLIDE_IMAGING](https://shiny-funicular-j1po82z.pages.github.io/omop_data_model.html#whole_slide_imaging): 20 columns
 - [CARE_SITE](https://shiny-funicular-j1po82z.pages.github.io/omop_data_model.html#care_site): 6 columns
 - [CDM_SOURCE](https://shiny-funicular-j1po82z.pages.github.io/omop_data_model.html#cdm_source): 11 columns
 - [COHORT](https://shiny-funicular-j1po82z.pages.github.io/omop_data_model.html#cohort): 4 columns
