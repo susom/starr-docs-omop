@@ -77,6 +77,7 @@ uv run python -m ipykernel install --user --name=starr-docs
 ### Previewing the Site Locally
 
 ```bash
+uv sync  # run this first if the .venv hasn't been built yet
 source .venv/bin/activate
 cd docs
 quarto preview

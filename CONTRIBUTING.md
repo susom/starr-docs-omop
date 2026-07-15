@@ -23,6 +23,7 @@ The data model page is regenerated from the [starr-data-lake](https://github.com
 dbt models. To refresh it manually:
 
 ```bash
+uv sync  # run this first if the .venv hasn't been built yet
 source .venv/bin/activate
 python scripts/generate_docs.py omop
 ```

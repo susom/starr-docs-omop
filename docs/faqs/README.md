@@ -16,6 +16,7 @@ The [scripts/generate_faq.py](../../scripts/generate_faq.py) script:
 This script runs automatically as a Quarto `pre-render` hook (defined in [docs/_quarto.yml](../_quarto.yml)), so `quarto preview`, `quarto render`, and `quarto publish` all regenerate the FAQ page. You can also run it manually:
 
 ```bash
+uv sync  # run this first if the .venv hasn't been built yet
 source ../../.venv/bin/activate
 python ../../scripts/generate_faq.py
 ```

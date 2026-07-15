@@ -22,6 +22,7 @@
     }
   },
   "remoteEnv": {
+    // Required by the devcontainer load sequence so packages can be installed after the container starts.
     "ROOT": "TRUE"
   },
   "mounts": [

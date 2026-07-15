@@ -19,4 +19,4 @@ Welcome to the STARR-OMOP Documentation
   - [Technical Specifications](https://docs.google.com/document/d/1wC_ikzVahKUQuGSod4OfFKVPfedAnqO-tDHjo4O2ygY)
   - [User Guide](https://docs.google.com/document/d/1dTjCEvvU8sMd8CuaVx94YFoPTsW_xjOMoF9-xl5zHik)
   - [Data Dictionary](https://docs.google.com/spreadsheets/d/1BW1tRRml5E20ivoA5c8DhfKeuP449cBECkkpKoycwgk)
-  - [FAQ](https://docs.google.com/document/d/1dTjCEvvU8sMd8CuaVx94YFoPTsW_xjOMoF9-xl5zHik)
+  - [FAQ](https://docs.google.com/document/d/1_9x2KNKLez5o0-vV4UQU2dp9pn6ezsAEsJXDh7n--3o/edit?tab=t.0#heading=h.kbz600iyowv6)

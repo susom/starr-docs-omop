@@ -33,7 +33,7 @@ The release notes below are divided into the following sections for readability:
 
 * **What changed:** Vocabulary updated to the August 2025 OHDSI Standardized Vocabularies. OHDSI vocabularies are updated twice per year.
 * **Potential impact:** Concept mappings, concept hierarchies, and domain assignments may change. Cohort definitions, concept sets, and event counts may differ.
-* **Recommended action:** Re-run cohorts and validate concept sets using the updated vocabulary. Update concepts sets as needed to maintain consistency.
+* **Recommended action:** Re-run cohorts and validate concept sets using the updated vocabulary. Update concept sets as needed to maintain consistency.
 
 **Source Value Transparency**
 
@@ -397,7 +397,7 @@ Each record represents a single genetic variant that has been identified by a ST
 
 * Patient identifier (`person_id`)
 * Visit identifier (`visit_occurrence_id`)
-* Provider identifier (`prov_id`)
+* Provider identifier (`provider_id`)
 * `order_datetime`
 * `test_name`
 * Variant type
@@ -442,7 +442,7 @@ Because data in a given `source_value` field may originate from multiple locatio
 
 In this example, the value “73” represents an RxNorm code corresponding to a single ingredient that is only one component of the medication. The updated `drug_source_value` field now includes both the source `medication_id`, which is the primary identifier for the record in the source system, and the human-readable `medication_name`, making it much easier for the researcher to understand the original source record.
 
-The new `source_value` fields can still be treated as regular ‘strings’ – and can be used to get a frequency count of the unique values or search for substrings across the entire field. They can also be easily parsed using the JSON functions available in BigQuery SQL to extract specific elements when needed. Note that not all elements will be present in each `source_value` json string; some inspection of the source values is needed to determine what elements are present and would be useful for a given investigation. Here is an example of how to use this function to extract the *`component_name`* element from the *`measurement_source_value`* field:
+The new `source_value` fields can still be treated as regular ‘strings’ – and can be used to get a frequency count of the unique values or search for substrings across the entire field. They can also be easily parsed using the JSON functions available in BigQuery SQL to extract specific elements when needed. Note that not all elements will be present in each `source_value` json string; some inspection of the source values is needed to determine what elements are present and would be useful for a given investigation.
 
 ### Updates to Date Filtering and Inclusion Logic
 
