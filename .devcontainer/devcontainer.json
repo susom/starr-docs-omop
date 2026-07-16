@@ -1,0 +1,32 @@
+{
+  "name": "STARR-OMOP Docs (Quarto + Python)",
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "quarto.quarto",
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "reditorsupport.r",
+        "streetsidesoftware.code-spell-checker",
+        "esbenp.prettier-vscode",
+        "GitHub.copilot",
+        "redhat.vscode-yaml",
+        "inferrinizzard.prettier-sql-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "remoteEnv": {
+    // Required by the devcontainer load sequence so packages can be installed after the container starts.
+    "ROOT": "TRUE"
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.config/gcloud,target=/root/.config/gcloud,type=bind"
+  ],
+  "postCreateCommand": "bash post_create.sh"
+}

@@ -93,9 +93,9 @@ Patient identifiers remain stable between refreshes.
 
 ## Access & Services
 
-### Self-Service Access
+### Getting Access
 
-STARR-OMOP-confidential and STARR-OMOP-confidential-lite are available through [self-service](https://starr.stanford.edu/self-service).
+To access STARR-OMOP-confidential and STARR-OMOP-confidential-lite databases, please follow the steps [here](getting_access.qmd).
 
 ### Consultation Services
 

@@ -2,82 +2,47 @@
 
 ## Summary
 
-<!-- Provide a concise summary of what this PR accomplishes and why it's needed -->
+<!-- Concisely describe what this PR changes in the documentation and why. -->
 
 ## Type of Change
 
-<!--- What types of changes does your code introduce? Put an `x` in all boxes that apply: -->
+<!-- Put an `x` in all boxes that apply. -->
 
-- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
-- [ ] ✨ New feature (non-breaking change which adds functionality)
-- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to change)
-- [ ] 🧹 Code refactor (no functional changes)
-- [ ] 📚 Documentation update
-- [ ] 🧪 Test update
-- [ ] 🔧 Build configuration update
+- [ ] 📄 New page or FAQ entry
+- [ ] ✏️ Content update to an existing page or FAQ
+- [ ] 🛠️ Generator/script change (`scripts/*.py`)
+- [ ] 🗂️ Data model regeneration (`omop_data_model.qmd` inputs)
+- [ ] 🎨 Styling / theme / navigation change
+- [ ] 🔧 Build or dev-container configuration
 - [ ] 📦 Dependency update
-- [ ] 🎨 Style update (formatting, renaming)
-- [ ] ⚡ Performance improvement
+- [ ] 🐛 Fix (broken link, typo, render error, etc.)
 
-## Implementation Details
+## Related Issues
 
-## <!--- Explain the technical implementation (architectural changes, data flow, etc.) -->
+<!-- e.g. Closes #12 -->
 
-## How Has This Been Tested?
+## Pages / Files Changed
 
-<!--- Please describe how you tested your changes -->
-
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated
-- [ ] Manual testing performed
-
-## Changes in Response to Comments
-
-## <!-- Detail any modifications made based on previous review feedback -->
+<!-- List the pages or files touched, e.g. docs/getting_access.qmd, docs/faqs/q3.qmd -->
 
 -
 
-## Known Issues
+## How to Verify
 
-## <!-- List any known issues, limitations, or future work items related to this PR -->
+<!-- Describe how a reviewer can confirm the change. -->
 
--
+- [ ] Ran `quarto preview` locally and the site renders without errors
+- [ ] Affected pages display and navigate correctly
+- [ ] I did **not** hand-edit generated files (`omop_data_model.qmd`, `faq.qmd`, `llms.txt`, `llms-full.txt`)
+
+## Screenshots
+
+<!-- Optional: before/after screenshots for visual or layout changes. -->
 
 ## Checklist
 
-<!--- Put an `x` in all the boxes that apply -->
-
-- [ ] My change requires a change to the documentation
-- [ ] I have updated the documentation accordingly
-- [ ] I have added tests to cover my changes
-- [ ] All new and existing tests passed
+- [ ] My commits follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary) format (see [CONTRIBUTING.md](../CONTRIBUTING.md))
+- [ ] I previewed the site locally and confirmed everything renders
+- [ ] Generated files were left untouched (they are produced by the pre-render hooks)
+- [ ] All internal links and anchors resolve
 - [ ] `pre-commit` was run locally prior to submission
-- [ ] I have checked for potential security vulnerabilities
-
-## Testing Datasets
-
-### Regression
-
-<!-- Describe regression testing datasets used and results -->
-
-- Dataset:
-- Results:
-
-### Full Dataset
-
-<!-- Describe full CDM testing datasets used and results -->
-
-- Dataset:
-- Results:
-
-## Table Summary
-
-<!-- Provide a summary of any table you would like to share, like counts /mappings rates, etc... -->
-
-## Test Output
-
-<!-- Paste your test output here -->
-
-### Regression
-
-### Full Dataset
