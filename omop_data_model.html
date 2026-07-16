@@ -2,17 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.7.29">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Detailed table and column definitions from dbt models">
+<meta name="description" content="Detailed table and column definitions">
 
-<title>OMOP CDM v5.4 Data Model – STARR-OMOP Documentation</title>
+<title>OMOP CDM v5.4 Data Model – STARR-OMOP Docs</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -42,10 +39,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-54ca3c8880fd8c986106ce3bf5c7adc7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-c07f0bc3dcc3fe94ec5905ff223c2618.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -77,9 +74,9 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="OMOP CDM v5.4 Data Model – STARR-OMOP Documentation">
-<meta property="og:description" content="Detailed table and column definitions from dbt models">
-<meta property="og:site_name" content="STARR-OMOP Documentation">
+<meta property="og:title" content="OMOP CDM v5.4 Data Model – STARR-OMOP Docs">
+<meta property="og:description" content="Detailed table and column definitions">
+<meta property="og:site_name" content="STARR-OMOP Docs">
 </head>
 
 <body class="nav-sidebar floating nav-fixed quarto-light">
@@ -90,7 +87,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">STARR-OMOP Documentation</span>
+    <span class="navbar-title">STARR-OMOP Docs</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -99,6 +96,14 @@ ul.task-list li input[type="checkbox"] {
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./about.html" aria-current="page"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./getting_access.html"> 
+<span class="menu-text">Getting Access</span></a>
+  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-starr-omop-v5.4" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">STARR-OMOP v5.4</span>
@@ -115,7 +120,11 @@ ul.task-list li input[type="checkbox"] {
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link active" href="./faq.html" aria-current="page"> 
+    <a class="nav-link" href="./about.html#53_docs"> 
+<span class="menu-text">STARR-OMOP v5.3</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./faq.html"> 
 <span class="menu-text">FAQ</span></a>
   </li>  
 </ul>
@@ -166,6 +175,18 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_access.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting Access</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./starr_omop54.html" class="sidebar-item-text sidebar-link">
@@ -352,10 +373,28 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">visit_occurrence</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#variant_occurrence" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">_variant_occurrence</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#whole_slide_imaging" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">_whole_slide_imaging</span></a>
+  </div>
+</li>
       </ul>
   </li>
       </ul>
   </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html#53_docs" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">STARR-OMOP v5.3</span></a>
+  </div>
+</li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./faq.html" class="sidebar-item-text sidebar-link">
@@ -373,8 +412,6 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#variant_occurrence-_variant_occurrence" id="toc-variant_occurrence-_variant_occurrence" class="nav-link" data-scroll-target="#variant_occurrence-_variant_occurrence">_VARIANT_OCCURRENCE {#_variant_occurrence}</a></li>
-  <li><a href="#whole_slide_imaging-_whole_slide_imaging" id="toc-whole_slide_imaging-_whole_slide_imaging" class="nav-link" data-scroll-target="#whole_slide_imaging-_whole_slide_imaging">_WHOLE_SLIDE_IMAGING {#_whole_slide_imaging}</a></li>
   <li><a href="#care_site" id="toc-care_site" class="nav-link" data-scroll-target="#care_site">CARE_SITE</a></li>
   <li><a href="#cdm_source" id="toc-cdm_source" class="nav-link" data-scroll-target="#cdm_source">CDM_SOURCE</a></li>
   <li><a href="#cohort" id="toc-cohort" class="nav-link" data-scroll-target="#cohort">COHORT</a></li>
@@ -414,6 +451,8 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#visit_detail" id="toc-visit_detail" class="nav-link" data-scroll-target="#visit_detail">VISIT_DETAIL</a></li>
   <li><a href="#visit_occurrence" id="toc-visit_occurrence" class="nav-link" data-scroll-target="#visit_occurrence">VISIT_OCCURRENCE</a></li>
   <li><a href="#vocabulary" id="toc-vocabulary" class="nav-link" data-scroll-target="#vocabulary">VOCABULARY</a></li>
+  <li><a href="#variant_occurrence" id="toc-variant_occurrence" class="nav-link" data-scroll-target="#variant_occurrence">_VARIANT_OCCURRENCE</a></li>
+  <li><a href="#whole_slide_imaging" id="toc-whole_slide_imaging" class="nav-link" data-scroll-target="#whole_slide_imaging">_WHOLE_SLIDE_IMAGING</a></li>
   </ul>
 </nav>
     </div>
@@ -427,7 +466,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    Detailed table and column definitions from dbt models
+    Detailed table and column definitions
   </div>
 </div>
 
@@ -446,352 +485,8 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This page documents all tables in the STARR-OMOP CDM v5.4 implementation, extracted from the dbt model definitions. Each table includes Stanford-specific implementation notes and detailed column descriptions.</p>
+<p>This page documents all tables in the STARR-OMOP CDM v5.4 implementation. Each table includes Stanford-specific implementation notes and detailed column descriptions.</p>
 <p><strong>Total Tables:</strong> 41</p>
-<hr>
-</section>
-<section id="variant_occurrence-_variant_occurrence" class="level2">
-<h2 class="anchored" data-anchor-id="variant_occurrence-_variant_occurrence">_VARIANT_OCCURRENCE {#_variant_occurrence}</h2>
-<p>The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing. This table is custom to STARR-OMOP and is not part of the standard OMOP CDM. Currently, it only contains variants identified via the STANFORD ACTIONABLE MUTATION PANEL FOR SOLID TUMORS (STAMP) test. The data is sourced from the Epic Genomics Suite, which incorporated STAMP tests starting in August of 2025. STAMP tests performed prior to this date are not currently included in this table.</p>
-<details>
-<summary>
-<strong><code>variant_occurrence_id</code></strong> <em>(int64)</em>
-</summary>
-<p>This is the primary key of the table. This is a unique identifier for every variant occurrence. It is assumed that every variant occurrence with a different unique identifier is in fact a different event and should be treated independently.</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Primary Key</strong></li>
-<li><strong>Not Null</strong></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>person_id</code></strong> <em>(INT64)</em>
-</summary>
-<p>A foreign key identifier to the person_id in the person table for whom the condition is recorded.</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Foreign Key</strong> → <code>ref('person')(person_id)</code></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>visit_occurrence_id</code></strong> <em>(INT64)</em>
-</summary>
-<p>A foreign key identifier to the visit_occurrence_id in the visit_occurrence table for the visit associated with the ordered test.</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Foreign Key</strong> → <code>ref('visit_occurrence')(visit_occurrence_id)</code></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>procedure_occurrence_id</code></strong> <em>(INT64)</em>
-</summary>
-<p>A foreign key identifier to the OMOP procedure_occurrence table for the procedure order for the variant test.</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Foreign Key</strong> → <code>ref('procedure_occurrence')(procedure_occurrence_id)</code></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>provider_id</code></strong> <em>(INT64)</em>
-</summary>
-<p>A foreign key identifier to the provider in the provider table who authorized the order for the variant test.</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Foreign Key</strong> → <code>ref('provider')(provider_id)</code></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>order_datetime</code></strong> <em>(DATETIME)</em>
-</summary>
-<p>The datetime when the test was ordered.</p>
-</details>
-<details>
-<summary>
-<strong><code>test_name</code></strong> <em>(string)</em>
-</summary>
-<p>The name of the test associated with the variant record.</p>
-</details>
-<details>
-<summary>
-<strong><code>variant_name</code></strong> <em>(string)</em>
-</summary>
-<p>The name of the genetic variant identified in the test.</p>
-</details>
-<details>
-<summary>
-<strong><code>variant_type</code></strong> <em>(STRING)</em>
-</summary>
-<p>The variant type, such as ‘Simple’, ‘Pharmacogenomic genotype’, ‘Negative’, etc.</p>
-</details>
-<details>
-<summary>
-<strong><code>assessment</code></strong> <em>(STRING)</em>
-</summary>
-<p>The assessment of the variant, such as ‘Detected’, ‘Not Detected’, ‘Negative’, etc.</p>
-</details>
-<details>
-<summary>
-<strong><code>genome_assembly</code></strong> <em>(STRING)</em>
-</summary>
-<p>The genome assembly used for the variant, such as ‘GRCh37’, ‘GRCh38’, ‘hg38’, etc.</p>
-</details>
-<details>
-<summary>
-<strong><code>chromosome</code></strong> <em>(STRING)</em>
-</summary>
-<p>The chromosome on which the variant is located, such as ‘1’, ‘2’, ‘X’, ‘Y’, etc.</p>
-</details>
-<details>
-<summary>
-<strong><code>transcript_ref_seq</code></strong> <em>(STRING)</em>
-</summary>
-<p>The external identifier defining the Transcript Reference Sequence.</p>
-</details>
-<details>
-<summary>
-<strong><code>dna_change</code></strong> <em>(STRING)</em>
-</summary>
-<p>The change at the DNA level relative to the Transcript Reference Sequence.</p>
-</details>
-<details>
-<summary>
-<strong><code>dna_var_type</code></strong> <em>(STRING)</em>
-</summary>
-<p>The descriptive name for the DNA sequence variation type, such as ‘Substitution’, ‘Copy number gain’, ‘Deletion’, etc.</p>
-</details>
-<details>
-<summary>
-<strong><code>amino_acid_change</code></strong> <em>(STRING)</em>
-</summary>
-<p>The change at the amino acid (protein) level caused by the DNA change.</p>
-</details>
-<details>
-<summary>
-<strong><code>variant_molecular_consequence</code></strong> <em>(STRING)</em>
-</summary>
-<p>The descriptive name for the molecular consequence of the variant, such as ‘Missense Variant’, ‘Nonsense’, ‘Frameshift Variant’, etc.</p>
-</details>
-<details>
-<summary>
-<strong><code>genomic_dna_change</code></strong> <em>(STRING)</em>
-</summary>
-<p>The change at the DNA level relative to the Genomic Reference Sequence.</p>
-</details>
-<details>
-<summary>
-<strong><code>allelic_frequency</code></strong> <em>(NUMERIC(18,5))</em>
-</summary>
-<p>The percentage of all of the reads at this genomic location that were represented by the given allele. For homozygotes it will be close to 100%; for heterozygotes it will be close to 50%. It can be a smaller number when there are mosaics or multiple chromosomes, or mixtures of tumor cells and normal cells. It is stored in the system as a decimal between 0 and 1 - this is calculated by dividing the percentage by 100.</p>
-</details>
-<details>
-<summary>
-<strong><code>copy_number_lower</code></strong> <em>(NUMERIC(9,2))</em>
-</summary>
-<p>The lower bound of the copy number range for the variant.</p>
-</details>
-<details>
-<summary>
-<strong><code>copy_number_upper</code></strong> <em>(NUMERIC(9,2))</em>
-</summary>
-<p>The upper bound of the copy number range for the variant.</p>
-</details>
-<details>
-<summary>
-<strong><code>gene_name</code></strong> <em>(STRING)</em>
-</summary>
-<p>The name of the gene associated with the variant record, such as ‘POLE’, ‘TP53’, ‘CYP2D6’, etc.</p>
-</details>
-<details>
-<summary>
-<strong><code>phenotype_spec_var_class</code></strong> <em>(STRING)</em>
-</summary>
-<p>The descriptive name for the phenotype variant class, such as ‘Pathogenic’, ‘Likely Pathogenic’, ‘Uncertain Significance’, etc.</p>
-</details>
-<details>
-<summary>
-<strong><code>interpretation</code></strong> <em>(STRING)</em>
-</summary>
-<p>The full text interpretation associated with the variant record, aggregated from individual interpretation lines.</p>
-</details>
-<details>
-<summary>
-<strong><code>accession_number</code></strong> <em>(STRING)</em>
-</summary>
-<p>The specimen accession numbers associated with the ordered test, stored as a comma-separated string if multiple accession numbers are present.</p>
-</details>
-<details>
-<summary>
-<strong><code>stamp_pipeline_version</code></strong> <em>(STRING)</em>
-</summary>
-<p>The version of the STAMP pipeline used for the test associated with the variant record.</p>
-</details>
-<details>
-<summary>
-<strong><code>specimen_type</code></strong> <em>(STRING)</em>
-</summary>
-<p>The specimen type associated with the order for the variant record, such as ‘Blood’, ‘Tissue/Bone - Biopsy’, ‘Existing Patient Material’, etc.</p>
-</details>
-<details>
-<summary>
-<strong><code>specimen_source</code></strong> <em>(STRING)</em>
-</summary>
-<p>The specimen source associated with the order for the variant record, such as ‘Blood, from Venipuncture’, ‘Saliva’, ‘Liver’, etc.</p>
-</details>
-<hr>
-</section>
-<section id="whole_slide_imaging-_whole_slide_imaging" class="level2">
-<h2 class="anchored" data-anchor-id="whole_slide_imaging-_whole_slide_imaging">_WHOLE_SLIDE_IMAGING {#_whole_slide_imaging}</h2>
-<p>OMOP extension table for whole slide imaging data from pathology specimens. It contains both information from the PHI-scrubbed whole slide imaging files (svs or isyntac) and source clarity. This table only contains information for slide images we have in GCP buckets with OMOP EHR information.</p>
-<details>
-<summary>
-<strong><code>whole_slide_imaging_id</code></strong> <em>(int64)</em>
-</summary>
-<p>Unique identifier for the whole slide imaging record</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Not Null</strong></li>
-<li><strong>Primary Key</strong></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>accession_number</code></strong> <em>(string)</em>
-</summary>
-<p>Specimen accession number</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Not Null</strong></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>specimen</code></strong> <em>(string)</em>
-</summary>
-<p>Specimen identifier</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Not Null</strong></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>block</code></strong> <em>(string)</em>
-</summary>
-<p>Block identifier</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Not Null</strong></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>slide</code></strong> <em>(string)</em>
-</summary>
-<p>Slide identifier</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Not Null</strong></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>person_id</code></strong> <em>(int64)</em>
-</summary>
-<p>Reference to the person in the OMOP CDM</p>
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><strong>Not Null</strong></li>
-</ul>
-</details>
-<details>
-<summary>
-<strong><code>acquisition_date</code></strong> <em>(datetime)</em>
-</summary>
-<p>Date and time when the slide was scanned from the wsi file metadata. This field is null for Aperio Leica slides as these were manually scanned after slides had been created.</p>
-</details>
-<details>
-<summary>
-<strong><code>procedure_start_time</code></strong> <em>(datetime)</em>
-</summary>
-<p>Date and time when the associated procedure started.</p>
-</details>
-<details>
-<summary>
-<strong><code>specimen_received_date</code></strong> <em>(datetime)</em>
-</summary>
-<p>Date and time when the specimen was received by the lab. Closest date to acquisition_date for the Aperio Leica slides.</p>
-</details>
-<details>
-<summary>
-<strong><code>brand</code></strong> <em>(string)</em>
-</summary>
-<p>WSI scanner brand (Philips or Aperio Leica)</p>
-</details>
-<details>
-<summary>
-<strong><code>scanner</code></strong> <em>(string)</em>
-</summary>
-<p>Scanner model name</p>
-</details>
-<details>
-<summary>
-<strong><code>mpp</code></strong> <em>(float64)</em>
-</summary>
-<p>Microns per pixel - spatial resolution of the scan</p>
-</details>
-<details>
-<summary>
-<strong><code>json_uri</code></strong> <em>(string)</em>
-</summary>
-<p>GCP URI to the deidentified JSON metadata file</p>
-</details>
-<details>
-<summary>
-<strong><code>tiff_uri</code></strong> <em>(string)</em>
-</summary>
-<p>GCP URI to the deidentified TIFF file</p>
-</details>
-<details>
-<summary>
-<strong><code>specimen_source_category_value</code></strong> <em>(int64)</em>
-</summary>
-<p>Specimen source category value</p>
-</details>
-<details>
-<summary>
-<strong><code>specimen_source</code></strong> <em>(string)</em>
-</summary>
-<p>Specimen source description</p>
-</details>
-<details>
-<summary>
-<strong><code>specimen_type_category_value</code></strong> <em>(int64)</em>
-</summary>
-<p>Specimen type category value</p>
-</details>
-<details>
-<summary>
-<strong><code>specimen_type</code></strong> <em>(string)</em>
-</summary>
-<p>Specimen type description</p>
-</details>
-<details>
-<summary>
-<strong><code>spec_task_list</code></strong> <em>(array&lt;struct&lt;task_c int64, task_name string&gt;&gt;)</em>
-</summary>
-<p>List of specimen tasks</p>
-</details>
-<details>
-<summary>
-<strong><code>note_id</code></strong> <em>(int64)</em>
-</summary>
-<p>Note_id for associated pathology report. It is possible that a slide link to more than one note when this happens we bring in one line per note.</p>
-</details>
 <hr>
 </section>
 <section id="care_site" class="level2">
@@ -4383,6 +4078,350 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 </details>
 <hr>
+</section>
+<section id="variant_occurrence" class="level2">
+<h2 class="anchored" data-anchor-id="variant_occurrence">_VARIANT_OCCURRENCE</h2>
+<p>The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing. This table is custom to STARR-OMOP and is not part of the standard OMOP CDM. Currently, it only contains variants identified via the STANFORD ACTIONABLE MUTATION PANEL FOR SOLID TUMORS (STAMP) test. The data is sourced from the Epic Genomics Suite, which incorporated STAMP tests starting in August of 2025. STAMP tests performed prior to this date are not currently included in this table.</p>
+<details>
+<summary>
+<strong><code>variant_occurrence_id</code></strong> <em>(int64)</em>
+</summary>
+<p>This is the primary key of the table. This is a unique identifier for every variant occurrence. It is assumed that every variant occurrence with a different unique identifier is in fact a different event and should be treated independently.</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Primary Key</strong></li>
+<li><strong>Not Null</strong></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>person_id</code></strong> <em>(INT64)</em>
+</summary>
+<p>A foreign key identifier to the person_id in the person table for whom the condition is recorded.</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Foreign Key</strong> → <code>ref('person')(person_id)</code></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>visit_occurrence_id</code></strong> <em>(INT64)</em>
+</summary>
+<p>A foreign key identifier to the visit_occurrence_id in the visit_occurrence table for the visit associated with the ordered test.</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Foreign Key</strong> → <code>ref('visit_occurrence')(visit_occurrence_id)</code></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>procedure_occurrence_id</code></strong> <em>(INT64)</em>
+</summary>
+<p>A foreign key identifier to the OMOP procedure_occurrence table for the procedure order for the variant test.</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Foreign Key</strong> → <code>ref('procedure_occurrence')(procedure_occurrence_id)</code></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>provider_id</code></strong> <em>(INT64)</em>
+</summary>
+<p>A foreign key identifier to the provider in the provider table who authorized the order for the variant test.</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Foreign Key</strong> → <code>ref('provider')(provider_id)</code></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>order_datetime</code></strong> <em>(DATETIME)</em>
+</summary>
+<p>The datetime when the test was ordered.</p>
+</details>
+<details>
+<summary>
+<strong><code>test_name</code></strong> <em>(string)</em>
+</summary>
+<p>The name of the test associated with the variant record.</p>
+</details>
+<details>
+<summary>
+<strong><code>variant_name</code></strong> <em>(string)</em>
+</summary>
+<p>The name of the genetic variant identified in the test.</p>
+</details>
+<details>
+<summary>
+<strong><code>variant_type</code></strong> <em>(STRING)</em>
+</summary>
+<p>The variant type, such as ‘Simple’, ‘Pharmacogenomic genotype’, ‘Negative’, etc.</p>
+</details>
+<details>
+<summary>
+<strong><code>assessment</code></strong> <em>(STRING)</em>
+</summary>
+<p>The assessment of the variant, such as ‘Detected’, ‘Not Detected’, ‘Negative’, etc.</p>
+</details>
+<details>
+<summary>
+<strong><code>genome_assembly</code></strong> <em>(STRING)</em>
+</summary>
+<p>The genome assembly used for the variant, such as ‘GRCh37’, ‘GRCh38’, ‘hg38’, etc.</p>
+</details>
+<details>
+<summary>
+<strong><code>chromosome</code></strong> <em>(STRING)</em>
+</summary>
+<p>The chromosome on which the variant is located, such as ‘1’, ‘2’, ‘X’, ‘Y’, etc.</p>
+</details>
+<details>
+<summary>
+<strong><code>transcript_ref_seq</code></strong> <em>(STRING)</em>
+</summary>
+<p>The external identifier defining the Transcript Reference Sequence.</p>
+</details>
+<details>
+<summary>
+<strong><code>dna_change</code></strong> <em>(STRING)</em>
+</summary>
+<p>The change at the DNA level relative to the Transcript Reference Sequence.</p>
+</details>
+<details>
+<summary>
+<strong><code>dna_var_type</code></strong> <em>(STRING)</em>
+</summary>
+<p>The descriptive name for the DNA sequence variation type, such as ‘Substitution’, ‘Copy number gain’, ‘Deletion’, etc.</p>
+</details>
+<details>
+<summary>
+<strong><code>amino_acid_change</code></strong> <em>(STRING)</em>
+</summary>
+<p>The change at the amino acid (protein) level caused by the DNA change.</p>
+</details>
+<details>
+<summary>
+<strong><code>variant_molecular_consequence</code></strong> <em>(STRING)</em>
+</summary>
+<p>The descriptive name for the molecular consequence of the variant, such as ‘Missense Variant’, ‘Nonsense’, ‘Frameshift Variant’, etc.</p>
+</details>
+<details>
+<summary>
+<strong><code>genomic_dna_change</code></strong> <em>(STRING)</em>
+</summary>
+<p>The change at the DNA level relative to the Genomic Reference Sequence.</p>
+</details>
+<details>
+<summary>
+<strong><code>allelic_frequency</code></strong> <em>(NUMERIC(18,5))</em>
+</summary>
+<p>The percentage of all of the reads at this genomic location that were represented by the given allele. For homozygotes it will be close to 100%; for heterozygotes it will be close to 50%. It can be a smaller number when there are mosaics or multiple chromosomes, or mixtures of tumor cells and normal cells. It is stored in the system as a decimal between 0 and 1 - this is calculated by dividing the percentage by 100.</p>
+</details>
+<details>
+<summary>
+<strong><code>copy_number_lower</code></strong> <em>(NUMERIC(9,2))</em>
+</summary>
+<p>The lower bound of the copy number range for the variant.</p>
+</details>
+<details>
+<summary>
+<strong><code>copy_number_upper</code></strong> <em>(NUMERIC(9,2))</em>
+</summary>
+<p>The upper bound of the copy number range for the variant.</p>
+</details>
+<details>
+<summary>
+<strong><code>gene_name</code></strong> <em>(STRING)</em>
+</summary>
+<p>The name of the gene associated with the variant record, such as ‘POLE’, ‘TP53’, ‘CYP2D6’, etc.</p>
+</details>
+<details>
+<summary>
+<strong><code>phenotype_spec_var_class</code></strong> <em>(STRING)</em>
+</summary>
+<p>The descriptive name for the phenotype variant class, such as ‘Pathogenic’, ‘Likely Pathogenic’, ‘Uncertain Significance’, etc.</p>
+</details>
+<details>
+<summary>
+<strong><code>interpretation</code></strong> <em>(STRING)</em>
+</summary>
+<p>The full text interpretation associated with the variant record, aggregated from individual interpretation lines.</p>
+</details>
+<details>
+<summary>
+<strong><code>accession_number</code></strong> <em>(STRING)</em>
+</summary>
+<p>The specimen accession numbers associated with the ordered test, stored as a comma-separated string if multiple accession numbers are present.</p>
+</details>
+<details>
+<summary>
+<strong><code>stamp_pipeline_version</code></strong> <em>(STRING)</em>
+</summary>
+<p>The version of the STAMP pipeline used for the test associated with the variant record.</p>
+</details>
+<details>
+<summary>
+<strong><code>specimen_type</code></strong> <em>(STRING)</em>
+</summary>
+<p>The specimen type associated with the order for the variant record, such as ‘Blood’, ‘Tissue/Bone - Biopsy’, ‘Existing Patient Material’, etc.</p>
+</details>
+<details>
+<summary>
+<strong><code>specimen_source</code></strong> <em>(STRING)</em>
+</summary>
+<p>The specimen source associated with the order for the variant record, such as ‘Blood, from Venipuncture’, ‘Saliva’, ‘Liver’, etc.</p>
+</details>
+<hr>
+</section>
+<section id="whole_slide_imaging" class="level2">
+<h2 class="anchored" data-anchor-id="whole_slide_imaging">_WHOLE_SLIDE_IMAGING</h2>
+<p>OMOP extension table for whole slide imaging data from pathology specimens. It contains both information from the PHI-scrubbed whole slide imaging files (svs or isyntac) and source clarity. This table only contains information for slide images we have in GCP buckets with OMOP EHR information.</p>
+<details>
+<summary>
+<strong><code>whole_slide_imaging_id</code></strong> <em>(int64)</em>
+</summary>
+<p>Unique identifier for the whole slide imaging record</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Not Null</strong></li>
+<li><strong>Primary Key</strong></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>accession_number</code></strong> <em>(string)</em>
+</summary>
+<p>Specimen accession number</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Not Null</strong></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>specimen</code></strong> <em>(string)</em>
+</summary>
+<p>Specimen identifier</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Not Null</strong></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>block</code></strong> <em>(string)</em>
+</summary>
+<p>Block identifier</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Not Null</strong></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>slide</code></strong> <em>(string)</em>
+</summary>
+<p>Slide identifier</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Not Null</strong></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>person_id</code></strong> <em>(int64)</em>
+</summary>
+<p>Reference to the person in the OMOP CDM</p>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><strong>Not Null</strong></li>
+</ul>
+</details>
+<details>
+<summary>
+<strong><code>acquisition_date</code></strong> <em>(datetime)</em>
+</summary>
+<p>Date and time when the slide was scanned from the wsi file metadata. This field is null for Aperio Leica slides as these were manually scanned after slides had been created.</p>
+</details>
+<details>
+<summary>
+<strong><code>procedure_start_time</code></strong> <em>(datetime)</em>
+</summary>
+<p>Date and time when the associated procedure started.</p>
+</details>
+<details>
+<summary>
+<strong><code>specimen_received_date</code></strong> <em>(datetime)</em>
+</summary>
+<p>Date and time when the specimen was received by the lab. Closest date to acquisition_date for the Aperio Leica slides.</p>
+</details>
+<details>
+<summary>
+<strong><code>brand</code></strong> <em>(string)</em>
+</summary>
+<p>WSI scanner brand (Philips or Aperio Leica)</p>
+</details>
+<details>
+<summary>
+<strong><code>scanner</code></strong> <em>(string)</em>
+</summary>
+<p>Scanner model name</p>
+</details>
+<details>
+<summary>
+<strong><code>mpp</code></strong> <em>(float64)</em>
+</summary>
+<p>Microns per pixel - spatial resolution of the scan</p>
+</details>
+<details>
+<summary>
+<strong><code>json_uri</code></strong> <em>(string)</em>
+</summary>
+<p>GCP URI to the deidentified JSON metadata file</p>
+</details>
+<details>
+<summary>
+<strong><code>tiff_uri</code></strong> <em>(string)</em>
+</summary>
+<p>GCP URI to the deidentified TIFF file</p>
+</details>
+<details>
+<summary>
+<strong><code>specimen_source_category_value</code></strong> <em>(int64)</em>
+</summary>
+<p>Specimen source category value</p>
+</details>
+<details>
+<summary>
+<strong><code>specimen_source</code></strong> <em>(string)</em>
+</summary>
+<p>Specimen source description</p>
+</details>
+<details>
+<summary>
+<strong><code>specimen_type_category_value</code></strong> <em>(int64)</em>
+</summary>
+<p>Specimen type category value</p>
+</details>
+<details>
+<summary>
+<strong><code>specimen_type</code></strong> <em>(string)</em>
+</summary>
+<p>Specimen type description</p>
+</details>
+<details>
+<summary>
+<strong><code>spec_task_list</code></strong> <em>(array&lt;struct&lt;task_c int64, task_name string&gt;&gt;)</em>
+</summary>
+<p>List of specimen tasks</p>
+</details>
+<details>
+<summary>
+<strong><code>note_id</code></strong> <em>(int64)</em>
+</summary>
+<p>Note_id for associated pathology report. It is possible that a slide link to more than one note when this happens we bring in one line per note.</p>
+</details>
+<hr>
 
 
 </section>
@@ -4439,14 +4478,13 @@ ul.task-list li input[type="checkbox"] {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-      const outerScaffold = trigger.parentElement.cloneNode(true);
-      const codeEl = outerScaffold.querySelector('code');
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
         }
-      }
-      return codeEl.innerText;
+        return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -4461,7 +4499,7 @@ ul.task-list li input[type="checkbox"] {
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/susom\.github\.io\/starr-docs-omop\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
