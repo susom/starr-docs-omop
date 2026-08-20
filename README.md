@@ -23,11 +23,13 @@ pyproject.toml          # Python dependencies (managed with uv)
 install.R               # R packages installed into the image
 scripts/
   generate_docs.py      # Builds omop_data_model.qmd from starr-data-lake dbt YMLs
+  generate_exports.py   # Builds the data dictionary page and Excel workbook (manual)
   generate_faq.py       # Builds faq.qmd from docs/faqs/q*.qmd entries
   generate_llms_txt.py  # Builds llms.txt and llms-full.txt from the rendered site
 docs/
   _quarto.yml           # Quarto site config (pages, navbar, pre-render hooks)
   *.qmd                 # Site pages (about, getting_access, starr_omop54, ...)
+  downloads/            # Generated downloadable artifacts (Excel data dictionary)
   faqs/                 # Individual FAQ entries (see docs/faqs/README.md)
   styles.css, fonts/    # Stanford theme assets
 ```
@@ -43,6 +45,18 @@ They are produced automatically by the `pre-render` hooks declared in [docs/_qua
 3. `scripts/generate_llms_txt.py` — builds `docs/llms.txt` and `docs/llms-full.txt` from the site structure.
 
 You can also run any of these scripts manually while iterating (see below).
+
+### The data dictionary is generated manually
+
+`docs/omop_data_dictionary.qmd` and `docs/downloads/starr_omop_data_dictionary.xlsx` are also generated — and also must not be edited by hand — but they are **not** produced by a `pre-render` hook. The workbook is a binary file, so regenerating it on every preview would leave noise in every `git status`.
+
+Regenerate both when the dbt models change, then commit them:
+
+```bash
+python scripts/generate_exports.py omop
+```
+
+Both artifacts are committed so the page and its download are available from a fresh clone without a build step. The page carries a provenance block naming the dbt commit it was generated from, so a stale copy is visible on the site itself.
 
 ## Developer Guide
 
