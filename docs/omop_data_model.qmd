@@ -7,7 +7,7 @@ description: "Detailed table and column definitions"
 
 This page documents all tables in the STARR-OMOP CDM v5.4 implementation. Each table includes Stanford-specific implementation notes and detailed column descriptions.
 
-**Total Tables:** 41
+**Total Tables:** 43
 
 ---
 
@@ -1040,11 +1040,8 @@ OMOP CDM v5.4 DEATH table. Stores information about a Person's death, including 
 
 In STARR-OMOP, the cause of death fields are not currently available from source systems and remain NULL.
 
-Patients are included in this table if they have a death date in the source EHR system (Epic), or if an external source (such as the Social Security Death Master File or California Death Certificate feed) provides evidence of death.
-
-However, external sources are not used to populate the death_date, death_datetime, and death_type_concept_id fields, as these sources are considered less reliable than the source EHR system due to challenges of linking patients outside the system.
-External death date sources are tracked in the custom _death_date_external field so that researchers can still consider this information if relevant to their work.
-This means that patients for whom only external death date information is available will have NULL values for death_date, death_datetime, and death_type_concept_id fields.
+This table contains only EHR-sourced (Epic) death records. External death records (CDPH, LADMF, DMF, etc.)
+are stored in the `_external_death_records` extension table, one row per external death record per person.
 
 <details>
 <summary>**`person_id`** *(INT64)*</summary>
@@ -1066,10 +1063,8 @@ record per person_id is allowed.
 <details>
 <summary>**`death_date`** *(DATE)*</summary>
 
-The date the Person was deceased.
-
-Populated using priority order: SHC EHR > LPCH EHR. Non-EHR death sources are treated as probable deaths and are not used
-to populate this field directly. Instead, all external death sources are aggregated into the _death_date_external field for provenance.
+The date the Person was deceased, sourced from the Epic EHR system.
+Populated using priority order: SHC EHR > LPCH EHR.
 
 </details>
 
@@ -1078,7 +1073,7 @@ to populate this field directly. Instead, all external death sources are aggrega
 
 The date and time the Person was deceased, if available. If no time information is available or if
 the time appears in the source data as 00:00:00 (default time value), this field is NULL. The prioritization of death
-sources is the same as for death_date: SHC EHR > LPCH EHR. Non-EHR death sources are not used to populate this field directly.
+sources is the same as for death_date: SHC EHR > LPCH EHR.
 
 </details>
 
@@ -1086,17 +1081,15 @@ sources is the same as for death_date: SHC EHR > LPCH EHR. Non-EHR death sources
 <summary>**`death_type_concept_id`** *(INT64)*</summary>
 
 A foreign key to the Type Concept in the Standardized Vocabularies reflecting
-the source of the DEATH record. A value of 32817 = EHR indicates the death was
-sourced from the Epic Clarity patient table, while a value of 32815 = Death Certificate
-indicates the death was sourced from the California Department of Public Health (CDPH)
-information as found in the Epic Clarity table external_death_reports.
+the source of the DEATH record. Always 32817 (EHR), indicating the death was
+sourced from the Epic Clarity patient table.
 
 </details>
 
 <details>
 <summary>**`cause_concept_id`** *(INT64)*</summary>
 
-A foreign key to the Standard Concept representing the Person’s cause of death,
+A foreign key to the Standard Concept representing the Person's cause of death,
 if available. This information is not available in STARR-OMOP; always 0 (effectively NULL).
 
 </details>
@@ -1115,22 +1108,6 @@ This information is not available in STARR-OMOP; always NULL.
 A foreign key to a concept representing the cause-of-death code,
 if the code belongs to a vocabulary in the OMOP Vocabularies.
 This information is not available in STARR-OMOP; always 0 (effectively NULL).
-
-</details>
-
-<details>
-<summary>**`_death_date_external`** *(STRING)*</summary>
-
-JSON array storing provenance for all external death sources aggregated per person. Each element contains a concept_id and death_date:
-
-  - concept_id 32885: Social Security Death Master File (DMF)
-  - concept_id 32815: California Death Certificate (CDPH)
-
-Example: '[{"concept_id":32885,"death_date":"2020-01-01"},{"concept_id":32815,"death_date":"2020-01-02"}]'
-
-This field is NULL for EHR-only deaths. When present, it provides full traceability for all external death sources for a person, ensuring no external death evidence is lost in the deduplication process. The primary death_date field will use the highest priority source, while this field preserves all external evidence.
-
-Users should use the concept_id in this field to determine the provenance of each external death record.
 
 </details>
 
@@ -3856,6 +3833,79 @@ A foreign key to the CONCEPT table for the unique relationship concept.
 
 ---
 
+## SOURCE_TO_CONCEPT_MAP {#source_to_concept_map}
+
+The SOURCE_TO_CONCEPT_MAP table is a legacy data structure within the OMOP Common Data Model, recommended for use in ETL processes to maintain local source codes which are not available as Concepts in the Standardized Vocabularies, and to establish mappings for each source code into a Standard Concept.
+STARR builds this table as an empty placeholder so that the OMOP 5.4 schema is complete; local source-code mappings are carried in the custom vocabulary instead.
+
+<details>
+<summary>**`source_code`** *(string)*</summary>
+
+The source code being translated into a Standard Concept.
+
+</details>
+
+<details>
+<summary>**`source_concept_id`** *(int64)*</summary>
+
+A foreign key to the Source Concept that is being translated into a Standard Concept.
+This is either 0 or should be a number above 2 billion, which are the Concepts reserved for site-specific codes and mappings.
+
+</details>
+
+<details>
+<summary>**`source_vocabulary_id`** *(string)*</summary>
+
+A foreign key to the VOCABULARY table defining the vocabulary of the source code that is being translated to a Standard Concept.
+
+</details>
+
+<details>
+<summary>**`source_code_description`** *(string)*</summary>
+
+An optional description for the source code.
+This is included as a convenience to compare the description of the source code to the name of the Concept.
+
+</details>
+
+<details>
+<summary>**`target_concept_id`** *(int64)*</summary>
+
+A foreign key to the Standard Concept that the source code is being mapped to.
+
+</details>
+
+<details>
+<summary>**`target_vocabulary_id`** *(string)*</summary>
+
+A foreign key to the VOCABULARY table defining the vocabulary of the target Concept.
+
+</details>
+
+<details>
+<summary>**`valid_start_date`** *(date)*</summary>
+
+The date when the mapping instance was first recorded.
+
+</details>
+
+<details>
+<summary>**`valid_end_date`** *(date)*</summary>
+
+The date when the mapping instance became invalid because it was deleted or superseded (updated) by a new relationship.
+The default value is 31-Dec-2099, meaning the mapping is valid until it becomes deprecated.
+
+</details>
+
+<details>
+<summary>**`invalid_reason`** *(string)*</summary>
+
+Reason the mapping instance was invalidated. Possible values are D (deleted), U (replaced with an update), or NULL (when the valid_end_date is the default value).
+
+</details>
+
+---
+
 ## SPECIMEN {#specimen}
 
 The specimen table captures data on biological samples, or specimens, from a person. A specimen record indicates characteristics, such as date/time, specimen type, specimen source, and anatomic site of origin, in which the specimen was collected. This table is not currently populated in STARR OMOP.
@@ -4384,6 +4434,76 @@ The vocabulary_concept_id is a foreign key to the CONCEPT table.
 
 ---
 
+## \_EXTERNAL_DEATH_RECORDS {#external_death_records}
+
+Extension table storing one row per external death record per person. External sources include
+CDPH (California Decedent Registry), LADMF (Limited Access Death Master File), other Clarity
+external death report organizations, and DMF (Social Security Death Master File).
+
+This table complements the OMOP `death` table, which contains only EHR-sourced (Epic) death records.
+External death records are separated because they carry lower confidence than EHR-confirmed deaths
+and should not be given the same weight by researchers.
+
+Unlike the `death` table, Clarity-sourced external records are not subject to the OMOP observation
+period date filtering. DMF-sourced records are limited to deaths at least 3 years before the data
+cut date due to SSA release lag.
+
+This table is custom to STARR-OMOP and is not part of the standard OMOP CDM.
+
+<details>
+<summary>**`external_death_record_id`** *(INT64)*</summary>
+
+Surrogate primary key — sequential integer assigned via ROW_NUMBER().
+
+**Constraints:**
+
+- **Primary Key**
+- **Not Null**
+
+</details>
+
+<details>
+<summary>**`person_id`** *(INT64)*</summary>
+
+A foreign key to the Person table identifying the person for whom this external
+death record exists.
+
+**Constraints:**
+
+- **Foreign Key** → `ref('person')(person_id)`
+- **Not Null**
+
+</details>
+
+<details>
+<summary>**`death_date`** *(DATE)*</summary>
+
+The death date reported by the external source.
+
+</details>
+
+<details>
+<summary>**`death_datetime`** *(DATETIME)*</summary>
+
+The death datetime reported by the external source, if time information is available.
+NULL when the source only provides a date or the time is 00:00:00.
+
+</details>
+
+<details>
+<summary>**`external_death_record_source`** *(STRING)*</summary>
+
+Provenance label identifying the external source of this death record.
+Known values in production data:
+  - 'Match on California Decedent Registry': CDPH data
+  - 'LADMF': Limited Access Death Master File
+  - 'DMF': Death Master File (tokenized match from DMF data)
+  - 'External Organization': third-party org reports
+
+</details>
+
+---
+
 ## \_VARIANT_OCCURRENCE {#variant_occurrence}
 
 The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing.
@@ -4650,10 +4770,6 @@ Specimen accession number
 
 Specimen identifier
 
-**Constraints:**
-
-- **Not Null**
-
 </details>
 
 <details>
@@ -4661,20 +4777,12 @@ Specimen identifier
 
 Block identifier
 
-**Constraints:**
-
-- **Not Null**
-
 </details>
 
 <details>
 <summary>**`slide`** *(string)*</summary>
 
 Slide identifier
-
-**Constraints:**
-
-- **Not Null**
 
 </details>
 

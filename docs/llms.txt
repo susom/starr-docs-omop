@@ -12,6 +12,7 @@
 - [Changes from OMOP-CDM 5.3 to 5.4](https://shiny-funicular-j1po82z.pages.github.io/about/changes_53_to_54.html)
 - [Released Datasets](https://shiny-funicular-j1po82z.pages.github.io/about/released_datasets.html)
 - [Getting Access to STARR-OMOP v5.4](https://shiny-funicular-j1po82z.pages.github.io/about/getting_access.html)
+- [OMOP Data Dictionary](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_dictionary.html): Every STARR-OMOP CDM v5.4 table and field in one searchable page, downloadable as an Excel workbook.
 
 ## Data Model Tables
 
@@ -27,7 +28,7 @@
 - [CONDITION_ERA](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#condition_era): 6 columns
 - [CONDITION_OCCURRENCE](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#condition_occurrence): 16 columns
 - [COST](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#cost): 22 columns
-- [DEATH](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#death): 8 columns
+- [DEATH](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#death): 7 columns
 - [DEVICE_EXPOSURE](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#device_exposure): 19 columns
 - [DOMAIN](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#domain): 3 columns
 - [DOSE_ERA](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#dose_era): 7 columns
@@ -50,9 +51,11 @@
 - [PROCEDURE_OCCURRENCE](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#procedure_occurrence): 16 columns
 - [PROVIDER](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#provider): 13 columns
 - [RELATIONSHIP](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#relationship): 6 columns
+- [SOURCE_TO_CONCEPT_MAP](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#source_to_concept_map): 9 columns
 - [SPECIMEN](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#specimen): 15 columns
 - [VISIT_DETAIL](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#visit_detail): 19 columns
 - [VISIT_OCCURRENCE](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#visit_occurrence): 17 columns
 - [VOCABULARY](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#vocabulary): 5 columns
+- [_EXTERNAL_DEATH_RECORDS](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#external_death_records): 5 columns
 - [_VARIANT_OCCURRENCE](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#variant_occurrence): 28 columns
 - [_WHOLE_SLIDE_IMAGING](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_model.html#whole_slide_imaging): 20 columns
