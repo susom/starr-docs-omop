@@ -288,6 +288,77 @@ border-bottom: 0;
   font-weight: 600;
 }
 
+/* Data dictionary tables.
+   The rules above target `.datatables`, the wrapper R's DT/htmlwidgets emits.
+   simple-datatables wraps its tables in `.datatable-wrapper` instead, so the
+   equivalents are repeated here rather than reused. */
+.datatable-wrapper table.data-dictionary-table tbody tr:nth-child(odd) {
+  background-color: var(--red-extra-light);
+}
+
+.datatable-wrapper table.data-dictionary-table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.datatable-wrapper table.data-dictionary-table thead th {
+  font-family: inherit;
+  font-weight: 600;
+}
+
+/* Field and type values read as code, so give them a monospace face. */
+.data-dictionary-table tbody td:nth-child(1),
+.data-dictionary-table tbody td:nth-child(3) {
+  font-family: var(--bs-font-monospace, monospace);
+  white-space: nowrap;
+}
+
+.data-dictionary-table {
+  font-size: 0.9rem;
+}
+
+/* Search box and pagination, matched to the Stanford palette. */
+.datatable-wrapper .datatable-input,
+.datatable-wrapper .datatable-selector {
+  border: 1px solid #dfe2e5;
+  border-radius: 3px;
+  padding: 0.25rem 0.5rem;
+}
+
+.datatable-wrapper .datatable-input:focus,
+.datatable-wrapper .datatable-selector:focus {
+  border-color: var(--red-light);
+  outline: 2px solid var(--red-extra-light);
+}
+
+.datatable-wrapper .datatable-pagination a {
+  color: var(--red-vivid);
+}
+
+.datatable-wrapper .datatable-pagination .datatable-active a {
+  background-color: var(--red-vivid);
+  color: var(--white);
+}
+
+.datatable-wrapper .datatable-info {
+  color: var(--cool-grey);
+  font-size: 0.85rem;
+}
+
+/* Download button on the data dictionary page. */
+.data-dictionary-download,
+.data-dictionary-download:visited {
+  background-color: var(--red-vivid);
+  border-color: var(--red-vivid);
+  color: var(--white);
+}
+
+.data-dictionary-download:hover,
+.data-dictionary-download:focus {
+  background-color: var(--red-dark);
+  border-color: var(--red-dark);
+  color: var(--white);
+}
+
 /* Tabset styles */
 .nav-tabs {
   border: 1px solid #dfe2e5;
