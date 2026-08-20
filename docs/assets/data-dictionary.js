@@ -2,10 +2,14 @@
  * Data dictionary grids — progressive enhancement for omop_data_dictionary.qmd.
  *
  * Every table on that page is rendered by scripts/generate_exports.py as plain
- * semantic HTML inside a `.dd-static` wrapper. This script reads those tables
- * out of the DOM and replaces each one with a Tabulator grid: frozen identifier
- * columns, per-column header filters, resizable columns, and CSV export of the
- * filtered view.
+ * semantic HTML inside a `.dd-static` wrapper. This script does two things to
+ * that markup:
+ *
+ *   - replaces each table with a Tabulator grid: frozen identifier columns,
+ *     per-column header filters, resizable columns, and CSV export of the
+ *     filtered view;
+ *   - turns the page's 45 sections into tab panels behind a vertical rail, so
+ *     reaching one table is a click rather than a long scroll.
  *
  * Reading from the DOM rather than from a separate JSON payload is deliberate:
  *
@@ -29,8 +33,8 @@
   var CLAMP_CHARS = 140;
   var SEARCH_DEBOUNCE_MS = 120;
 
-  /* The 43 per-table grids are built a few at a time after the two grids at
-     the top of the page, so a slow device stays responsive while they land. */
+  /* Only used by the no-tabs fallback, which builds every grid a few at a
+     time so a slow device stays responsive while they land. */
   var IDLE_CHUNK = 4;
   var IDLE_TIMEOUT_MS = 100;
 
@@ -390,28 +394,296 @@
       /* Only retire the static table once the grid actually rendered, so a
          Tabulator failure leaves a readable page rather than a blank one. */
       container.hidden = true;
+      host.dataset.ddReady = "true";
     });
   }
 
-  function init() {
-    if (typeof Tabulator === "undefined") {
-      return; /* CDN blocked — the static tables are still on the page. */
+  /* ---------------------------------------------------------------- tabs */
+
+  /* The page is 45 sections long — All Fields, the table index, and one per
+     OMOP table — which is a lot of scrolling to reach PROCEDURE_OCCURRENCE.
+     They become tab panels behind a vertical rail instead.
+
+     The rail is vertical rather than a horizontal tab strip because 43 names
+     of 20-odd characters wrap to six or seven rows and push the content below
+     the fold. Same interaction, a control that survives the item count. */
+
+  function sectionTable(section) {
+    return section.querySelector(".dd-static table.data-dictionary-table");
+  }
+
+  /* The index grid already knows each table's category and field count, so
+     the rail reads them from there rather than recomputing. */
+  function readIndexMeta() {
+    var meta = {};
+    var index = document.querySelector("table.dd-layout-index");
+    if (!index) {
+      return meta;
+    }
+    index.querySelectorAll("tbody tr").forEach(function (tr) {
+      var cells = tr.querySelectorAll("td");
+      var link = cells.length > 2 && cells[0].querySelector("a[href^='#']");
+      if (link) {
+        meta[link.getAttribute("href").slice(1)] = {
+          category: cells[1].textContent.trim(),
+          count: cells[2].textContent.trim()
+        };
+      }
+    });
+    return meta;
+  }
+
+  function collectSections(main) {
+    return Array.prototype.filter.call(main.children, function (element) {
+      return (
+        element.tagName === "SECTION" && element.id && sectionTable(element)
+      );
+    });
+  }
+
+  function groupSections(sections, meta) {
+    var groups = [];
+
+    function group(name) {
+      for (var i = 0; i < groups.length; i++) {
+        if (groups[i].name === name) {
+          return groups[i];
+        }
+      }
+      groups.push({ name: name, items: [] });
+      return groups[groups.length - 1];
     }
 
-    var tables = document.querySelectorAll(
-      ".dd-static table.data-dictionary-table"
-    );
-    if (!tables.length) {
-      return;
+    group("Overview");
+
+    sections.forEach(function (section) {
+      var heading = section.querySelector("h2");
+      var info = meta[section.id] || {};
+      var overview = section.id === "all-fields" || section.id === "tables";
+      group(overview ? "Overview" : info.category || "Tables").items.push({
+        id: section.id,
+        label: heading ? heading.textContent.trim() : section.id,
+        count:
+          info.count ||
+          String(section.querySelectorAll(".dd-static tbody tr").length),
+        section: section
+      });
+    });
+
+    return groups.filter(function (entry) {
+      return entry.items.length;
+    });
+  }
+
+  function railButton(item) {
+    var element = document.createElement("button");
+    element.type = "button";
+    element.className = "dd-rail-item";
+    element.id = "dd-tab-" + item.id;
+    element.setAttribute("role", "tab");
+    element.setAttribute("aria-controls", item.id);
+    element.setAttribute("aria-selected", "false");
+    element.tabIndex = -1;
+
+    var name = document.createElement("span");
+    name.className = "dd-rail-name";
+    name.textContent = item.label;
+
+    var count = document.createElement("span");
+    count.className = "dd-rail-count";
+    count.textContent = item.count;
+
+    element.appendChild(name);
+    element.appendChild(count);
+    return element;
+  }
+
+  /* Re-measure a panel that is being shown again. Tabulator builds
+     asynchronously and throws if asked to redraw before it has finished, so
+     this waits for the `dd-ready` flag that enhance() sets on `tableBuilt`.
+     A grid built while its panel was already visible needs no redraw at all. */
+  function redraw(section) {
+    var host = section.querySelector(".dd-grid[data-dd-ready]");
+    var grid = host && Tabulator.findTable(host);
+    if (grid && grid.length) {
+      grid[0].redraw(true);
+    }
+  }
+
+  function buildTabs() {
+    var main = document.querySelector("main");
+    var sections = main ? collectSections(main) : [];
+    if (sections.length < 3) {
+      return false; /* Not the shape we expect — leave the page alone. */
     }
 
-    /* All Fields and Tables are what the page opens on, so build them now.
-       The 40-odd per-table grids are all below the fold, and building them in
-       the same pass would block the main thread on work nobody is looking at
-       yet — so they are backfilled one per idle callback instead. Doing it on
-       idle rather than on scroll means every grid is guaranteed to exist
-       without depending on the visitor scrolling to it, and the browser's
-       default scroll anchoring absorbs the height change. */
+    var groups = groupSections(sections, readIndexMeta());
+    var items = [];
+    var byId = {};
+
+    var browser = document.createElement("div");
+    browser.className = "dd-browser";
+
+    var rail = document.createElement("nav");
+    rail.className = "dd-rail";
+    rail.setAttribute("aria-label", "Data dictionary sections");
+
+    var filter = document.createElement("input");
+    filter.type = "search";
+    filter.className = "dd-rail-filter";
+    filter.placeholder = "Filter " + (sections.length - 2) + " tables…";
+    filter.setAttribute("aria-label", "Filter the list of tables");
+
+    var list = document.createElement("div");
+    list.className = "dd-rail-list";
+    list.setAttribute("role", "tablist");
+    list.setAttribute("aria-orientation", "vertical");
+
+    var empty = document.createElement("p");
+    empty.className = "dd-rail-empty";
+    empty.textContent = "No table matches that filter.";
+    empty.hidden = true;
+
+    groups.forEach(function (entry) {
+      var heading = document.createElement("p");
+      heading.className = "dd-rail-group";
+      heading.textContent = entry.name;
+      list.appendChild(heading);
+      entry.group = heading;
+
+      entry.items.forEach(function (item) {
+        item.button = railButton(item);
+        item.group = entry;
+        list.appendChild(item.button);
+        items.push(item);
+        byId[item.id] = item;
+      });
+    });
+
+    rail.appendChild(filter);
+    rail.appendChild(list);
+    rail.appendChild(empty);
+
+    var panels = document.createElement("div");
+    panels.className = "dd-panels";
+
+    main.insertBefore(browser, sections[0]);
+    browser.appendChild(rail);
+    browser.appendChild(panels);
+
+    sections.forEach(function (section) {
+      section.setAttribute("role", "tabpanel");
+      section.setAttribute("aria-labelledby", "dd-tab-" + section.id);
+      section.hidden = true;
+      panels.appendChild(section);
+    });
+
+    function activate(id, focus) {
+      var item = byId[id];
+      if (!item) {
+        return false;
+      }
+      items.forEach(function (other) {
+        var on = other === item;
+        other.button.setAttribute("aria-selected", on ? "true" : "false");
+        other.button.tabIndex = on ? 0 : -1;
+        other.section.hidden = !on;
+      });
+      /* Built on activation rather than up front: a grid needs real layout to
+         size its columns, so there is nothing to gain from building one inside
+         a hidden panel — and everything to lose. */
+      var table = sectionTable(item.section);
+      if (table) {
+        enhance(table);
+      }
+      redraw(item.section);
+      if (focus) {
+        item.button.focus();
+      }
+      /* replaceState, not location.hash: the URL stays shareable without
+         adding a history entry per click or re-triggering a scroll. */
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, "", "#" + id);
+      }
+      return true;
+    }
+
+    items.forEach(function (item) {
+      item.button.addEventListener("click", function () {
+        activate(item.id);
+      });
+    });
+
+    function visibleItems() {
+      return items.filter(function (item) {
+        return !item.button.hidden;
+      });
+    }
+
+    list.addEventListener("keydown", function (event) {
+      var steps = { ArrowDown: 1, ArrowUp: -1 };
+      var shown = visibleItems();
+      var current = shown.indexOf(byId[document.activeElement.id.slice(7)]);
+      var next = null;
+
+      if (event.key in steps && current !== -1) {
+        next = shown[(current + steps[event.key] + shown.length) % shown.length];
+      } else if (event.key === "Home") {
+        next = shown[0];
+      } else if (event.key === "End") {
+        next = shown[shown.length - 1];
+      }
+
+      if (next) {
+        event.preventDefault();
+        activate(next.id, true);
+      }
+    });
+
+    filter.addEventListener("input", function () {
+      var needle = filter.value.trim().toLowerCase();
+      var shown = 0;
+      items.forEach(function (item) {
+        var on = !needle || item.label.toLowerCase().indexOf(needle) !== -1;
+        item.button.hidden = !on;
+        shown += on ? 1 : 0;
+      });
+      groups.forEach(function (entry) {
+        entry.group.hidden = entry.items.every(function (item) {
+          return item.button.hidden;
+        });
+      });
+      empty.hidden = shown > 0;
+    });
+
+    function fromHash() {
+      var id = (window.location.hash || "").replace(/^#/, "");
+      return byId[id] ? id : null;
+    }
+
+    window.addEventListener("hashchange", function () {
+      var id = fromHash();
+      /* Links in the index grid point at sections that are now hidden panels,
+         so the browser's own jump does nothing and we do it here instead. */
+      if (id && activate(id)) {
+        browser.scrollIntoView({ block: "start" });
+      }
+    });
+
+    var initial = fromHash();
+    activate(initial || items[0].id);
+    if (initial) {
+      browser.scrollIntoView({ block: "start" });
+    }
+    return true;
+  }
+
+  /* ---------------------------------------------------------------- init */
+
+  function enhanceEverything(tables) {
+    /* Fallback for a page shape the tab builder did not recognise: the two
+       grids at the top are what you land on, and the rest are backfilled a few
+       per idle callback so the main thread stays free. */
     var deferred = [];
     tables.forEach(function (table) {
       if (layoutFor(table) === LAYOUTS["dd-layout-fields"]) {
@@ -445,6 +717,23 @@
         { timeout: IDLE_TIMEOUT_MS }
       );
     })();
+  }
+
+  function init() {
+    if (typeof Tabulator === "undefined") {
+      return; /* CDN blocked — the static tables are still on the page. */
+    }
+
+    var tables = document.querySelectorAll(
+      ".dd-static table.data-dictionary-table"
+    );
+    if (!tables.length) {
+      return;
+    }
+
+    if (!buildTabs()) {
+      enhanceEverything(tables);
+    }
   }
 
   if (document.readyState === "loading") {

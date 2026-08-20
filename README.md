@@ -59,11 +59,13 @@ python scripts/generate_exports.py omop
 
 Both artifacts are committed so the page and its download are available from a fresh clone without a build step. The page carries a provenance block naming the dbt commit it was generated from, so a stale copy is visible on the site itself.
 
-### The data dictionary tables are grids
+### The data dictionary is tabs of grids
 
 Every table on that page is written into the `.qmd` as an ordinary HTML `<table>`, and [docs/assets/data-dictionary.js](docs/assets/data-dictionary.js) upgrades each one into a [Tabulator](https://tabulator.info) grid after the page loads — search, per-column filters, sorting, resizing, and CSV export of whatever is currently filtered.
 
-The upgrade is additive, so the static tables are what Quarto's search index, `llms-full.txt`, printing, and a no-JavaScript visitor see. Tabulator itself is loaded from jsDelivr, pinned to an exact version with an SRI hash; both the version and the hashes live in `scripts/generate_exports.py`, which writes them into the page's front matter. That page also widens itself past the site's usual body column (`grid: body-width:` in the same front matter) so all six columns fit.
+The same script also turns the page's 45 sections into tabs: a filterable rail on the left, one panel visible at a time. Each grid is built the first time its tab is opened, because a grid built inside a hidden panel has no layout to measure and would size its columns to zero.
+
+The upgrade is additive, so the static tables are what Quarto's search index, `llms-full.txt`, printing, and a no-JavaScript visitor see — with JavaScript off the page is the plain long scroll it was written as, and `@media print` un-hides every panel so ⌘P still yields the whole dictionary. Tabulator itself is loaded from jsDelivr, pinned to an exact version with an SRI hash; both the version and the hashes live in `scripts/generate_exports.py`, which writes them into the page's front matter. That page also widens itself past the site's usual body column (`grid: body-width:` in the same front matter) so all six columns fit.
 
 ## Developer Guide
 

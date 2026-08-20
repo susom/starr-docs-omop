@@ -18,7 +18,7 @@ include-in-header:
 <!-- GENERATED FILE — do not edit by hand.
      Produced by scripts/generate_exports.py; see README.md. -->
 
-Every table and field in the OMOP CDM v5.4 implementation, in one searchable page. Every table below is a grid: search it, filter any column from the box under its header, click a header to sort, drag a column edge to resize, click a long description to expand it, and download whatever you have filtered down to as CSV. Take the whole thing away as an Excel workbook with the button below.
+Every table and field in the OMOP CDM v5.4 implementation, in one searchable page. Start in **All Fields** to search every table at once, or pick a single table from the list. Each one is a grid: search it, filter any column from the box under its header, click a header to sort, drag a column edge to resize, click a long description to expand it, and download whatever you have filtered down to as CSV. Take the whole thing away as an Excel workbook with the button below.
 
 <a class="btn btn-primary data-dictionary-download" href="downloads/starr_omop_data_dictionary.xlsx" download>Download as Excel (.xlsx)</a>
 
@@ -4101,7 +4101,7 @@ All 504 fields across 43 tables. Search here to find which table contains a give
 
 ## Tables {#tables}
 
-43 tables. Click a table name to jump to its fields.
+43 tables. Click a table name to open its fields.
 
 <div class="dd-static">
 <table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-index" id="dt-index">

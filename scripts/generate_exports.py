@@ -498,12 +498,13 @@ class DataDictionaryExporter:
         )
         return [
             f"Every table and field in the {self.export_config['cdm_version']} "
-            "implementation, in one searchable page. Every table below is a "
-            "grid: search it, filter any column from the box under its header, "
-            "click a header to sort, drag a column edge to resize, click a "
-            "long description to expand it, and download whatever you have "
-            "filtered down to as CSV. Take the whole thing away as an Excel "
-            "workbook with the button below.",
+            "implementation, in one searchable page. Start in **All Fields** "
+            "to search every table at once, or pick a single table from the "
+            "list. Each one is a grid: search it, filter any "
+            "column from the box under its header, click a header to sort, "
+            "drag a column edge to resize, click a long description to expand "
+            "it, and download whatever you have filtered down to as CSV. Take "
+            "the whole thing away as an Excel workbook with the button below.",
             "",
             f'<a class="btn btn-primary data-dictionary-download" '
             f'href="{workbook_href}" download>Download as Excel (.xlsx)</a>',
@@ -553,7 +554,7 @@ class DataDictionaryExporter:
         return [
             "## Tables {#tables}",
             "",
-            f"{len(rows)} tables. Click a table name to jump to its fields.",
+            f"{len(rows)} tables. Click a table name to open its fields.",
             "",
             # Table names are anchor markup here, so they must not be escaped.
             self._to_html(frame, "dt-index", "dd-layout-index", escape=False),

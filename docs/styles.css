@@ -365,6 +365,117 @@ border-bottom: 0;
   font-size: 0.9rem;
 }
 
+/* --- Tab rail: one panel at a time instead of 45 stacked sections ------- */
+
+/* Vertical rather than a horizontal tab strip: 43 table names of ~20
+   characters wrap to six or seven rows and push the content below the fold. */
+.dd-browser {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+.dd-rail {
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 2rem);
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background-color: var(--white, #fff);
+}
+
+.dd-rail-filter {
+  flex: none;
+  margin: 0.5rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.85rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.dd-rail-filter:focus {
+  outline: 2px solid var(--red-vivid);
+  outline-offset: -1px;
+}
+
+.dd-rail-list {
+  overflow-y: auto;
+  padding: 0 0.4rem 0.5rem;
+}
+
+.dd-rail-group {
+  margin: 0.7rem 0.5rem 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.dd-rail-item {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+  padding: 0.3rem 0.5rem;
+  border: 0;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #212529;
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.dd-rail-item:hover {
+  background-color: var(--red-extra-light);
+}
+
+.dd-rail-item[aria-selected="true"] {
+  background-color: var(--red-vivid);
+  color: var(--white, #fff);
+  font-weight: 600;
+}
+
+.dd-rail-count {
+  flex: none;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.dd-rail-item[aria-selected="true"] .dd-rail-count {
+  opacity: 0.85;
+}
+
+.dd-rail-empty {
+  margin: 0 0.9rem 0.75rem;
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.dd-panels > section > h2 {
+  margin-top: 0;
+}
+
+/* Under ~992px the two-column split stops paying for itself: the rail goes
+   full width above the panel and gives up its sticky positioning. */
+@media (max-width: 991.98px) {
+  .dd-browser {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .dd-rail {
+    position: static;
+    max-height: 15rem;
+  }
+}
+
 /* --- Toolbar above each grid -------------------------------------------- */
 
 .dd-toolbar {
@@ -501,7 +612,8 @@ border-bottom: 0;
 
 @media print {
   .dd-toolbar,
-  .dd-grid {
+  .dd-grid,
+  .dd-rail {
     display: none !important;
   }
 
@@ -511,6 +623,16 @@ border-bottom: 0;
 
   .dd-static {
     overflow-x: visible;
+  }
+
+  /* Printing wants the whole dictionary, not whichever tab happens to be
+     open, so every panel comes back. */
+  .dd-browser {
+    display: block;
+  }
+
+  .dd-panels > section[hidden] {
+    display: block !important;
   }
 }
 
