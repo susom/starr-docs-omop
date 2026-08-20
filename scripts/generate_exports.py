@@ -302,6 +302,21 @@ class DataDictionaryExporter:
             ("Fields", str(len(self.rows))),
         ]
 
+    def workbook_created(self) -> dt.datetime:
+        """The workbook's creation stamp, as a naive UTC datetime.
+
+        ``git log --format=%cI`` carries the committer's UTC offset, and
+        XlsxWriter writes this property with ``strftime("…%SZ")`` — the offset
+        is dropped and the local time is labelled as UTC. Converting first
+        keeps the stamp truthful, and it stays reproducible because the offset
+        comes from the commit object rather than from this machine.
+        """
+        if not self.source_date:
+            return dt.datetime(1980, 1, 1)
+        if self.source_date.tzinfo is None:
+            return self.source_date
+        return self.source_date.astimezone(dt.timezone.utc).replace(tzinfo=None)
+
     def provenance_note(self) -> str:
         """Single sentence naming the variant these definitions describe."""
         return (
@@ -328,7 +343,7 @@ class DataDictionaryExporter:
                 {
                     "title": self.export_config["workbook_title"],
                     "comments": self.export_config["page_description"],
-                    "created": self.source_date or dt.datetime(1980, 1, 1),
+                    "created": self.workbook_created(),
                 }
             )
             fmt = {
