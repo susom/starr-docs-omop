@@ -14,6 +14,9 @@ docs/_site/
 # Temporary files
 .temp/
 
+# Python bytecode (scripts/ import each other, so this appears on any run)
+__pycache__/
+
 *.css
 *.html
 *.pdf

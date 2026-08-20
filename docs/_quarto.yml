@@ -13,9 +13,11 @@ project:
     - changes_53_to_54.qmd
     - released_datasets.qmd
     - getting_access.qmd
+    - omop_data_dictionary.qmd
   resources:
     - llms.txt
     - llms-full.txt
+    - downloads/
 
 website:
   title: "STARR-OMOP Docs"
@@ -97,6 +99,8 @@ website:
               href: omop_data_model.qmd#variant_occurrence
             - text: "_whole_slide_imaging"
               href: omop_data_model.qmd#whole_slide_imaging
+        - text: "Data Dictionary"
+          href: omop_data_dictionary.qmd
       - text: "STARR-OMOP v5.3"
         href: about.qmd#53_docs
       - text: "FAQ"
@@ -113,6 +117,8 @@ website:
             href: starr_omop54.qmd
           - text: "Data Model Tables"
             href: omop_data_model.qmd
+          - text: "Data Dictionary"
+            href: omop_data_dictionary.qmd
       - text: "STARR-OMOP v5.3"
         href: about.qmd#53_docs
       - text: "FAQ"
@@ -128,6 +134,9 @@ website:
             href: llms.txt
           - text: "llms-full.txt"
             href: llms-full.txt
+      - text: "Download"
+        icon: download
+        href: downloads/starr_omop_data_dictionary.xlsx
 
     tools:
       - icon: github
@@ -148,6 +157,27 @@ format:
     toc: true
     toc-depth: 5
     smooth-scroll: true
+    # Loaded from CDN and initialised inline rather than from partial files:
+    # the root .gitignore drops *.js and *.css, so an include-*: file: partial
+    # would not survive a fresh clone.
+    include-in-header:
+      text: |
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3/dist/style.css">
+    include-after-body:
+      text: |
+        <script type="module">
+          import {DataTable} from "https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3/dist/module.js";
+          for (const table of document.querySelectorAll("table[id^='dt-']")) {
+            new DataTable(table, {
+              searchable: true,
+              sortable: true,
+              perPage: 25,
+              perPageSelect: [10, 25, 50, 100],
+              labels: {placeholder: "Search…", noRows: "No matching fields"}
+            });
+          }
+        </script>
 
 execute:
   lib-dir: /home/rstudio/renv/library/linux-ubuntu-noble/R-4.4/aarch64-unknown-linux-gnu
