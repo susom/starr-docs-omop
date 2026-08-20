@@ -26,3 +26,7 @@ __pycache__/
 # But keep Stanford theme assets
 !docs/styles.css
 !docs/fonts/*.woff
+
+# ...and hand-written site scripts (docs/assets/ holds only source, never build
+# output, so it is safe to un-ignore wholesale)
+!docs/assets/*.js

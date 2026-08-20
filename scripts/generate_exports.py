@@ -105,33 +105,47 @@ BRAND_COOL_GREY = "#4D4F53"
 INVALID_SHEET_CHARS = r"[]:*?/\\"
 MAX_SHEET_NAME = 31
 
-DATATABLES_VERSION = "9.0.3"
-DATATABLES_CDN = f"https://cdn.jsdelivr.net/npm/simple-datatables@{DATATABLES_VERSION}"
+TABULATOR_VERSION = "6.5.2"
+TABULATOR_CDN = f"https://cdn.jsdelivr.net/npm/tabulator-tables@{TABULATOR_VERSION}"
+
+# Subresource integrity hashes for the pinned version above. Regenerate with:
+#   curl -sfL <url> | openssl dgst -sha384 -binary | openssl base64 -A
+TABULATOR_CSS_SRI = "sha384-Dbp8ndtzK+EKUKuD9c6EP5uRUXy2+OEN6LXCUsVF/5zRJbY7RD2TFAakK/eR/wds"
+TABULATOR_JS_SRI = "sha384-ZlfxHB5fIn8MOAuKJe8YBMi7snQXYvhy+0b3K4rGBBY2UvrJwho2jciJ5NKt0WtC"
+
+# Six columns of identifiers and free text do not fit the ~800px article
+# column Quarto's grid reserves for body content, and `page-layout: full`
+# alone does not change that: the theme bakes `minmax(500px, calc(800px - 3em))`
+# into the body-content track, and the page-layout class has no CSS of its own.
+# Overriding `grid.body-width` for this page is the supported way to change it
+# (Quarto compiles a second theme bundle for the page, which is why this is set
+# here and not site-wide). `margin-width: 0` reclaims the right-hand margin,
+# and the table of contents goes with it — the Tables grid below is a better
+# index of a 43-section page than a 45-entry sidebar list.
+PAGE_LAYOUT_FRONT_MATTER = [
+    "page-layout: full",
+    "toc: false",
+    "grid:",
+    "  body-width: 1400px",
+    "  margin-width: 0px",
+]
 
 # Emitted into the generated page's own front matter rather than into
-# `format.html` in _quarto.yml, so the only page that needs simple-datatables
-# is the only page that pays to download it.
+# `format.html` in _quarto.yml, so the only page that needs a data grid is the
+# only page that pays to download one.
 #
-# Inline `text:` rather than `file:` partials: the root .gitignore drops *.js
-# and *.css, so partial files would not survive a fresh clone.
-DATATABLES_FRONT_MATTER = [
+# Both scripts are deferred, so they execute in order once the tables are
+# parsed: Tabulator first, then the initialiser that reads the static tables
+# out of the DOM and replaces them (see docs/assets/data-dictionary.js).
+GRID_FRONT_MATTER = [
+    *PAGE_LAYOUT_FRONT_MATTER,
     "include-in-header:",
     "  text: |",
-    f'    <link rel="stylesheet" href="{DATATABLES_CDN}/dist/style.css">',
-    "include-after-body:",
-    "  text: |",
-    '    <script type="module">',
-    f'      import {{DataTable}} from "{DATATABLES_CDN}/dist/module.js";',
-    "      for (const table of document.querySelectorAll(\"table[id^='dt-']\")) {",
-    "        new DataTable(table, {",
-    "          searchable: true,",
-    "          sortable: true,",
-    "          perPage: 25,",
-    "          perPageSelect: [10, 25, 50, 100],",
-    '          labels: {placeholder: "Search…", noRows: "No matching fields"}',
-    "        });",
-    "      }",
-    "    </script>",
+    f'    <link rel="stylesheet" href="{TABULATOR_CDN}/dist/css/tabulator_simple.min.css"',
+    f'          integrity="{TABULATOR_CSS_SRI}" crossorigin="anonymous">',
+    f'    <script defer src="{TABULATOR_CDN}/dist/js/tabulator.min.js"',
+    f'            integrity="{TABULATOR_JS_SRI}" crossorigin="anonymous"></script>',
+    '    <script defer src="assets/data-dictionary.js"></script>',
 ]
 
 
@@ -464,7 +478,7 @@ class DataDictionaryExporter:
             "---",
             f'title: "{cfg["page_title"]}"',
             f'description: "{cfg["page_description"]}"',
-            *DATATABLES_FRONT_MATTER,
+            *GRID_FRONT_MATTER,
             "---",
             "",
             "<!-- GENERATED FILE — do not edit by hand.",
@@ -484,8 +498,12 @@ class DataDictionaryExporter:
         )
         return [
             f"Every table and field in the {self.export_config['cdm_version']} "
-            "implementation, in one searchable page. Use the search box on any "
-            "table to filter it, or click a column header to sort.",
+            "implementation, in one searchable page. Every table below is a "
+            "grid: search it, filter any column from the box under its header, "
+            "click a header to sort, drag a column edge to resize, click a "
+            "long description to expand it, and download whatever you have "
+            "filtered down to as CSV. Take the whole thing away as an Excel "
+            "workbook with the button below.",
             "",
             f'<a class="btn btn-primary data-dictionary-download" '
             f'href="{workbook_href}" download>Download as Excel (.xlsx)</a>',
@@ -578,10 +596,17 @@ class DataDictionaryExporter:
     def _to_html(
         frame: pd.DataFrame, table_id: str, layout: str, escape: bool = True
     ) -> str:
-        # The layout class tells the stylesheet which columns hold identifiers.
-        # The three layouts have different column orders, so CSS cannot key off
-        # position alone (see docs/styles.css).
-        return frame.to_html(
+        # The layout class does double duty: it tells the stylesheet which
+        # columns hold identifiers (the three layouts have different column
+        # orders, so CSS cannot key off position alone) and it tells
+        # docs/assets/data-dictionary.js how to configure the grid it builds
+        # from this table.
+        #
+        # The `.dd-static` wrapper is the scroll container for the table as
+        # rendered here. That table stays in the document: the grid script
+        # hides it only after its replacement has rendered, so site search,
+        # llms-full.txt, printing and no-JS visitors all still see the data.
+        table = frame.to_html(
             index=False,
             escape=escape,
             border=0,
@@ -592,6 +617,7 @@ class DataDictionaryExporter:
             justify="left",
             table_id=table_id,
         )
+        return f'<div class="dd-static">\n{table}</div>'
 
     # ------------------------------------------------------------------
 

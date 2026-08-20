@@ -4141,7 +4141,7 @@ A limited data set or human-subject data in the OMOP CDM is available through a 
 Every STARR-OMOP CDM v5.4 table and field in one searchable page, downloadable as an Excel workbook.
 ============================================================
 
-Every table and field in the OMOP CDM v5.4 implementation, in one searchable page. Use the search box on any table to filter it, or click a column header to sort.
+Every table and field in the OMOP CDM v5.4 implementation, in one searchable page. Every table below is a grid: search it, filter any column from the box under its header, click a header to sort, drag a column edge to resize, click a long description to expand it, and download whatever you have filtered down to as CSV. Take the whole thing away as an Excel workbook with the button below.
 
 Download as Excel (.xlsx)
 

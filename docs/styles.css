@@ -157,6 +157,18 @@ p, li, summary, td, th, .callout-body {
   word-break: break-word;
 }
 
+/* ...but never inside a data dictionary table. `overflow-wrap: anywhere` does
+   not merely permit mid-word breaks: it drops the cell's min-content width to
+   a single character, which tells the table layout algorithm that any column
+   may legally shrink to one glyph. A six-column table then squeezes into a
+   stack of vertical letters instead of widening or scrolling. Prose pages
+   still want the rule above; data tables scroll instead (`.dd-static`). */
+.data-dictionary-table td,
+.data-dictionary-table th {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
 code, .sourceCode {
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -288,21 +300,46 @@ border-bottom: 0;
   font-weight: 600;
 }
 
-/* Data dictionary tables.
-   The rules above target `.datatables`, the wrapper R's DT/htmlwidgets emits.
-   simple-datatables wraps its tables in `.datatable-wrapper` instead, so the
-   equivalents are repeated here rather than reused. */
-.datatable-wrapper table.data-dictionary-table tbody tr:nth-child(odd) {
+/* ---------------------------------------------------------------------------
+   Data dictionary page (docs/omop_data_dictionary.qmd)
+
+   The generator emits every table as plain HTML inside a `.dd-static` wrapper.
+   docs/assets/data-dictionary.js reads those tables and replaces each with a
+   Tabulator grid; the static markup stays in the document for site search,
+   printing, and visitors without JavaScript. Both presentations are styled
+   here.
+   ------------------------------------------------------------------------ */
+
+/* --- Static tables: the fallback, and what search and print see --------- */
+
+/* A real horizontal scroll container. The legacy `table { display: block;
+   overflow: auto }` rule further down was meant to do this, but it never
+   engaged while cells could shrink to one character. */
+.dd-static {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.dd-static table.data-dictionary-table {
+  display: table;
+  width: 100%;
+}
+
+.dd-static table.data-dictionary-table tbody tr:nth-child(odd) {
   background-color: var(--red-extra-light);
 }
 
-.datatable-wrapper table.data-dictionary-table tbody tr:hover {
+.dd-static table.data-dictionary-table tbody tr:hover {
   background-color: #f0f0f0;
 }
 
-.datatable-wrapper table.data-dictionary-table thead th {
+.dd-static table.data-dictionary-table thead th {
   font-family: inherit;
   font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #f6f8fa;
 }
 
 /* Table, field and type values read as code, so give them a monospace face.
@@ -328,32 +365,153 @@ border-bottom: 0;
   font-size: 0.9rem;
 }
 
-/* Search box and pagination, matched to the Stanford palette. */
-.datatable-wrapper .datatable-input,
-.datatable-wrapper .datatable-selector {
-  border: 1px solid #dfe2e5;
-  border-radius: 3px;
-  padding: 0.25rem 0.5rem;
+/* --- Toolbar above each grid -------------------------------------------- */
+
+.dd-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0.5rem;
 }
 
-.datatable-wrapper .datatable-input:focus,
-.datatable-wrapper .datatable-selector:focus {
+.dd-search {
+  flex: 1 1 20rem;
+  max-width: 30rem;
+  border: 1px solid #dfe2e5;
+  border-radius: 3px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.dd-search:focus {
   border-color: var(--red-light);
   outline: 2px solid var(--red-extra-light);
 }
 
-.datatable-wrapper .datatable-pagination a {
+.dd-button {
+  white-space: nowrap;
+}
+
+.dd-button:hover,
+.dd-button:focus {
+  border-color: var(--red-vivid);
   color: var(--red-vivid);
 }
 
-.datatable-wrapper .datatable-pagination .datatable-active a {
-  background-color: var(--red-vivid);
-  color: var(--white);
-}
-
-.datatable-wrapper .datatable-info {
+.dd-count {
   color: var(--cool-grey);
   font-size: 0.85rem;
+  margin-left: auto;
+}
+
+/* --- Tabulator grid, in the Stanford palette ---------------------------- */
+
+.dd-grid .tabulator {
+  border: 1px solid #dfe2e5;
+  font-size: 0.85rem;
+  background-color: var(--white);
+}
+
+.dd-grid .tabulator .tabulator-header {
+  background-color: #f6f8fa;
+  border-bottom: 2px solid var(--red-vivid);
+}
+
+.dd-grid .tabulator .tabulator-col {
+  background-color: #f6f8fa;
+}
+
+.dd-grid .tabulator .tabulator-col-title {
+  font-weight: 600;
+  color: var(--black);
+}
+
+.dd-grid .tabulator .tabulator-header-filter input,
+.dd-grid .tabulator .tabulator-header-filter select {
+  border: 1px solid #dfe2e5;
+  border-radius: 3px;
+  padding: 0.15rem 0.3rem;
+  font-weight: 400;
+}
+
+.dd-grid .tabulator .tabulator-header-filter input:focus,
+.dd-grid .tabulator .tabulator-header-filter select:focus {
+  border-color: var(--red-light);
+  outline: 2px solid var(--red-extra-light);
+}
+
+.dd-grid .tabulator-row.tabulator-row-odd {
+  background-color: var(--red-extra-light);
+}
+
+.dd-grid .tabulator-row.tabulator-selectable:hover,
+.dd-grid .tabulator-row:hover {
+  background-color: #f0f0f0;
+}
+
+.dd-grid .tabulator-row .tabulator-cell {
+  padding: 5px 10px;
+  border-right: 1px solid #eceff1;
+  vertical-align: top;
+}
+
+.dd-grid .tabulator-row .tabulator-cell.dd-mono {
+  font-family: var(--bs-font-monospace, monospace);
+}
+
+/* Frozen identifier columns need an opaque background of their own, or the
+   scrolling cells show through them. */
+.dd-grid .tabulator-row .tabulator-cell.tabulator-frozen {
+  background-color: inherit;
+}
+
+.dd-grid .tabulator-row.tabulator-row-odd .tabulator-cell.tabulator-frozen {
+  background-color: var(--red-extra-light);
+}
+
+.dd-grid .tabulator-row.tabulator-row-even .tabulator-cell.tabulator-frozen {
+  background-color: var(--white);
+}
+
+/* Descriptions longer than a couple of lines are clamped, and expand when the
+   cell is clicked (docs/assets/data-dictionary.js). */
+.dd-desc {
+  white-space: normal;
+  line-height: 1.45;
+}
+
+.dd-desc-clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.dd-desc-clamped.dd-desc-open {
+  display: block;
+  -webkit-line-clamp: none;
+  line-clamp: none;
+  overflow: visible;
+}
+
+/* --- Print: the grids are virtualised, so print the static tables ------- */
+
+@media print {
+  .dd-toolbar,
+  .dd-grid {
+    display: none !important;
+  }
+
+  .dd-static[hidden] {
+    display: block !important;
+  }
+
+  .dd-static {
+    overflow-x: visible;
+  }
 }
 
 /* Download button on the data dictionary page. */

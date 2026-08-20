@@ -18,6 +18,7 @@ project:
     - llms.txt
     - llms-full.txt
     - downloads/
+    - assets/
 
 website:
   title: "STARR-OMOP Docs"
