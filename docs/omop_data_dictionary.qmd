@@ -1,6 +1,23 @@
 ---
 title: "OMOP Data Dictionary"
 description: "Every STARR-OMOP CDM v5.4 table and field in one searchable page, downloadable as an Excel workbook."
+include-in-header:
+  text: |
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3/dist/style.css">
+include-after-body:
+  text: |
+    <script type="module">
+      import {DataTable} from "https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3/dist/module.js";
+      for (const table of document.querySelectorAll("table[id^='dt-']")) {
+        new DataTable(table, {
+          searchable: true,
+          sortable: true,
+          perPage: 25,
+          perPageSelect: [10, 25, 50, 100],
+          labels: {placeholder: "Search…", noRows: "No matching fields"}
+        });
+      }
+    </script>
 ---
 
 <!-- GENERATED FILE — do not edit by hand.
@@ -37,7 +54,7 @@ These definitions describe the **OMOP CDM v5.4** schema as defined in the dbt mo
 
 All 504 fields across 43 tables. Search here to find which table contains a given field.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-all-fields">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-all" id="dt-all-fields">
   <thead>
     <tr style="text-align: left;">
       <th>Table</th>
@@ -4090,7 +4107,7 @@ All 504 fields across 43 tables. Search here to find which table contains a give
 
 43 tables. Click a table name to jump to its fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-index">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-index" id="dt-index">
   <thead>
     <tr style="text-align: left;">
       <th>Table</th>
@@ -4369,7 +4386,7 @@ The CARE_SITE table contains a list of uniquely identified institutional (physic
 
 6 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-care_site">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-care_site">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4426,7 +4443,7 @@ The CDM_SOURCE table provides information about the source data and the process 
 
 11 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-cdm_source">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-cdm_source">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4513,7 +4530,7 @@ The cohort table contains records identifying the subject(s) for defined cohort,
 
 4 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-cohort">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-cohort">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4558,7 +4575,7 @@ Cohorts are a set of subjects that satisfy a given combination of inclusion crit
 
 7 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-cohort_definition">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-cohort_definition">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4621,7 +4638,7 @@ The primary purpose of the CONCEPT table is to provide a standardized representa
 
 10 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-concept">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-concept">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4702,7 +4719,7 @@ The CONCEPT_ANCESTOR table is designed to simplify observational analysis by pro
 
 4 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-concept_ancestor">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-concept_ancestor">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4747,7 +4764,7 @@ The CONCEPT_CLASS table includes semantic categories that reference the source s
 
 3 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-concept_class">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-concept_class">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4786,7 +4803,7 @@ The CONCEPT_RELATIONSHIP table contains records that define relationships betwee
 
 6 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-concept_relationship">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-concept_relationship">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4843,7 +4860,7 @@ The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations
 
 3 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-concept_synonym">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-concept_synonym">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4880,7 +4897,7 @@ The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations
 
 6 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-condition_era">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-condition_era">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -4935,7 +4952,7 @@ The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations
 
 16 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-condition_occurrence">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-condition_occurrence">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5052,7 +5069,7 @@ The cost table captures the various financial aspects of healthcare events. It i
 
 22 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-cost">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-cost">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5205,7 +5222,7 @@ OMOP CDM v5.4 DEATH table. Stores information about a Person's death, including 
 
 7 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-death">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-death">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5268,7 +5285,7 @@ The Device domain captures information about a persons exposure to a foreign phy
 
 19 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-device_exposure">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-device_exposure">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5403,7 +5420,7 @@ The DOMAIN table includes a list of OMOP-defined Domains to which the Concepts o
 
 3 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-domain">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-domain">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5442,7 +5459,7 @@ The dose_era table captures the time periods (eras) during which a person is exp
 
 7 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-dose_era">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-dose_era">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5505,7 +5522,7 @@ A Drug Era is defined as a span of time when the Person is assumed to be exposed
 
 7 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-drug_era">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-drug_era">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5568,7 +5585,7 @@ The DRUG_EXPOSURE table captures records about the exposure to a Drug ingested o
 
 23 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-drug_exposure">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-drug_exposure">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5727,7 +5744,7 @@ The DRUG_STRENGTH table contains structured content about the amount or concentr
 
 12 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-drug_strength">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-drug_strength">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5820,7 +5837,7 @@ The episode table captures aggregated information about periods of continuous en
 
 13 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-episode">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-episode">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5919,7 +5936,7 @@ The episode_event table captures the events that are part of an episode. It incl
 
 3 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-episode_event">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-episode_event">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -5958,7 +5975,7 @@ The FACT_RELATIONSHIP table contains records about the relationships between fac
 
 5 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-fact_relationship">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-fact_relationship">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -6009,7 +6026,7 @@ A record of image occurrences from the Vendor Neutral Archive (VNA). This does n
 
 17 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-image_occurrence">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-image_occurrence">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -6132,7 +6149,7 @@ The location table represents a generic way to capture physical location or addr
 
 13 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-location">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-location">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -6231,7 +6248,7 @@ The MEASUREMENT table contains records of Measurements, i.e. structured values (
 
 23 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-measurement">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-measurement">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -6390,7 +6407,7 @@ The metadata table metadata information about a dataset that has been transforme
 
 9 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-metadata">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-metadata">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -6465,7 +6482,7 @@ The NOTE table captures unstructured information that was recorded by a provider
 
 17 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-note">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-note">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -6588,7 +6605,7 @@ The note_nlp table encodes all output of NLP on clinical notes. Each row represe
 
 14 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-note_nlp">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-note_nlp">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -6693,7 +6710,7 @@ This table contains records of various observations made about individuals. It i
 
 21 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-observation">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-observation">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -6840,7 +6857,7 @@ The observation period table is intended to contain records of spans of time in 
 
 5 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-observation_period">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-observation_period">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -6891,7 +6908,7 @@ This table contains information about the period of time that a Person is contin
 
 17 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-payer_plan_period">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-payer_plan_period">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7014,7 +7031,7 @@ This table serves as the central identity management for all Persons in the data
 
 18 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-person">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-person">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7143,7 +7160,7 @@ The PROCEDURE_OCCURRENCE table contains records of procedures that have been per
 
 16 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-procedure_occurrence">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-procedure_occurrence">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7260,7 +7277,7 @@ The PROVIDER table contains a list of uniquely identified healthcare providers. 
 
 13 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-provider">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-provider">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7359,7 +7376,7 @@ The RELATIONSHIP table provides a reference list of all types of relationships t
 
 6 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-relationship">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-relationship">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7416,7 +7433,7 @@ The SOURCE_TO_CONCEPT_MAP table is a legacy data structure within the OMOP Commo
 
 9 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-source_to_concept_map">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-source_to_concept_map">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7491,7 +7508,7 @@ The specimen table captures data on biological samples, or specimens, from a per
 
 15 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-specimen">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-specimen">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7602,7 +7619,7 @@ The VISIT_DETAIL table is an optional table used to represents details of each r
 
 19 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-visit_detail">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-visit_detail">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7737,7 +7754,7 @@ This table contains Events where Persons engage with the healthcare system for a
 
 17 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-visit_occurrence">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-visit_occurrence">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7860,7 +7877,7 @@ The VOCABULARY table includes a list of the Vocabularies integrated from various
 
 5 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-vocabulary">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-vocabulary">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7913,7 +7930,7 @@ Extension table storing one row per external death record per person. External s
 
 5 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-external_death_records">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-external_death_records">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -7966,7 +7983,7 @@ The VARIANT_OCCURRENCE table contains information about genetic variants identif
 
 28 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-variant_occurrence">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-variant_occurrence">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>
@@ -8157,7 +8174,7 @@ OMOP extension table for whole slide imaging data from pathology specimens. It c
 
 20 fields.
 
-<table class="dataframe table table-sm table-striped table-hover data-dictionary-table" id="dt-whole_slide_imaging">
+<table class="dataframe table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" id="dt-whole_slide_imaging">
   <thead>
     <tr style="text-align: left;">
       <th>Field</th>

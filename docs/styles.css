@@ -305,9 +305,21 @@ border-bottom: 0;
   font-weight: 600;
 }
 
-/* Field and type values read as code, so give them a monospace face. */
-.data-dictionary-table tbody td:nth-child(1),
-.data-dictionary-table tbody td:nth-child(3) {
+/* Table, field and type values read as code, so give them a monospace face.
+   The three tables have different column orders, so each layout names its own
+   identifier columns rather than relying on position alone:
+
+     .dd-layout-fields  Field | Required | Type | Description
+     .dd-layout-all     Table | Category | Field | Required | Type | Description
+     .dd-layout-index   Table | Category | Fields | Description   (Fields is a count)
+
+   The layout class is emitted by scripts/generate_exports.py. */
+.dd-layout-fields tbody td:nth-child(1),
+.dd-layout-fields tbody td:nth-child(3),
+.dd-layout-all tbody td:nth-child(1),
+.dd-layout-all tbody td:nth-child(3),
+.dd-layout-all tbody td:nth-child(5),
+.dd-layout-index tbody td:nth-child(1) {
   font-family: var(--bs-font-monospace, monospace);
   white-space: nowrap;
 }

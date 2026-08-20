@@ -157,27 +157,6 @@ format:
     toc: true
     toc-depth: 5
     smooth-scroll: true
-    # Loaded from CDN and initialised inline rather than from partial files:
-    # the root .gitignore drops *.js and *.css, so an include-*: file: partial
-    # would not survive a fresh clone.
-    include-in-header:
-      text: |
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3/dist/style.css">
-    include-after-body:
-      text: |
-        <script type="module">
-          import {DataTable} from "https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3/dist/module.js";
-          for (const table of document.querySelectorAll("table[id^='dt-']")) {
-            new DataTable(table, {
-              searchable: true,
-              sortable: true,
-              perPage: 25,
-              perPageSelect: [10, 25, 50, 100],
-              labels: {placeholder: "Search…", noRows: "No matching fields"}
-            });
-          }
-        </script>
 
 execute:
   lib-dir: /home/rstudio/renv/library/linux-ubuntu-noble/R-4.4/aarch64-unknown-linux-gnu

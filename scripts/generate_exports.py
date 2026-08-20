@@ -105,6 +105,35 @@ BRAND_COOL_GREY = "#4D4F53"
 INVALID_SHEET_CHARS = r"[]:*?/\\"
 MAX_SHEET_NAME = 31
 
+DATATABLES_VERSION = "9.0.3"
+DATATABLES_CDN = f"https://cdn.jsdelivr.net/npm/simple-datatables@{DATATABLES_VERSION}"
+
+# Emitted into the generated page's own front matter rather than into
+# `format.html` in _quarto.yml, so the only page that needs simple-datatables
+# is the only page that pays to download it.
+#
+# Inline `text:` rather than `file:` partials: the root .gitignore drops *.js
+# and *.css, so partial files would not survive a fresh clone.
+DATATABLES_FRONT_MATTER = [
+    "include-in-header:",
+    "  text: |",
+    f'    <link rel="stylesheet" href="{DATATABLES_CDN}/dist/style.css">',
+    "include-after-body:",
+    "  text: |",
+    '    <script type="module">',
+    f'      import {{DataTable}} from "{DATATABLES_CDN}/dist/module.js";',
+    "      for (const table of document.querySelectorAll(\"table[id^='dt-']\")) {",
+    "        new DataTable(table, {",
+    "          searchable: true,",
+    "          sortable: true,",
+    "          perPage: 25,",
+    "          perPageSelect: [10, 25, 50, 100],",
+    '          labels: {placeholder: "Search…", noRows: "No matching fields"}',
+    "        });",
+    "      }",
+    "    </script>",
+]
+
 
 def normalize_type(raw: str) -> str:
     """Canonicalise a dbt ``data_type`` string."""
@@ -435,6 +464,7 @@ class DataDictionaryExporter:
             "---",
             f'title: "{cfg["page_title"]}"',
             f'description: "{cfg["page_description"]}"',
+            *DATATABLES_FRONT_MATTER,
             "---",
             "",
             "<!-- GENERATED FILE — do not edit by hand.",
@@ -490,7 +520,7 @@ class DataDictionaryExporter:
             f"All {len(self.rows)} fields across {len(self.tables)} tables. "
             "Search here to find which table contains a given field.",
             "",
-            self._to_html(frame, "dt-all-fields"),
+            self._to_html(frame, "dt-all-fields", "dd-layout-all"),
             "",
             "---",
             "",
@@ -508,7 +538,7 @@ class DataDictionaryExporter:
             f"{len(rows)} tables. Click a table name to jump to its fields.",
             "",
             # Table names are anchor markup here, so they must not be escaped.
-            self._to_html(frame, "dt-index", escape=False),
+            self._to_html(frame, "dt-index", "dd-layout-index", escape=False),
             "",
             "---",
             "",
@@ -536,7 +566,7 @@ class DataDictionaryExporter:
             [
                 f"{len(frame)} fields.",
                 "",
-                self._to_html(frame, f"dt-{table_anchor(name)}"),
+                self._to_html(frame, f"dt-{table_anchor(name)}", "dd-layout-fields"),
                 "",
                 "---",
                 "",
@@ -545,12 +575,20 @@ class DataDictionaryExporter:
         return lines
 
     @staticmethod
-    def _to_html(frame: pd.DataFrame, table_id: str, escape: bool = True) -> str:
+    def _to_html(
+        frame: pd.DataFrame, table_id: str, layout: str, escape: bool = True
+    ) -> str:
+        # The layout class tells the stylesheet which columns hold identifiers.
+        # The three layouts have different column orders, so CSS cannot key off
+        # position alone (see docs/styles.css).
         return frame.to_html(
             index=False,
             escape=escape,
             border=0,
-            classes="table table-sm table-striped table-hover data-dictionary-table",
+            classes=(
+                "table table-sm table-striped table-hover "
+                f"data-dictionary-table {layout}"
+            ),
             justify="left",
             table_id=table_id,
         )
