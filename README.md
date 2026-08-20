@@ -23,7 +23,7 @@ pyproject.toml          # Python dependencies (managed with uv)
 install.R               # R packages installed into the image
 scripts/
   generate_docs.py      # Builds omop_data_model.qmd from starr-data-lake dbt YMLs
-  generate_exports.py   # Builds the data dictionary page and Excel workbook (manual)
+  generate_exports.py   # Builds the data dictionary page and Excel workbook
   generate_faq.py       # Builds faq.qmd from docs/faqs/q*.qmd entries
   generate_llms_txt.py  # Builds llms.txt and llms-full.txt from the rendered site
 docs/
@@ -37,27 +37,26 @@ docs/
 
 ## How the Site Is Built
 
-The pages `omop_data_model.qmd`, `faq.qmd`, `llms.txt`, and `llms-full.txt` are **generated** — do not edit them by hand.
+The pages `omop_data_model.qmd`, `omop_data_dictionary.qmd`, `faq.qmd`, `llms.txt`, `llms-full.txt`, and the Excel workbook `downloads/starr_omop_data_dictionary.xlsx` are **generated** — do not edit them by hand.
 
 They are produced automatically by the `pre-render` hooks declared in [docs/_quarto.yml](docs/_quarto.yml), which run every time you `quarto preview`, `quarto render`, or `quarto publish`, in this order:
 
 1. `scripts/generate_docs.py omop` — sparse-clones [starr-data-lake](https://github.com/susom/starr-data-lake) and extracts table/column metadata from the dbt YML models into `docs/omop_data_model.qmd`.
-2. `scripts/generate_faq.py` — collects every `docs/faqs/q*.qmd` entry into `docs/faq.qmd` (see [docs/faqs/README.md](docs/faqs/README.md)).
-3. `scripts/generate_llms_txt.py` — builds `docs/llms.txt` and `docs/llms-full.txt` from the site structure.
+2. `scripts/generate_exports.py omop` — sparse-clones the same repo and flattens the same models into `docs/omop_data_dictionary.qmd` and `docs/downloads/starr_omop_data_dictionary.xlsx`.
+3. `scripts/generate_faq.py` — collects every `docs/faqs/q*.qmd` entry into `docs/faq.qmd` (see [docs/faqs/README.md](docs/faqs/README.md)).
+4. `scripts/generate_llms_txt.py` — builds `docs/llms.txt` and `docs/llms-full.txt` from the site structure.
+
+The order matters twice: step 4 reads the pages written by steps 1–3, and step 2 must run before it or `llms-full.txt` describes the previous dictionary.
 
 You can also run any of these scripts manually while iterating (see below).
 
-### The data dictionary is generated manually
+### Why rebuilding a binary every render is safe
 
-`docs/omop_data_dictionary.qmd` and `docs/downloads/starr_omop_data_dictionary.xlsx` are also generated — and also must not be edited by hand — but they are **not** produced by a `pre-render` hook. The workbook is a binary file, so regenerating it on every preview would leave noise in every `git status`.
+Step 2 rewrites a `.xlsx` on every preview, which would normally leave a binary diff in every `git status`. It does not, because both artifacts are byte-reproducible: every timestamp in them — the workbook's `created` property, the provenance block on the page — is derived from the dbt source commit, never from the wall clock. Re-rendering against unchanged models writes identical bytes, so `git status` stays clean and a diff appears only when the dbt models actually move.
 
-Regenerate both when the dbt models change, then commit them:
+Both artifacts are still committed, so the page and its download work from a fresh clone without a build step. When a render does produce a diff, commit it: that is the dbt change reaching the site. The page also carries a provenance block naming the dbt commit it was generated from, so a stale checkout is visible on the site itself.
 
-```bash
-python scripts/generate_exports.py omop
-```
-
-Both artifacts are committed so the page and its download are available from a fresh clone without a build step. The page carries a provenance block naming the dbt commit it was generated from, so a stale copy is visible on the site itself.
+Steps 1 and 2 each clone the dbt repo (~3 s, ~3 MB, shallow and sparse), so the dictionary costs one extra clone per render.
 
 ### The data dictionary is tabs of grids
 

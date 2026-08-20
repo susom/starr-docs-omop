@@ -7,11 +7,17 @@ Produces two artifacts from the same dbt source the rest of the site uses:
     docs/omop_data_dictionary.qmd                   searchable page
     docs/downloads/starr_omop_data_dictionary.xlsx  downloadable workbook
 
-Both are generated and committed. This generator is deliberately *not* wired
-into the Quarto ``pre-render`` hooks in ``docs/_quarto.yml``: the workbook is a
-binary file, and rewriting it on every local preview would leave noise in every
-``git status``. Run it by hand when the dbt models change, then commit both
-artifacts.
+Both are produced by a ``pre-render`` hook in ``docs/_quarto.yml``, so they
+refresh on every ``quarto render``/``preview``/``publish`` like the rest of the
+generated site. Both are also committed, so a fresh clone serves the page and
+its download without a build.
+
+Rewriting a binary on every preview would normally leave noise in ``git
+status``; it does not here because both artifacts are byte-reproducible. Every
+timestamp written into them derives from the dbt source commit rather than the
+wall clock (see ``_read_commit_date`` and ``workbook_created``), so re-running
+against unchanged models reproduces the same bytes and only a real dbt change
+shows up as a diff.
 
 Usage:
     python generate_exports.py omop

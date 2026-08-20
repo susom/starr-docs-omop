@@ -2,6 +2,9 @@ project:
   type: website
   pre-render:
     - ../scripts/generate_docs.py omop
+    # Writes omop_data_dictionary.qmd and downloads/*.xlsx. Must precede
+    # generate_llms_txt.py, which reads the dictionary page.
+    - ../scripts/generate_exports.py omop
     - ../scripts/generate_faq.py
     - ../scripts/generate_llms_txt.py --base-url "https://shiny-funicular-j1po82z.pages.github.io/about/"
   render:
