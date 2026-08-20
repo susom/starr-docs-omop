@@ -54,6 +54,25 @@ MODEL_CONFIGS = {
 EXCLUDE_FOLDERS = ["temp"]
 
 
+def table_anchor(name: str) -> str:
+    """Quarto anchor id for a table.
+
+    Leading underscores are stripped so section links resolve
+    (``_variant_occurrence`` -> ``#variant_occurrence``).
+    """
+    return name.lstrip("_")
+
+
+def table_heading(name: str) -> str:
+    """Display heading for a table.
+
+    Leading underscores are escaped so they render literally instead of
+    being read as emphasis (``_variant_occurrence`` -> ``\\_VARIANT_OCCURRENCE``).
+    """
+    stripped = name.lstrip("_")
+    return "\\_" * (len(name) - len(stripped)) + stripped.upper()
+
+
 class DocGenerator:
     """Generates STARR documentation from dbt YML files."""
 
@@ -222,11 +241,8 @@ class DocGenerator:
 
     def _generate_table_section(self, table: Dict[str, Any]) -> List[str]:
         """Generate markdown section for a single table."""
-        # Anchor id strips leading underscores so Quarto section links resolve.
-        anchor = table["name"].lstrip("_")
-        # Escape leading underscores in the heading text so they render literally.
-        heading = table["name"].upper().lstrip("_")
-        heading = "\\_" * (len(table["name"]) - len(table["name"].lstrip("_"))) + heading
+        anchor = table_anchor(table["name"])
+        heading = table_heading(table["name"])
         lines = [
             f"## {heading} {{#{anchor}}}",
             "",
