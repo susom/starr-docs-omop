@@ -23,6 +23,11 @@ __pycache__/
 *.js
 *.woff
 
+# The data dictionary workbook is build output like every other generated page:
+# a pre-render hook writes it from the dbt models on each render and publish, so
+# committing it only adds a binary that goes stale between regenerations.
+docs/downloads/*.xlsx
+
 # But keep Stanford theme assets
 !docs/styles.css
 !docs/fonts/*.woff

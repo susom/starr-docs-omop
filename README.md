@@ -30,7 +30,7 @@ docs/
   _quarto.yml           # Quarto site config (pages, navbar, pre-render hooks)
   *.qmd                 # Site pages (about, getting_access, starr_omop54, ...)
   assets/               # Hand-written site scripts (data dictionary grid)
-  downloads/            # Generated downloadable artifacts (Excel data dictionary)
+  downloads/            # Generated downloadable artifacts (not committed)
   faqs/                 # Individual FAQ entries (see docs/faqs/README.md)
   styles.css, fonts/    # Stanford theme assets
 ```
@@ -38,6 +38,8 @@ docs/
 ## How the Site Is Built
 
 The pages `omop_data_model.qmd`, `omop_data_dictionary.qmd`, `faq.qmd`, `llms.txt`, `llms-full.txt`, and the Excel workbook `downloads/starr_omop_data_dictionary.xlsx` are **generated** — do not edit them by hand.
+
+The generated pages are committed so that a diff shows what a dbt change did to the docs. The workbook is not: it is a binary, nothing can be read out of its diff, and the same hooks rebuild it on every render and publish. Expect `docs/downloads/` to be empty in a fresh clone until you render.
 
 They are produced automatically by the `pre-render` hooks declared in [docs/_quarto.yml](docs/_quarto.yml), which run every time you `quarto preview`, `quarto render`, or `quarto publish`, in this order:
 
