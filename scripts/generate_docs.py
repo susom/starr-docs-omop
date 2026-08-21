@@ -73,6 +73,19 @@ def table_heading(name: str) -> str:
     return "\\_" * (len(name) - len(stripped)) + stripped.upper()
 
 
+def markdown_prose(text: str) -> str:
+    """dbt prose, made safe to drop into a generated Markdown document.
+
+    Descriptions are authored in ``starr-data-lake`` and land in these pages as
+    Markdown, and Pandoc passes raw HTML through untouched -- a ``<script>`` in
+    a model description would reach the rendered site as a live element rather
+    than as the text somebody wrote. Escaping the three HTML metacharacters
+    closes that without flattening the prose: Markdown itself still works, and
+    several descriptions rely on it for code spans around table names.
+    """
+    return html.escape(text, quote=False)
+
+
 class DocGenerator:
     """Generates STARR documentation from dbt YML files."""
 
@@ -251,7 +264,7 @@ class DocGenerator:
         if bq_location:
             lines.extend([f"**BigQuery:** `{bq_location}`", ""])
         if table["description"]:
-            lines.extend([table["description"], ""])
+            lines.extend([markdown_prose(table["description"]), ""])
         for column in table["columns"]:
             lines.extend(self._generate_column_item(column))
         lines.extend(["---", ""])
@@ -269,7 +282,7 @@ class DocGenerator:
             "",
         ]
         if column["description"]:
-            lines.extend([column["description"], ""])
+            lines.extend([markdown_prose(column["description"]), ""])
         if column["constraints"]:
             lines.extend(["**Constraints:**", ""])
             for constraint in column["constraints"]:

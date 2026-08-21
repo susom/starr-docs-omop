@@ -586,10 +586,31 @@ border-bottom: 0;
 }
 
 /* Descriptions longer than a couple of lines are clamped, and expand when the
-   cell is clicked (docs/assets/data-dictionary.js). */
+   control is activated (docs/assets/data-dictionary.js). */
 .dd-desc {
   white-space: normal;
   line-height: 1.45;
+}
+
+/* Clamped descriptions are rendered as a <button> so they can be reached with
+   Tab and opened with Enter or Space. These rules take the button chrome back
+   off so it still reads as prose. `display` is deliberately absent: the clamp
+   rules below own it, and setting it here would outrank `.dd-desc-clamped` and
+   break the clamp. */
+button.dd-desc {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+button.dd-desc:focus-visible {
+  outline: 2px solid var(--red-vivid);
+  outline-offset: 2px;
 }
 
 .dd-desc-clamped {

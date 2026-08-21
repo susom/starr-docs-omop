@@ -14,5 +14,11 @@ dependencies = [
     "requests>=2.32.5",
     "tabulate>=0.9.0",
     "db-dtypes>=1.7.1",
-    "xlsxwriter>=3.2.0"
+    # Pinned exactly, not floored: docs/downloads/starr_omop_data_dictionary.xlsx
+    # is committed, and the generator only stays byte-reproducible if every
+    # contributor writes it with the same serializer. Measured — 3.2.0 and 3.2.9
+    # produce different bytes from identical data, while pandas 2.2.3 vs 3.0.3
+    # produce the same bytes, so xlsxwriter alone decides the binary. Bump this
+    # pin and the regenerated workbook in the same commit.
+    "xlsxwriter==3.2.9"
 ]

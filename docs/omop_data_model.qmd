@@ -1064,7 +1064,7 @@ record per person_id is allowed.
 <summary>**`death_date`** *(DATE)*</summary>
 
 The date the Person was deceased, sourced from the Epic EHR system.
-Populated using priority order: SHC EHR > LPCH EHR.
+Populated using priority order: SHC EHR &gt; LPCH EHR.
 
 </details>
 
@@ -1073,7 +1073,7 @@ Populated using priority order: SHC EHR > LPCH EHR.
 
 The date and time the Person was deceased, if available. If no time information is available or if
 the time appears in the source data as 00:00:00 (default time value), this field is NULL. The prioritization of death
-sources is the same as for death_date: SHC EHR > LPCH EHR.
+sources is the same as for death_date: SHC EHR &gt; LPCH EHR.
 
 </details>
 
@@ -2304,7 +2304,7 @@ For STARR-OMOP, it is set to EHR record (concept_id=32817)
 <details>
 <summary>**`operator_concept_id`** *(int64)*</summary>
 
-Operators are <, <=, =, >=, > and these concepts belong to the 'Meas Value Operator' domain.
+Operators are &lt;, &lt;=, =, &gt;=, &gt; and these concepts belong to the 'Meas Value Operator' domain.
 This is intended for measurments that are ranges and it is not expected to be populated for most measurements.
 
 **Constraints:**
@@ -2327,7 +2327,7 @@ The relationship for the two records (systolic/diastolic) is captured in the FAC
 <summary>**`value_as_concept_id`** *(int64)*</summary>
 
 If the raw data gives a categorial result for measurements those values are captured and mapped to
-standard concepts in the ['Meas Value'](https://athena.ohdsi.org/search-terms/terms?domain=Meas+Value&invalidReason=Valid&standardConcept=Standard) domain.
+standard concepts in the ['Meas Value'](https://athena.ohdsi.org/search-terms/terms?domain=Meas+Value&amp;invalidReason=Valid&amp;standardConcept=Standard) domain.
 (e.g. 'normal', 'abnormal', 'positive', 'negative', 'detected', 'not detected', etc.)
 
 **Constraints:**
@@ -2340,7 +2340,7 @@ standard concepts in the ['Meas Value'](https://athena.ohdsi.org/search-terms/te
 <summary>**`unit_concept_id`** *(int64)*</summary>
 
 This concept represents the mapping of the UNIT_SOURCE_VALUE column.
-It is mapped to the [Unit](https://athena.ohdsi.org/search-terms/terms?domain=Unit&invalidReason=Valid&standardConcept=Standard) domain
+It is mapped to the [Unit](https://athena.ohdsi.org/search-terms/terms?domain=Unit&amp;invalidReason=Valid&amp;standardConcept=Standard) domain
 that best represents the unit as given in the source data
 
 **Constraints:**
@@ -2795,7 +2795,7 @@ Term_exists is defined as a flag that indicates if the patient actually has or h
 Any of the following modifiers would make Term_exists false -
 Negation = true
 Subject = [anything other than the patient]
-Conditional = true/li> Rule_out = true
+Conditional = true/li&gt; Rule_out = true
 Uncertain = very low certainty or any lower certainties.
 A complete lack of modifiers would make Term_exists true.
 

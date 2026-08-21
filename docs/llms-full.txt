@@ -895,13 +895,13 @@ record per person_id is allowed.
 death_date (DATE)
 
 The date the Person was deceased, sourced from the Epic EHR system.
-Populated using priority order: SHC EHR > LPCH EHR.
+Populated using priority order: SHC EHR &gt; LPCH EHR.
 
 death_datetime (DATETIME)
 
 The date and time the Person was deceased, if available. If no time information is available or if
 the time appears in the source data as 00:00:00 (default time value), this field is NULL. The prioritization of death
-sources is the same as for death_date: SHC EHR > LPCH EHR.
+sources is the same as for death_date: SHC EHR &gt; LPCH EHR.
 
 death_type_concept_id (INT64)
 
@@ -1730,7 +1730,7 @@ For STARR-OMOP, it is set to EHR record (concept_id=32817)
 
 operator_concept_id (int64)
 
-Operators are =, > and these concepts belong to the 'Meas Value Operator' domain.
+Operators are &lt;, &lt;=, =, &gt;=, &gt; and these concepts belong to the 'Meas Value Operator' domain.
 This is intended for measurments that are ranges and it is not expected to be populated for most measurements.
 
 **Constraints:**
@@ -2062,7 +2062,7 @@ Term_exists is defined as a flag that indicates if the patient actually has or h
 Any of the following modifiers would make Term_exists false -
 Negation = true
 Subject = [anything other than the patient]
-Conditional = true/li> Rule_out = true
+Conditional = true/li&gt; Rule_out = true
 Uncertain = very low certainty or any lower certainties.
 A complete lack of modifiers would make Term_exists true.
 

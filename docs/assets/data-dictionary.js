@@ -163,36 +163,67 @@
   function descriptionFormatter(expanded) {
     return function (cell) {
       var value = cell.getValue() || "";
-      var element = document.createElement("div");
-      element.className = "dd-desc";
-      element.textContent = value;
-      if (value.length > CLAMP_CHARS) {
-        var open = expanded.has(cell.getRow().getIndex());
-        element.classList.add("dd-desc-clamped");
-        element.classList.toggle("dd-desc-open", open);
-        element.title = open ? "Click to collapse" : value;
+
+      if (value.length <= CLAMP_CHARS) {
+        var plain = document.createElement("div");
+        plain.className = "dd-desc";
+        plain.textContent = value;
+        return plain;
       }
+
+      /* The expander is a real <button>, not a div with a click handler: that
+         is what gets it into the tab order, gives it Enter and Space for free,
+         and announces it as a control rather than as prose. Driven from a
+         Tabulator cellClick the two lines a keyboard visitor can see would be
+         all they ever get. The stylesheet strips the button chrome, so it
+         still reads as the description it is. */
+      var key = cell.getRow().getIndex();
+      var element = document.createElement("button");
+      element.type = "button";
+      element.className = "dd-desc dd-desc-clamped";
+      element.textContent = value;
+
+      function render(open) {
+        element.classList.toggle("dd-desc-open", open);
+        element.setAttribute("aria-expanded", open ? "true" : "false");
+        element.title = open ? "Collapse description" : value;
+      }
+
+      render(expanded.has(key));
+
+      /* Listening on the button rather than on the cell keeps mouse and
+         keyboard on one path -- a keyboard activation dispatches a click that
+         would otherwise reach a cellClick handler too, and toggle twice. */
+      element.addEventListener("click", function () {
+        var open = !expanded.has(key);
+        if (open) {
+          expanded.add(key);
+        } else {
+          expanded.delete(key);
+        }
+        render(open);
+        cell.getRow().normalizeHeight();
+      });
+
       return element;
     };
   }
 
-  function descriptionToggle(expanded) {
-    return function (event, cell) {
-      var element = cell.getElement().querySelector(".dd-desc");
-      if (!element || !element.classList.contains("dd-desc-clamped")) {
-        return;
-      }
-      var key = cell.getRow().getIndex();
-      var open = !expanded.has(key);
-      if (open) {
-        expanded.add(key);
-      } else {
-        expanded.delete(key);
-      }
-      element.classList.toggle("dd-desc-open", open);
-      element.title = open ? "Click to collapse" : cell.getValue();
-      cell.getRow().normalizeHeight();
-    };
+  /* ------------------------------------------------------------- download */
+
+  /* Excel, Sheets and Numbers all read a cell opening with one of these as the
+     start of a formula rather than as text, so a dbt description beginning
+     "=..." would execute when somebody opens the CSV this page hands them. */
+  var FORMULA_LEAD = /^[=+\-@\t\r]/;
+
+  /* An apostrophe is the conventional neutraliser: spreadsheets take it as
+     "treat the rest as text" and do not display it, so the cell still reads as
+     written. Applied only on download -- the grid itself renders through
+     textContent and was never at risk. */
+  function csvSafe(value) {
+    return typeof value === "string" && FORMULA_LEAD.test(value)
+      ? "'" + value
+      : value;
   }
 
   /* ------------------------------------------------------------- columns */
@@ -237,9 +268,13 @@
         column.headerFilter = "input";
       }
 
+      /* Every column, not just the prose ones: a table or field name is dbt
+         data too, and the whole point is that no cell reaches a spreadsheet
+         as something other than text. */
+      column.accessorDownload = csvSafe;
+
       if (trait.clamp) {
         column.formatter = descriptionFormatter(expanded);
-        column.cellClick = descriptionToggle(expanded);
         column.variableHeight = true;
       } else if (rows.some(function (row) { return row[hrefField(field)]; })) {
         column.formatter = linkFormatter(field);

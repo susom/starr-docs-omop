@@ -47,6 +47,7 @@ from generate_docs import (
     MODEL_CONFIGS,
     REPO_URL,
     DocGenerator,
+    markdown_prose,
     table_anchor,
     table_heading,
 )
@@ -371,7 +372,24 @@ class DataDictionaryExporter:
         output_path = self.project_root / self.export_config["workbook_file"]
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with pd.ExcelWriter(output_path, engine="xlsxwriter") as writer:
+        with pd.ExcelWriter(
+            output_path,
+            engine="xlsxwriter",
+            # XlsxWriter's write() converts strings that look like formulas or
+            # URLs into live cells by default. Every string here is dbt prose,
+            # so a description opening with "=" or "@" would land in Excel as a
+            # formula rather than as the text it is, and one holding a bare URL
+            # would become a clickable link nobody authored. Nothing in the
+            # current source triggers either conversion; switching them off is
+            # what keeps that true as the descriptions change. The About sheet's
+            # deliberate links go through write_url(), which is unaffected.
+            engine_kwargs={
+                "options": {
+                    "strings_to_formulas": False,
+                    "strings_to_urls": False,
+                }
+            },
+        ) as writer:
             book = writer.book
             # xlsxwriter otherwise stamps docProps/core.xml with the wall clock,
             # which would make every rebuild a new binary in git.
@@ -682,9 +700,12 @@ class DataDictionaryExporter:
                     "",
                 ]
             )
+        # This paragraph is the one place on the page where a dbt value is
+        # emitted as Markdown rather than through pandas' HTML escaping, so it
+        # is escaped here instead.
         description = flatten_description(table["description"])
         if description:
-            lines.extend([description, ""])
+            lines.extend([markdown_prose(description), ""])
         lines.extend(
             [
                 f"{len(frame)} fields.",
