@@ -41,7 +41,7 @@ The pages `omop_data_model.qmd`, `omop_data_dictionary.qmd`, `faq.qmd`, `llms.tx
 
 They are produced automatically by the `pre-render` hooks declared in [docs/_quarto.yml](docs/_quarto.yml), which run every time you `quarto preview`, `quarto render`, or `quarto publish`, in this order:
 
-1. `scripts/generate_docs.py omop` — sparse-clones [starr-data-lake](https://github.com/susom/starr-data-lake) and extracts table/column metadata from the dbt YML models into `docs/omop_data_model.qmd`.
+1. `scripts/generate_docs.py omop` — sparse-clones [starr-data-lake](https://github.com/susom/starr-data-lake) and extracts table/column metadata from the dbt YML models into `docs/omop_data_model.qmd`. It also rewrites the per-table list under **Data Model Tables** in `docs/_quarto.yml` (see below).
 2. `scripts/generate_exports.py omop` — sparse-clones the same repo and flattens the same models into `docs/omop_data_dictionary.qmd` and `docs/downloads/starr_omop_data_dictionary.xlsx`.
 3. `scripts/generate_faq.py` — collects every `docs/faqs/q*.qmd` entry into `docs/faq.qmd` (see [docs/faqs/README.md](docs/faqs/README.md)).
 4. `scripts/generate_llms_txt.py` — builds `docs/llms.txt` and `docs/llms-full.txt` from the site structure.
@@ -49,6 +49,14 @@ They are produced automatically by the `pre-render` hooks declared in [docs/_qua
 The order matters twice: step 4 reads the pages written by steps 1–3, and step 2 must run before it or `llms-full.txt` describes the previous dictionary.
 
 You can also run any of these scripts manually while iterating (see below).
+
+### The sidebar's table list is generated too
+
+`docs/_quarto.yml` is hand-maintained, with one exception: the run of `- text:`/`href: omop_data_model.qmd#…` pairs under **Data Model Tables**. Step 1 rewrites that block from the models it just parsed.
+
+It has to, because that list used to be typed by hand and went stale the moment dbt gained a table — by the time this was noticed the page documented 43 tables and the sidebar offered 30. Quarto re-reads its config after the pre-render hooks, so a repair takes effect in the same render, and the hook is a no-op when the list already matches.
+
+Edit any other part of `_quarto.yml` freely; the rewrite is textual and touches only those lines.
 
 ### Why rebuilding a binary every render is safe
 
