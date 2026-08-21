@@ -1,6 +1,7 @@
 ---
 title: "OMOP CDM v5.4 Data Model"
 description: "Detailed table and column definitions"
+toc: false
 ---
 
 ## Overview

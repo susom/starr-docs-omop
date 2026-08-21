@@ -288,6 +288,11 @@ class DocGenerator:
             "---",
             f'title: "{self.config["title"]}"',
             f'description: "{self.config["description"]}"',
+            # The project sets `toc: true`, which on this page means Pandoc builds
+            # a right-hand list of all 43 table headings -- the same list the
+            # generated sidebar block already puts on the left. One copy is enough,
+            # and the sidebar is the one that stays visible across pages.
+            "toc: false",
             "---",
             "",
             "## Overview",
