@@ -116,6 +116,15 @@ The documentation is extracted directly from our data transformation layer, ensu
 
 [View Data Model Tables →](omop_data_model.qmd){.btn .btn-primary}
 
+## Data Dictionary
+
+The same tables and columns are also published as a [Data Dictionary](omop_data_dictionary.qmd) — one searchable, sortable, filterable grid per table, with the whole model in a single **All Fields** view. It is generated from the same dbt models, so it never falls behind the data model page.
+
+The complete dictionary is also downloadable as an Excel workbook, one sheet per table.
+
+[View Data Dictionary →](omop_data_dictionary.qmd){.btn .btn-primary}
+[Download as Excel (.xlsx)](downloads/starr_omop_data_dictionary.xlsx){.btn .btn-outline-primary}
+
 ## Frequently Asked Questions
 
 Common questions about STARR-OMOP are automatically collected from individual FAQ entries and compiled into a comprehensive list. Each question includes detailed explanations, code examples, and best practices for working with the OMOP data model.
