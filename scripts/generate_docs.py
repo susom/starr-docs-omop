@@ -6,7 +6,7 @@ Generates Quarto markdown documentation from dbt YML files for the
 STARR-OMOP data model.
 
 Usage:
-    python generate_docs.py omop
+    python scripts/generate_docs.py omop
 
 Note: Activate the virtual environment before running:
     source .venv/bin/activate

@@ -20,7 +20,7 @@ against unchanged models reproduces the same bytes and only a real dbt change
 shows up as a diff.
 
 Usage:
-    python generate_exports.py omop
+    python scripts/generate_exports.py omop
 
 Note: Activate the virtual environment before running:
     source .venv/bin/activate
@@ -28,6 +28,7 @@ Note: Activate the virtual environment before running:
 
 import argparse
 import datetime as dt
+import html
 import re
 import subprocess
 import sys
@@ -116,8 +117,12 @@ TABULATOR_CDN = f"https://cdn.jsdelivr.net/npm/tabulator-tables@{TABULATOR_VERSI
 
 # Subresource integrity hashes for the pinned version above. Regenerate with:
 #   curl -sfL <url> | openssl dgst -sha384 -binary | openssl base64 -A
-TABULATOR_CSS_SRI = "sha384-Dbp8ndtzK+EKUKuD9c6EP5uRUXy2+OEN6LXCUsVF/5zRJbY7RD2TFAakK/eR/wds"
-TABULATOR_JS_SRI = "sha384-ZlfxHB5fIn8MOAuKJe8YBMi7snQXYvhy+0b3K4rGBBY2UvrJwho2jciJ5NKt0WtC"
+TABULATOR_CSS_SRI = (
+    "sha384-Dbp8ndtzK+EKUKuD9c6EP5uRUXy2+OEN6LXCUsVF/5zRJbY7RD2TFAakK/eR/wds"
+)
+TABULATOR_JS_SRI = (
+    "sha384-ZlfxHB5fIn8MOAuKJe8YBMi7snQXYvhy+0b3K4rGBBY2UvrJwho2jciJ5NKt0WtC"
+)
 
 # Six columns of identifiers and free text do not fit the ~800px article
 # column Quarto's grid reserves for body content, and `page-layout: full`
@@ -623,17 +628,40 @@ class DataDictionaryExporter:
 
     def _page_index(self) -> List[str]:
         rows = self.index_rows()
-        for row in rows:
-            anchor = table_anchor(row["Table"].lower())
-            row["Table"] = f'<a href="#{anchor}">{row["Table"]}</a>'
+        # Every column is rendered with escaping on, Category and Description
+        # included: both carry dbt YAML prose, and markup in a description must
+        # reach the page as text rather than as elements. The Table cell needs
+        # anchor markup that escaping would destroy, so it travels through the
+        # frame as a sentinel and is substituted afterwards. NUL cannot appear
+        # in a YAML scalar, so no dbt value can forge one, and the anchor built
+        # here is the only markup that gets in.
+        links: Dict[str, str] = {}
+        for position, row in enumerate(rows):
+            # Dropping NUL from the data makes the sentinel unforgeable by
+            # construction. A YAML scalar cannot hold one, so this changes no
+            # real output; it turns "the source cannot do that" from an
+            # assumption into something the code enforces.
+            for column in ("Category", "Description"):
+                row[column] = str(row[column]).replace("\x00", "")
+            token = f"\x00dd-link-{position}\x00"
+            name = row["Table"].replace("\x00", "")
+            anchor = html.escape(table_anchor(name.lower()))
+            links[token] = f'<a href="#{anchor}">{html.escape(name)}</a>'
+            row["Table"] = token
+
         frame = pd.DataFrame(rows, columns=INDEX_COLUMNS)
+        table = self._to_html(frame, "dt-index", "dd-layout-index")
+        for token, link in links.items():
+            if table.count(token) != 1:
+                raise RuntimeError(f"index link sentinel {token!r} did not survive")
+            table = table.replace(token, link)
+
         return [
             "## Tables {#tables}",
             "",
             f"{len(rows)} tables. Click a table name to open its fields.",
             "",
-            # Table names are anchor markup here, so they must not be escaped.
-            self._to_html(frame, "dt-index", "dd-layout-index", escape=False),
+            table,
             "",
             "---",
             "",
@@ -670,14 +698,16 @@ class DataDictionaryExporter:
         return lines
 
     @staticmethod
-    def _to_html(
-        frame: pd.DataFrame, table_id: str, layout: str, escape: bool = True
-    ) -> str:
+    def _to_html(frame: pd.DataFrame, table_id: str, layout: str) -> str:
         # The layout class does double duty: it tells the stylesheet which
         # columns hold identifiers (the three layouts have different column
         # orders, so CSS cannot key off position alone) and it tells
         # docs/assets/data-dictionary.js how to configure the grid it builds
         # from this table.
+        #
+        # Escaping is not optional: every cell here originates in dbt YAML, so
+        # a description containing markup must render as text. _page_index gets
+        # its links past this with a sentinel rather than by turning it off.
         #
         # The `.dd-static` wrapper is the scroll container for the table as
         # rendered here. That table stays in the document: the grid script
@@ -685,7 +715,7 @@ class DataDictionaryExporter:
         # llms-full.txt, printing and no-JS visitors all still see the data.
         table = frame.to_html(
             index=False,
-            escape=escape,
+            escape=True,
             border=0,
             classes=(
                 "table table-sm table-striped table-hover "
