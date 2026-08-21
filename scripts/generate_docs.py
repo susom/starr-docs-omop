@@ -75,56 +75,57 @@ def table_heading(name: str) -> str:
 
 
 # A URL scheme Pandoc may keep in an href. Anything else -- javascript:,
-# data:, vbscript: -- is a way to run code from a link, so the construct is
-# turned back into text rather than rewritten to some guessed-at safe target.
-SAFE_URL_SCHEME = re.compile(r"\A(?:https?|mailto|ftp):", re.I)
+# data:, vbscript: -- is a way to run code from a link.
+SAFE_URL_SCHEME = re.compile(r"\A(?:https?|mailto|ftp):", re.IGNORECASE)
 ANY_URL_SCHEME = re.compile(r"\A[A-Za-z][A-Za-z0-9+.\-]*:")
 
-# `[text](dest)`, `![alt](dest)`, and the reference definition `[label]: dest`.
-# These run after HTML escaping, so a `<dest>` destination arrives spelled
-# `&lt;dest&gt;` -- matching a literal `<` here would never fire.
-MD_INLINE_LINK = re.compile(r"!?\[[^\]\n]*\]\(\s*([^)\s]*)")
-MD_REFERENCE_LINK = re.compile(r"(?m)^[ \t]{0,3}\[[^\]\n]+\]:[ \t]*(\S+)")
+# One link, spelled the simple way, in text whose brackets are already escaped.
+#
+# The label deliberately admits no bracket and no backslash. CommonMark allows
+# both -- balanced nested brackets, and `\]` standing for a literal one -- and a
+# label using either stays escaped rather than being matched loosely. That is
+# the whole point of the rewrite below: the shapes this expression cannot read
+# are the shapes it must not approve.
+ESCAPED_LINK = re.compile(r"\\\[([^\[\]\\\n]{0,200})\\\]\(([^\s()<>\\]{1,300})\)")
 
 
-def _text_if_unsafe(match: "re.Match[str]") -> str:
-    """Escape a link construct's opening bracket if its scheme is not allowed.
+def _restore_if_safe(match: "re.Match[str]") -> str:
+    """Turn an escaped ``\\[label\\](dest)`` back into a live link, or leave it.
 
-    Escaping ``[`` is what stops the construct forming at all, so it renders as
-    the text somebody wrote. Escaping the leading ``!`` of an image instead
-    would leave the ``[...](...)`` behind it to become a link.
+    Called only on the strict shape above, so the one remaining question is the
+    destination. A relative target has no scheme and is fine; an absolute one
+    has to name a scheme that cannot execute.
     """
-    destination = match.group(1)
-    # Pandoc also accepts `(<dest>)`; strip the delimiters before reading the
-    # scheme, or `&lt;javascript:` reads as having no scheme at all.
-    if destination.startswith("&lt;"):
-        destination = destination[4:]
-    if destination.endswith("&gt;"):
-        destination = destination[:-4]
-    if not ANY_URL_SCHEME.match(destination) or SAFE_URL_SCHEME.match(destination):
+    label, destination = match.group(1), match.group(2)
+    if ANY_URL_SCHEME.match(destination) and not SAFE_URL_SCHEME.match(destination):
         return match.group(0)
-    return match.group(0).replace("[", "\\[", 1)
+    return f"[{label}]({destination})"
 
 
 def markdown_prose(text: str) -> str:
     """dbt prose, made safe to drop into a generated Markdown document.
 
     Descriptions are authored in ``starr-data-lake`` and land in these pages as
-    Markdown, which Pandoc reads with more power than prose needs. Three things
-    are taken away, and nothing else:
+    Markdown, which Pandoc reads with more power than prose needs. This takes
+    that power away and hands back only what the descriptions actually use.
 
-    - **Raw HTML**, by escaping the three HTML metacharacters. Pandoc passes
-      raw HTML through, so a ``<script>`` in a description would otherwise
-      reach the page as a live element. This also kills ``<javascript:...>``
-      autolinks, which need a literal ``<``.
-    - **Attribute syntax**, by escaping braces. ``[x]{onclick="..."}`` puts an
-      arbitrary attribute on a span, and ```` `...`{=html} ```` reintroduces raw
-      HTML through the back door.
-    - **Links whose scheme can execute**, by rendering the construct as text.
+    The ordering is the design. Everything that can start a construct is
+    escaped first -- HTML metacharacters, backslashes, braces, and *every*
+    bracket -- so by this point no link, image, reference definition, attribute
+    span or raw-HTML block can form at all. Only then is a single narrow shape,
+    ``[label](destination)`` with a scheme that cannot execute, allowed back.
 
-    What survives is the Markdown these descriptions actually use: code spans
-    around table names, emphasis, and ordinary http(s) links to the OHDSI
-    vocabulary browser.
+    That direction matters more than the patterns do. Matching link syntax and
+    escaping the ones that look dangerous fails open: every label spelling the
+    expression cannot parse -- ``[a [b]](...)``, ``[x \\]](...)`` -- is a way
+    past it, and CommonMark has more of those than a regular expression can
+    hold. Escaping first and restoring second fails closed, so an unparseable
+    label is rendered as the text somebody wrote instead of becoming a link.
+
+    What survives is what these descriptions contain: code spans around table
+    names, emphasis, and ordinary http(s) links to the OHDSI vocabulary
+    browser. A bracketed aside that was never a link, like
+    ``[anything other than the patient]``, still reads exactly as written.
 
     This narrows an already-trusted source rather than standing between the
     site and an untrusted one -- anyone who can edit a dbt description can
@@ -132,9 +133,12 @@ def markdown_prose(text: str) -> str:
     reader for these pages would be the airtight version.
     """
     safe = html.escape(text, quote=False)
+    # Before adding escapes of our own, so a backslash in the source stays a
+    # backslash instead of escaping the character behind it.
+    safe = safe.replace("\\", "\\\\")
     safe = safe.replace("{", "\\{").replace("}", "\\}")
-    safe = MD_INLINE_LINK.sub(_text_if_unsafe, safe)
-    return MD_REFERENCE_LINK.sub(_text_if_unsafe, safe)
+    safe = safe.replace("[", "\\[").replace("]", "\\]")
+    return ESCAPED_LINK.sub(_restore_if_safe, safe)
 
 
 class DocGenerator:

@@ -2061,7 +2061,7 @@ term_exists (string)
 Term_exists is defined as a flag that indicates if the patient actually has or had the condition.
 Any of the following modifiers would make Term_exists false -
 Negation = true
-Subject = [anything other than the patient]
+Subject = \[anything other than the patient\]
 Conditional = true/li&gt; Rule_out = true
 Uncertain = very low certainty or any lower certainties.
 A complete lack of modifiers would make Term_exists true.
