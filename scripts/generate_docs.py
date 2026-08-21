@@ -286,6 +286,66 @@ class DocGenerator:
             f.write(content)
         print(f"Documentation written to {output_path}")
 
+    def sync_sidebar(self) -> bool:
+        """Rewrite the per-table sidebar entries in ``docs/_quarto.yml``.
+
+        The page body is regenerated on every render, but the sidebar used to be a
+        hand-typed list of tables. It was written in the initial commit and never
+        updated, so by the time dbt had grown to 43 baseline models the navigation
+        still offered 30 — thirteen tables reachable only by scrolling or search.
+
+        Rewriting it here from ``self.tables_data`` — the same parsed models the page
+        itself is built from — makes that class of drift impossible. The edit is
+        textual rather than a YAML round-trip because ``_quarto.yml`` is a
+        hand-maintained file: a dump would discard its comments and reflow every
+        unrelated block.
+
+        Returns True if the file changed.
+        """
+        config_path = self.project_root / "docs" / "_quarto.yml"
+        if not config_path.exists():
+            print(f"Warning: {config_path} not found — sidebar not synced")
+            return False
+
+        page = Path(self.config["output_file"]).name
+        lines = config_path.read_text(encoding="utf-8").splitlines(keepends=True)
+
+        # The block to replace is the contiguous run of two-line entries
+        #     - text: "<table>"
+        #       href: <page>#<anchor>
+        # A pair is identified by its href, so an entry pointing at the page itself
+        # (the parent `section:`) is left alone.
+        href_marker = f"href: {page}#"
+        pairs = [
+            i - 1
+            for i, line in enumerate(lines)
+            if i and href_marker in line and line.strip().startswith("href:")
+            and lines[i - 1].strip().startswith("- text:")
+        ]
+        if not pairs:
+            print(f"Warning: no '{href_marker}…' entries in {config_path.name}")
+            return False
+
+        start, end = pairs[0], pairs[-1] + 2
+        indent = " " * (len(lines[start]) - len(lines[start].lstrip()))
+        block: List[str] = []
+        for table in self.tables_data:
+            block.append(f'{indent}- text: "{table["name"]}"\n')
+            block.append(f"{indent}  href: {page}#{table_anchor(table['name'])}\n")
+
+        if lines[start:end] == block:
+            print(f"Sidebar already lists all {len(block) // 2} tables")
+            return False
+
+        config_path.write_text(
+            "".join(lines[:start] + block + lines[end:]), encoding="utf-8"
+        )
+        print(
+            f"Sidebar synced in {config_path.name}: "
+            f"{(end - start) // 2} entries -> {len(block) // 2}"
+        )
+        return True
+
     def cleanup(self):
         """Clean up temporary directory."""
         if self.temp_dir and os.path.exists(self.temp_dir):
@@ -306,6 +366,7 @@ class DocGenerator:
             print("Generating Quarto markdown...")
             content = self.generate_quarto_markdown()
             self.write_output(content)
+            self.sync_sidebar()
 
             print("=" * 60)
             print("Documentation generation complete!")
