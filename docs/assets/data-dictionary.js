@@ -578,11 +578,14 @@
       panels.appendChild(section);
     });
 
+    var selected = null;
+
     function activate(id, focus) {
       var item = byId[id];
       if (!item) {
         return false;
       }
+      selected = item;
       items.forEach(function (other) {
         var on = other === item;
         other.button.setAttribute("aria-selected", on ? "true" : "false");
@@ -654,6 +657,23 @@
         });
       });
       empty.hidden = shown > 0;
+
+      /* Filtering out the selected tab would otherwise leave its panel open
+         with no selected button beside it — a tablist with nothing selected,
+         and arrow keys with no anchor to move from. Move the selection to the
+         first tab still standing. Focus is deliberately not taken: the filter
+         field has it and the visitor is still typing. Enhancing is cached, so
+         a tab already built costs nothing to re-activate on later keystrokes.
+
+         When nothing matches, there is no tab to move to; the panel stays put
+         behind the "no match" message and comes back into agreement with the
+         rail as soon as the filter admits anything again. */
+      if (selected && selected.button.hidden) {
+        var first = visibleItems()[0];
+        if (first) {
+          activate(first.id);
+        }
+      }
     });
 
     function fromHash() {
