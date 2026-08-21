@@ -16,6 +16,7 @@ import argparse
 import html
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -73,17 +74,67 @@ def table_heading(name: str) -> str:
     return "\\_" * (len(name) - len(stripped)) + stripped.upper()
 
 
+# A URL scheme Pandoc may keep in an href. Anything else -- javascript:,
+# data:, vbscript: -- is a way to run code from a link, so the construct is
+# turned back into text rather than rewritten to some guessed-at safe target.
+SAFE_URL_SCHEME = re.compile(r"\A(?:https?|mailto|ftp):", re.I)
+ANY_URL_SCHEME = re.compile(r"\A[A-Za-z][A-Za-z0-9+.\-]*:")
+
+# `[text](dest)`, `![alt](dest)`, and the reference definition `[label]: dest`.
+# These run after HTML escaping, so a `<dest>` destination arrives spelled
+# `&lt;dest&gt;` -- matching a literal `<` here would never fire.
+MD_INLINE_LINK = re.compile(r"!?\[[^\]\n]*\]\(\s*([^)\s]*)")
+MD_REFERENCE_LINK = re.compile(r"(?m)^[ \t]{0,3}\[[^\]\n]+\]:[ \t]*(\S+)")
+
+
+def _text_if_unsafe(match: "re.Match[str]") -> str:
+    """Escape a link construct's opening bracket if its scheme is not allowed.
+
+    Escaping ``[`` is what stops the construct forming at all, so it renders as
+    the text somebody wrote. Escaping the leading ``!`` of an image instead
+    would leave the ``[...](...)`` behind it to become a link.
+    """
+    destination = match.group(1)
+    # Pandoc also accepts `(<dest>)`; strip the delimiters before reading the
+    # scheme, or `&lt;javascript:` reads as having no scheme at all.
+    if destination.startswith("&lt;"):
+        destination = destination[4:]
+    if destination.endswith("&gt;"):
+        destination = destination[:-4]
+    if not ANY_URL_SCHEME.match(destination) or SAFE_URL_SCHEME.match(destination):
+        return match.group(0)
+    return match.group(0).replace("[", "\\[", 1)
+
+
 def markdown_prose(text: str) -> str:
     """dbt prose, made safe to drop into a generated Markdown document.
 
     Descriptions are authored in ``starr-data-lake`` and land in these pages as
-    Markdown, and Pandoc passes raw HTML through untouched -- a ``<script>`` in
-    a model description would reach the rendered site as a live element rather
-    than as the text somebody wrote. Escaping the three HTML metacharacters
-    closes that without flattening the prose: Markdown itself still works, and
-    several descriptions rely on it for code spans around table names.
+    Markdown, which Pandoc reads with more power than prose needs. Three things
+    are taken away, and nothing else:
+
+    - **Raw HTML**, by escaping the three HTML metacharacters. Pandoc passes
+      raw HTML through, so a ``<script>`` in a description would otherwise
+      reach the page as a live element. This also kills ``<javascript:...>``
+      autolinks, which need a literal ``<``.
+    - **Attribute syntax**, by escaping braces. ``[x]{onclick="..."}`` puts an
+      arbitrary attribute on a span, and ```` `...`{=html} ```` reintroduces raw
+      HTML through the back door.
+    - **Links whose scheme can execute**, by rendering the construct as text.
+
+    What survives is the Markdown these descriptions actually use: code spans
+    around table names, emphasis, and ordinary http(s) links to the OHDSI
+    vocabulary browser.
+
+    This narrows an already-trusted source rather than standing between the
+    site and an untrusted one -- anyone who can edit a dbt description can
+    already change what the data dictionary claims. Constraining the Pandoc
+    reader for these pages would be the airtight version.
     """
-    return html.escape(text, quote=False)
+    safe = html.escape(text, quote=False)
+    safe = safe.replace("{", "\\{").replace("}", "\\}")
+    safe = MD_INLINE_LINK.sub(_text_if_unsafe, safe)
+    return MD_REFERENCE_LINK.sub(_text_if_unsafe, safe)
 
 
 class DocGenerator:
