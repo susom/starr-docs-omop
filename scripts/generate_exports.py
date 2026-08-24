@@ -165,7 +165,11 @@ COLUMN_REGISTRY: Dict[str, Dict[str, Any]] = {
         "identifier": True,
         "filter": "input",
         "compact": True,
-        "width": 240,
+        # Wide enough for every field name the dictionary contains: the longest
+        # (`source_documentation_reference`, 30 characters) measures 261px in the
+        # grid's monospace face, and the cell adds 10px of padding either side.
+        # A field name that ellipsises is a field name the reader cannot look up.
+        "width": 290,
         "xlsx": 32,
         "glossary": "Column name as defined in the dbt model.",
     },

@@ -1,13 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Roboto+Slab:wght@300;400;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
-
-@font-face {
-  font-family: "Web Font";
-  src: url("fonts/webfont.woff") format("woff"), url("fonts/webfont.ttf") format("truetype");
-  font-weight: 300;
-  font-display: swap;
-}
-
-
 :root {
   --red-vivid: #8C1515;
   --red-dark: #820000;
@@ -16,6 +6,12 @@
   --cool-grey: #4D4F53;
   --white: #FFFFFF;
   --black: #2E2D29;
+
+  /* The dictionary renders the same rows twice — the Tabulator grid when
+     JavaScript runs, the static table when it does not. They read as one table
+     only if they are the same size, so both take it from here rather than
+     each carrying its own literal. */
+  --dd-table-font-size: 0.9rem;
 }
 
 /* Base styles */
@@ -363,7 +359,7 @@ border-bottom: 0;
 }
 
 .data-dictionary-table {
-  font-size: 0.9rem;
+  font-size: var(--dd-table-font-size);
 }
 
 /* --- Tab rail: one panel at a time instead of 45 stacked sections ------- */
@@ -524,8 +520,13 @@ border-bottom: 0;
   outline: 2px solid var(--red-extra-light);
 }
 
-.dd-button {
+/* Lux sizes `.btn-sm` with a hard `font-size: 10px`, which is both too small to
+   read comfortably and the only text on the page that ignores the root size.
+   Compounding with `.btn` outranks it, so the toolbar stays legible without
+   restyling every small button on the site. */
+.dd-button.btn {
   white-space: nowrap;
+  font-size: 0.8rem;
 }
 
 .dd-button:hover,
@@ -782,36 +783,40 @@ border-bottom: 0;
 
 /* --- Tabulator grid, in the Stanford palette ---------------------------- */
 
-.dd-grid .tabulator {
+/* Tabulator adds `.tabulator` to the element it is handed, and that element is
+   the `.dd-grid` host itself (data-dictionary.js). So these are compound
+   selectors, `.dd-grid.tabulator`, not descendant ones — a space here matches
+   nothing and quietly hands the grid back to Tabulator's stock theme. */
+.dd-grid.tabulator {
   border: 1px solid #dfe2e5;
-  font-size: 0.85rem;
+  font-size: var(--dd-table-font-size);
   background-color: var(--white);
 }
 
-.dd-grid .tabulator .tabulator-header {
+.dd-grid.tabulator .tabulator-header {
   background-color: #f6f8fa;
   border-bottom: 2px solid var(--red-vivid);
 }
 
-.dd-grid .tabulator .tabulator-col {
+.dd-grid.tabulator .tabulator-col {
   background-color: #f6f8fa;
 }
 
-.dd-grid .tabulator .tabulator-col-title {
+.dd-grid.tabulator .tabulator-col-title {
   font-weight: 600;
   color: var(--black);
 }
 
-.dd-grid .tabulator .tabulator-header-filter input,
-.dd-grid .tabulator .tabulator-header-filter select {
+.dd-grid.tabulator .tabulator-header-filter input,
+.dd-grid.tabulator .tabulator-header-filter select {
   border: 1px solid #dfe2e5;
   border-radius: 3px;
   padding: 0.15rem 0.3rem;
   font-weight: 400;
 }
 
-.dd-grid .tabulator .tabulator-header-filter input:focus,
-.dd-grid .tabulator .tabulator-header-filter select:focus {
+.dd-grid.tabulator .tabulator-header-filter input:focus,
+.dd-grid.tabulator .tabulator-header-filter select:focus {
   border-color: var(--red-light);
   outline: 2px solid var(--red-extra-light);
 }
@@ -844,22 +849,24 @@ border-bottom: 0;
   line-height: 1.3;
 }
 
-.dd-density-compact .tabulator .tabulator-header .tabulator-col-content {
+/* Compound again: `.dd-density-compact` is toggled onto the same host element
+   that carries `.tabulator`. */
+.dd-density-compact.tabulator .tabulator-header .tabulator-col-content {
   padding: 2px 6px;
 }
 
 /* Group headers, when the toolbar's Group control is set. */
-.dd-grid .tabulator .tabulator-group {
+.dd-grid.tabulator .tabulator-group {
   border-bottom: 1px solid #dfe2e5;
   background-color: #eef1f4;
   font-weight: 600;
 }
 
-.dd-grid .tabulator .tabulator-group.tabulator-group-visible .tabulator-arrow {
+.dd-grid.tabulator .tabulator-group.tabulator-group-visible .tabulator-arrow {
   border-top-color: var(--red-vivid);
 }
 
-.dd-grid .tabulator .tabulator-group .tabulator-arrow {
+.dd-grid.tabulator .tabulator-group .tabulator-arrow {
   border-left-color: var(--red-vivid);
 }
 

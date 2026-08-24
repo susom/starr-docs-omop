@@ -72,7 +72,7 @@ All 504 fields across 43 tables. Search here to find which table contains a give
 <tr>
 <th scope="col" data-dd-key="table" data-dd-mono="true" data-dd-identifier="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="input" data-dd-links="table" data-dd-width="200">Table</th>
 <th scope="col" data-dd-key="category" data-dd-groupable="true" data-dd-filter="list" data-dd-width="140">Category</th>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165" data-dd-hidden="true">References</th>
@@ -4911,7 +4911,7 @@ The CARE_SITE table contains a list of uniquely identified institutional (physic
 <table id="dt-care_site" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CARE_SITE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -4977,7 +4977,7 @@ The CDM_SOURCE table provides information about the source data and the process 
 <table id="dt-cdm_source" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CDM_SOURCE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5078,7 +5078,7 @@ The cohort table contains records identifying the subject(s) for defined cohort,
 <table id="dt-cohort" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="COHORT">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5130,7 +5130,7 @@ Cohorts are a set of subjects that satisfy a given combination of inclusion crit
 <table id="dt-cohort_definition" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="COHORT_DEFINITION">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5203,7 +5203,7 @@ The primary purpose of the CONCEPT table is to provide a standardized representa
 <table id="dt-concept" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5297,7 +5297,7 @@ The CONCEPT_ANCESTOR table is designed to simplify observational analysis by pro
 <table id="dt-concept_ancestor" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_ANCESTOR">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5349,7 +5349,7 @@ The CONCEPT_CLASS table includes semantic categories that reference the source s
 <table id="dt-concept_class" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_CLASS">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5394,7 +5394,7 @@ The CONCEPT_RELATIONSHIP table contains records that define relationships betwee
 <table id="dt-concept_relationship" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_RELATIONSHIP">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5460,7 +5460,7 @@ The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations
 <table id="dt-concept_synonym" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_SYNONYM">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5503,7 +5503,7 @@ The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations
 <table id="dt-condition_era" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONDITION_ERA">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5567,7 +5567,7 @@ The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations
 <table id="dt-condition_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONDITION_OCCURRENCE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5703,7 +5703,7 @@ The cost table captures the various financial aspects of healthcare events. It i
 <table id="dt-cost" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="COST">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5881,7 +5881,7 @@ OMOP CDM v5.4 DEATH table. Stores information about a Person's death, including 
 <table id="dt-death" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DEATH">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -5954,7 +5954,7 @@ The Device domain captures information about a persons exposure to a foreign phy
 <table id="dt-device_exposure" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DEVICE_EXPOSURE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6111,7 +6111,7 @@ The DOMAIN table includes a list of OMOP-defined Domains to which the Concepts o
 <table id="dt-domain" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DOMAIN">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6156,7 +6156,7 @@ The dose_era table captures the time periods (eras) during which a person is exp
 <table id="dt-dose_era" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DOSE_ERA">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6229,7 +6229,7 @@ A Drug Era is defined as a span of time when the Person is assumed to be exposed
 <table id="dt-drug_era" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DRUG_ERA">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6302,7 +6302,7 @@ The DRUG_EXPOSURE table captures records about the exposure to a Drug ingested o
 <table id="dt-drug_exposure" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DRUG_EXPOSURE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6487,7 +6487,7 @@ The DRUG_STRENGTH table contains structured content about the amount or concentr
 <table id="dt-drug_strength" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DRUG_STRENGTH">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6595,7 +6595,7 @@ The episode table captures aggregated information about periods of continuous en
 <table id="dt-episode" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="EPISODE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6710,7 +6710,7 @@ The episode_event table captures the events that are part of an episode. It incl
 <table id="dt-episode_event" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="EPISODE_EVENT">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6755,7 +6755,7 @@ The FACT_RELATIONSHIP table contains records about the relationships between fac
 <table id="dt-fact_relationship" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="FACT_RELATIONSHIP">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6814,7 +6814,7 @@ A record of image occurrences from the Vendor Neutral Archive (VNA). This does n
 <table id="dt-image_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="IMAGE_OCCURRENCE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -6957,7 +6957,7 @@ The location table represents a generic way to capture physical location or addr
 <table id="dt-location" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="LOCATION">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -7072,7 +7072,7 @@ The MEASUREMENT table contains records of Measurements, i.e. structured values (
 <table id="dt-measurement" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="MEASUREMENT">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -7257,7 +7257,7 @@ The metadata table metadata information about a dataset that has been transforme
 <table id="dt-metadata" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="METADATA">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -7344,7 +7344,7 @@ The NOTE table captures unstructured information that was recorded by a provider
 <table id="dt-note" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="NOTE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -7487,7 +7487,7 @@ The note_nlp table encodes all output of NLP on clinical notes. Each row represe
 <table id="dt-note_nlp" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="NOTE_NLP">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -7609,7 +7609,7 @@ This table contains records of various observations made about individuals. It i
 <table id="dt-observation" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="OBSERVATION">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -7780,7 +7780,7 @@ The observation period table is intended to contain records of spans of time in 
 <table id="dt-observation_period" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="OBSERVATION_PERIOD">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -7839,7 +7839,7 @@ This table contains information about the period of time that a Person is contin
 <table id="dt-payer_plan_period" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PAYER_PLAN_PERIOD">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -7982,7 +7982,7 @@ This table serves as the central identity management for all Persons in the data
 <table id="dt-person" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PERSON">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -8132,7 +8132,7 @@ The PROCEDURE_OCCURRENCE table contains records of procedures that have been per
 <table id="dt-procedure_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PROCEDURE_OCCURRENCE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -8268,7 +8268,7 @@ The PROVIDER table contains a list of uniquely identified healthcare providers. 
 <table id="dt-provider" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PROVIDER">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -8383,7 +8383,7 @@ The RELATIONSHIP table provides a reference list of all types of relationships t
 <table id="dt-relationship" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="RELATIONSHIP">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -8449,7 +8449,7 @@ The SOURCE_TO_CONCEPT_MAP table is a legacy data structure within the OMOP Commo
 <table id="dt-source_to_concept_map" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="SOURCE_TO_CONCEPT_MAP">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -8536,7 +8536,7 @@ The specimen table captures data on biological samples, or specimens, from a per
 <table id="dt-specimen" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="SPECIMEN">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -8665,7 +8665,7 @@ The VISIT_DETAIL table is an optional table used to represents details of each r
 <table id="dt-visit_detail" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="VISIT_DETAIL">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -8822,7 +8822,7 @@ This table contains Events where Persons engage with the healthcare system for a
 <table id="dt-visit_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="VISIT_OCCURRENCE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -8965,7 +8965,7 @@ The VOCABULARY table includes a list of the Vocabularies integrated from various
 <table id="dt-vocabulary" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="VOCABULARY">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -9026,7 +9026,7 @@ Extension table storing one row per external death record per person. External s
 <table id="dt-external_death_records" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="_EXTERNAL_DEATH_RECORDS">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -9087,7 +9087,7 @@ The VARIANT_OCCURRENCE table contains information about genetic variants identif
 <table id="dt-variant_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="_VARIANT_OCCURRENCE">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
@@ -9309,7 +9309,7 @@ OMOP extension table for whole slide imaging data from pathology specimens. It c
 <table id="dt-whole_slide_imaging" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="_WHOLE_SLIDE_IMAGING">
 <thead>
 <tr>
-<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="240">Field</th>
+<th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
 <th scope="col" data-dd-key="required" data-dd-title="Req" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-align="center" data-dd-width="80" data-dd-filter-values="[&quot;&quot;, &quot;Yes&quot;, &quot;No&quot;]">Required</th>
 <th scope="col" data-dd-key="type" data-dd-mono="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="list" data-dd-width="125">Type</th>
 <th scope="col" data-dd-key="references" data-dd-mono="true" data-dd-filter="input" data-dd-links="table" data-dd-width="165">References</th>
