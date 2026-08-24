@@ -46,7 +46,7 @@ The generated pages are committed so that a diff shows what a dbt change did to 
 
 They are produced automatically by the `pre-render` hooks declared in [docs/_quarto.yml](docs/_quarto.yml), which run every time you `quarto preview`, `quarto render`, or `quarto publish`, in this order:
 
-1. `scripts/generate_docs.py omop` — sparse-clones [starr-data-lake](https://github.com/susom/starr-data-lake) and extracts table/column metadata from the dbt YML models into `docs/omop_data_model.qmd`. It also rewrites the per-table list under **Data Model Tables** in `docs/_quarto.yml` (see below).
+1. `scripts/generate_docs.py omop` — sparse-clones [starr-data-lake](https://github.com/susom/starr-data-lake) and writes one section per table into `docs/omop_data_model.qmd`: what the table holds, and how many fields it has. It also rewrites the per-table list under **Data Model Tables** in `docs/_quarto.yml` (see below).
 2. `scripts/generate_exports.py omop` — sparse-clones the same repo and flattens the same models into `docs/omop_data_dictionary.qmd` and `docs/downloads/starr_omop_data_dictionary.xlsx`.
 3. `scripts/generate_faq.py` — collects every `docs/faqs/q*.qmd` entry into `docs/faq.qmd` (see [docs/faqs/README.md](docs/faqs/README.md)).
 4. `scripts/generate_llms_txt.py` — builds `docs/llms.txt` and `docs/llms-full.txt` from the site structure.
@@ -70,6 +70,14 @@ Step 2 rewrites a `.xlsx` on every preview, which would normally leave a binary 
 The page is committed, so a fresh clone reads correctly before anything is built; the workbook is rebuilt on demand. When a render does produce a diff, commit it: that is the dbt change reaching the site. The page also carries a provenance block naming the dbt commit it was generated from, so a stale checkout is visible on the site itself.
 
 Steps 1 and 2 each clone the dbt repo (~3 s, ~3 MB, shallow and sparse), so the dictionary costs one extra clone per render.
+
+### Two pages from the same models, with different jobs
+
+`omop_data_model.qmd` and `omop_data_dictionary.qmd` are built from the same dbt YMLs, so they used to say the same thing twice: the data model page spelled out every column in a `<details>` block, and the dictionary put the same 504 fields in a grid that also sorts, filters and exports them.
+
+They are split by what each is good at. The **data model** page carries the narrative — what a table is for and how Stanford populates it — one section per table, ending in a link to that table's fields. The **dictionary** carries the fields: type, requiredness, foreign keys and per-field description, searchable across all 43 tables at once. Neither repeats the other, and a reader who lands on either has one click to the other.
+
+The field count in each data model section is the one thing that crosses the boundary: `generate_docs.py` writes it and `generate_llms_txt.py` reads it back to build the **Data Model Tables** list in `llms.txt`. The format and the pattern that parses it sit next to each other in `generate_docs.py` for that reason.
 
 ### The data dictionary is tabs of grids
 

@@ -107,10 +107,7 @@ For documentation and training resources, please refer to [research support](htt
 
 ## Data Model Documentation
 
-Detailed table and column definitions for STARR-OMOP are available in the [Data Model Tables](omop_data_model.qmd) page. This comprehensive documentation includes:
-
-- **Table Descriptions**: Stanford-specific implementation notes for each OMOP table
-- **Column Definitions**: Detailed descriptions with data types and constraints
+The [Data Model Tables](omop_data_model.qmd) page describes what each OMOP table holds and how Stanford populates it — the implementation notes that do not fit in a grid cell, one section per table. Every section links to that table's fields in the data dictionary below.
 
 The documentation is extracted directly from our data transformation layer, ensuring it remains synchronized with the actual implementation.
 
@@ -118,7 +115,7 @@ The documentation is extracted directly from our data transformation layer, ensu
 
 ## Data Dictionary
 
-The same tables and columns are also published as a [Data Dictionary](omop_data_dictionary.qmd) — one searchable, sortable, filterable grid per table, with the whole model in a single **All Fields** view. It is generated from the same dbt models, so it never falls behind the data model page.
+The fields themselves are in the [Data Dictionary](omop_data_dictionary.qmd): every field of every table with its data type, whether it is required, the tables it references, and its description. One searchable, sortable, filterable grid per table, plus a single **All Fields** view across the whole model. It is generated from the same dbt models as the data model page, so the two cannot fall out of step.
 
 The complete dictionary is also downloadable as an Excel workbook, one sheet per table.
 

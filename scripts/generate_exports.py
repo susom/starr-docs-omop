@@ -1025,9 +1025,10 @@ class DataDictionaryExporter:
             "",
             ":::",
             "",
-            "For the narrative table notes and per-column constraint detail, see "
+            "For what each table is for and how Stanford populates it, see "
             f"[{self.export_config['cdm_version']} Data Model]"
-            f"({self.export_config['model_page']}).",
+            f"({self.export_config['model_page']}). The fields are here; the "
+            "narrative is there.",
             "",
             "---",
             "",

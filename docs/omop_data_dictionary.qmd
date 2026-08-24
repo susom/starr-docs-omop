@@ -56,7 +56,7 @@ No field has been added, retyped or dropped since 2026-08-20.
 
 :::
 
-For the narrative table notes and per-column constraint detail, see [OMOP CDM v5.4 Data Model](omop_data_model.qmd).
+For what each table is for and how Stanford populates it, see [OMOP CDM v5.4 Data Model](omop_data_model.qmd). The fields are here; the narrative is there.
 
 ---
 

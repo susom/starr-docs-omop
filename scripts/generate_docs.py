@@ -40,12 +40,16 @@ MODEL_CONFIGS = {
         "yml_path": "dbt/omop_cdm54/models/baseline",
         "manifest_path": None,
         "output_file": "docs/omop_data_model.qmd",
+        "dictionary_page": "omop_data_dictionary.qmd",
         "title": "OMOP CDM v5.4 Data Model",
-        "description": "Detailed table and column definitions",
+        "description": "What each table holds and how Stanford populates it",
         "overview": (
-            "This page documents all tables in the STARR-OMOP CDM v5.4 implementation. "
-            "Each table includes Stanford-specific "
-            "implementation notes and detailed column descriptions."
+            "This page describes what each table in the STARR-OMOP CDM v5.4 "
+            "implementation holds, and how Stanford populates it. The fields "
+            "themselves — type, requiredness, foreign keys and per-field "
+            "descriptions — are in the "
+            "[data dictionary](omop_data_dictionary.qmd), which is searchable, "
+            "filterable and downloadable as a spreadsheet."
         ),
         "bq_project": None,
         "bq_schema": None,
@@ -53,6 +57,26 @@ MODEL_CONFIGS = {
 }
 
 EXCLUDE_FOLDERS = ["temp"]
+
+# The line each table section carries in place of the column list it used to
+# spell out, and the shape generate_llms_txt.py reads the count back out of.
+#
+# Both pages are generated from the same dbt models, so a `<details>` per
+# column here said the same thing the dictionary's grid says a page away —
+# with less of it, since the grid also sorts, filters and exports. What this
+# page has that the dictionary does not is the narrative: what a table is for
+# and how Stanford fills it. That is what it keeps.
+#
+# Writer and reader live together because the count is a contract between two
+# scripts. If this format changes and FIELD_COUNT does not, llms.txt quietly
+# reports every table as having no fields.
+FIELD_COUNT = re.compile(r"^\*\*(\d+) fields?\*\*")
+
+
+def field_count_line(count: int, page: str, anchor: str) -> str:
+    """How many fields a table has, and where to read them."""
+    fields = "field" if count == 1 else "fields"
+    return f"**{count} {fields}** — [see them in the data dictionary]({page}#{anchor})."
 
 
 def table_anchor(name: str) -> str:
@@ -325,30 +349,18 @@ class DocGenerator:
             lines.extend([f"**BigQuery:** `{bq_location}`", ""])
         if table["description"]:
             lines.extend([markdown_prose(table["description"]), ""])
-        for column in table["columns"]:
-            lines.extend(self._generate_column_item(column))
-        lines.extend(["---", ""])
-        return lines
-
-    def _generate_column_item(self, column: Dict[str, Any]) -> List[str]:
-        """Generate collapsible details element for a column."""
-        summary = f"**`{html.escape(column['name'])}`**"
-        if column["data_type"]:
-            summary += f" *({html.escape(column['data_type'])})*"
-
-        lines = [
-            "<details>",
-            f"<summary>{summary}</summary>",
-            "",
-        ]
-        if column["description"]:
-            lines.extend([markdown_prose(column["description"]), ""])
-        if column["constraints"]:
-            lines.extend(["**Constraints:**", ""])
-            for constraint in column["constraints"]:
-                lines.append(f"- {constraint}")
-            lines.append("")
-        lines.extend(["</details>", ""])
+        lines.extend(
+            [
+                field_count_line(
+                    len(table["columns"]),
+                    self.config["dictionary_page"],
+                    anchor,
+                ),
+                "",
+                "---",
+                "",
+            ]
+        )
         return lines
 
     def write_output(self, content: str):
