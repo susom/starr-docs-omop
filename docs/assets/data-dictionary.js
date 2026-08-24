@@ -1414,7 +1414,12 @@
         layout.name +
         (narrow ? "-narrow" : "") +
         "-v" +
-        columnsDigest(specs)
+        columnsDigest(specs),
+      /* Rows must be keyboard-reachable so that Enter/Space can open the
+         row-detail drawer for users who navigate without a pointer device. */
+      rowFormatter: function (row) {
+        row.getElement().setAttribute("tabindex", "0");
+      }
     };
     if (layout.height) {
       options.height = layout.height;
@@ -1464,6 +1469,28 @@
       /* A keyboard-generated click reports detail 0. Only then is moving
          focus into the drawer the right thing to do. */
       drawer.show(row.getData(), event.detail === 0, event.target);
+    });
+
+    /* Keyboard activation: Enter or Space on a focused row opens the drawer.
+       Rows carry tabindex="0" (set by rowFormatter above) so they are
+       reachable via Tab and arrow keys without a pointer device. */
+    host.addEventListener("keydown", function (event) {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      if (event.target && event.target.closest("button, a, input, select")) {
+        return;
+      }
+      var rowEl =
+        event.target && event.target.closest(".tabulator-row");
+      if (!rowEl) {
+        return;
+      }
+      event.preventDefault();
+      var row = grid.getRow(rowEl);
+      if (row) {
+        drawer.show(row.getData(), true, rowEl);
+      }
     });
 
     grid.on("tableBuilt", function () {
