@@ -53,8 +53,18 @@ def strip_to_plaintext(text):
     # Data islands (`<script type="application/json">`) are markup for a page's
     # own script, not prose. Dropping only the tags, as the generic rule below
     # does, would leave their JSON sitting in the middle of the page text.
+    #
+    # Both halves of the closing pattern matter. `</script >` — whitespace
+    # before the `>` — is a valid end tag that a plain `</script>` misses, and
+    # missing it does not fail safe: the generic tag-stripper below would then
+    # unwrap the island and leave its JSON behind as prose. `\Z` closes the
+    # other end of the same hole, so a script that is never closed takes the
+    # rest of the text with it rather than leaking.
     text = re.sub(
-        r"<script\b[^>]*>.*?</script>", "", text, flags=re.DOTALL | re.IGNORECASE
+        r"<script\b[^>]*>.*?(?:</script\s*>|\Z)",
+        "",
+        text,
+        flags=re.DOTALL | re.IGNORECASE,
     )
     text = re.sub(r"<details>\s*", "", text)
     text = re.sub(r"</details>\s*", "", text)
