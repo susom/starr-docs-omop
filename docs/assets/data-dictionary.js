@@ -267,8 +267,12 @@
     if (!CHANGES) {
       return "";
     }
+    /* Key spelling has to match `field_signatures()` exactly: the table is
+       upper-cased there, the field keeps whatever case dbt authored it in --
+       lower, in practice, for every OMOP column. Upper-casing the whole key
+       would turn `PERSON.person_id` into `PERSON.PERSON_ID` and never hit. */
     var table = state.tableName || data.table || "";
-    var key = (table + "." + (data.field || "")).toUpperCase();
+    var key = table.toUpperCase() + "." + (data.field || "");
     if (CHANGES.added.has(key)) {
       return "new";
     }
@@ -300,8 +304,15 @@
 
   /* Expanded descriptions are tracked by row index rather than by DOM state:
      the All Fields grid recycles cell elements as you scroll, so a class left
-     on the element alone would not survive. `expandAll` is the toolbar
-     override and wins over the per-row set. */
+     on the element alone would not survive.
+
+     `expandAll` is the mode, and each mode has its own set of per-row
+     exceptions to it: `expanded` while collapsed is the default, `collapsed`
+     while expanded is. Two sets rather than one because clicking a single
+     description means "this row", not "leave the mode" -- the earlier code
+     dropped out of expand-all on a per-row collapse and rerendered only the
+     cell that was clicked, leaving every other row visibly expanded under a
+     toolbar button that had already flipped back to "Expand all". */
   function descriptionFormatter(state) {
     return function (cell) {
       var value = cell.getValue() || "";
@@ -331,7 +342,13 @@
         element.title = open ? "Collapse description" : value;
       }
 
-      render(state.expandAll || state.expanded.has(key));
+      function isOpen() {
+        return state.expandAll
+          ? !state.collapsed.has(key)
+          : state.expanded.has(key);
+      }
+
+      render(isOpen());
 
       /* Listening on the button rather than on the cell keeps mouse and
          keyboard on one path -- a keyboard activation dispatches a click that
@@ -339,12 +356,18 @@
       element.addEventListener("click", function (event) {
         /* Without this the click also reaches rowClick and opens the drawer. */
         event.stopPropagation();
-        var open = !(state.expandAll || state.expanded.has(key));
-        if (open) {
+        var open = !isOpen();
+        if (state.expandAll) {
+          /* Stay in expand-all; record this one row as the exception. */
+          if (open) {
+            state.collapsed.delete(key);
+          } else {
+            state.collapsed.add(key);
+          }
+        } else if (open) {
           state.expanded.add(key);
         } else {
           state.expanded.delete(key);
-          state.expandAll = false;
         }
         render(open);
         cell.getRow().normalizeHeight();
@@ -1077,9 +1100,11 @@
 
     expand.addEventListener("click", function () {
       state.expandAll = !state.expandAll;
-      if (!state.expandAll) {
-        state.expanded.clear();
-      }
+      /* Both sets hold per-row exceptions to the mode being left, so the
+         button always delivers exactly what it says rather than the previous
+         mode's exceptions showing through. */
+      state.expanded.clear();
+      state.collapsed.clear();
       syncExpand();
       grid.redraw(true);
       context.pushUrl();
@@ -1171,14 +1196,31 @@
   var CONTEXTS = {};
   var urlTimer = null;
 
+  /* `decodeURIComponent` throws a URIError on a malformed percent escape, and
+     the fragment is the one part of the URL that arrives verbatim from
+     whoever sent the link -- `#%zz` is enough. parseHash runs after every
+     section has been moved into a hidden tab panel, so an exception escaping
+     here aborts tab setup with nothing on screen at all. A fragment that
+     cannot be decoded is not an id this page knows: hand back the raw text and
+     let the unknown-id path fall through to the default tab.
+     (URLSearchParams needs no such guard -- its decoding is lossy, not
+     throwing, and leaves an invalid escape as the literal text.) */
+  function decodeId(raw) {
+    try {
+      return decodeURIComponent(raw);
+    } catch (error) {
+      return raw;
+    }
+  }
+
   function parseHash() {
     var raw = (window.location.hash || "").replace(/^#/, "");
     var split = raw.indexOf("?");
     if (split === -1) {
-      return { id: decodeURIComponent(raw), params: new URLSearchParams() };
+      return { id: decodeId(raw), params: new URLSearchParams() };
     }
     return {
-      id: decodeURIComponent(raw.slice(0, split)),
+      id: decodeId(raw.slice(0, split)),
       params: new URLSearchParams(raw.slice(split + 1))
     };
   }
@@ -1259,6 +1301,11 @@
     }
     state.density = params.get("d") === "1";
     state.expandAll = params.get("x") === "1";
+    if (!state.expandAll) {
+      /* A per-row collapse only means anything inside expand-all. Left behind,
+         it would come back the next time the mode is switched on. */
+      state.collapsed.clear();
+    }
     state.changedOnly = CHANGES ? params.get("ch") === "1" : false;
     var group = params.get("g");
     if (group && context.specs.some(function (spec) {
@@ -1307,22 +1354,25 @@
 
     var narrow = isNarrow();
 
+    /* Kept alongside the state so `tableBuilt` can tell a view persistence
+       restored from the one the registry would have produced anyway. */
+    var defaultHidden = specs
+      .filter(function (spec) {
+        /* A phone starts on the Compact preset rather than the registry
+           default. It is the same set the preset menu offers, so the column
+           manager can explain and undo it — unlike Tabulator's responsive
+           collapse, which hides columns behind the state the manager and the
+           search box both read from. */
+        return narrow ? !spec.compact : spec.hidden;
+      })
+      .map(function (spec) {
+        return spec.key;
+      });
+
     var state = {
-      hidden: new Set(
-        specs
-          .filter(function (spec) {
-            /* A phone starts on the Compact preset rather than the registry
-               default. It is the same set the preset menu offers, so the
-               column manager can explain and undo it — unlike Tabulator's
-               responsive collapse, which hides columns behind the state the
-               manager and the search box both read from. */
-            return narrow ? !spec.compact : spec.hidden;
-          })
-          .map(function (spec) {
-            return spec.key;
-          })
-      ),
+      hidden: new Set(defaultHidden),
       expanded: new Set(),
+      collapsed: new Set(),
       expandAll: false,
       density: false,
       changedOnly: false,
@@ -1440,6 +1490,26 @@
 
       if (pendingParams) {
         applyUrlState(context, pendingParams);
+        return;
+      }
+
+      /* `activate()` wrote a bare `#section` while this grid was still
+         building — `ready` was false, and pushUrlFor will not describe a view
+         that does not exist yet. Nothing prompts it afterwards either, so a
+         column set restored from a previous visit is missing from every URL
+         copied off the page until some unrelated control is touched.
+
+         Only when it differs from the registry default, though: writing the
+         default set into the fragment would pin today's columns into every
+         link anyone shares, and a later change to the defaults would never
+         reach them. */
+      var restored =
+        state.hidden.size !== defaultHidden.length ||
+        defaultHidden.some(function (key) {
+          return !state.hidden.has(key);
+        });
+      if (restored) {
+        pushUrlFor(context);
       }
     });
   }

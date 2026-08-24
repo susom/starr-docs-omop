@@ -110,7 +110,12 @@ ANY_URL_SCHEME = re.compile(r"\A[A-Za-z][A-Za-z0-9+.\-]*:")
 # label using either stays escaped rather than being matched loosely. That is
 # the whole point of the rewrite below: the shapes this expression cannot read
 # are the shapes it must not approve.
-ESCAPED_LINK = re.compile(r"\\\[([^\[\]\\\n]{0,200})\\\]\(([^\s()<>\\]{1,300})\)")
+#
+# The lookbehind is what keeps this to *links*. `!` is not among the characters
+# escaped above, so without it the brackets in `![alt](https://host/x)` would be
+# restored around a surviving `!` and the result is a live <img> -- a remote
+# request on page load, from prose that was only ever promised a link.
+ESCAPED_LINK = re.compile(r"(?<!!)\\\[([^\[\]\\\n]{0,200})\\\]\(([^\s()<>\\]{1,300})\)")
 
 
 def _restore_if_safe(match: "re.Match[str]") -> str:
