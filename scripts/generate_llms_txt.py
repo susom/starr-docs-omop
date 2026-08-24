@@ -25,6 +25,8 @@ except ImportError:
     print("Please activate the virtual environment: source .venv/bin/activate")
     sys.exit(1)
 
+from generate_docs import FIELD_COUNT  # noqa: E402
+
 
 def parse_quarto_config(docs_dir):
     with open(docs_dir / "_quarto.yml", "r", encoding="utf-8") as f:
@@ -48,6 +50,22 @@ def extract_qmd(qmd_path):
 
 
 def strip_to_plaintext(text):
+    # Data islands (`<script type="application/json">`) are markup for a page's
+    # own script, not prose. Dropping only the tags, as the generic rule below
+    # does, would leave their JSON sitting in the middle of the page text.
+    #
+    # Both halves of the closing pattern matter. `</script >` — whitespace
+    # before the `>` — is a valid end tag that a plain `</script>` misses, and
+    # missing it does not fail safe: the generic tag-stripper below would then
+    # unwrap the island and leave its JSON behind as prose. `\Z` closes the
+    # other end of the same hole, so a script that is never closed takes the
+    # rest of the text with it rather than leaking.
+    text = re.sub(
+        r"<script\b[^>]*>.*?(?:</script\s*>|\Z)",
+        "",
+        text,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
     text = re.sub(r"<details>\s*", "", text)
     text = re.sub(r"</details>\s*", "", text)
     text = re.sub(r"<summary>(.*?)</summary>", r"\1", text)
@@ -66,36 +84,31 @@ def strip_to_plaintext(text):
 
 
 def extract_tables_summary(body):
+    """Name, anchor and field count for each table section of a data model page.
+
+    The count used to be derived by counting the ``**`column`**`` headings the
+    section spelled out. Those live in the data dictionary now, and the section
+    states its own count instead — see ``field_count_line`` in generate_docs.py,
+    which writes the line ``FIELD_COUNT`` reads.
+    """
     tables = []
-    current_table = None
-    current_anchor = None
-    columns = []
+    current = None
 
     for line in body.split("\n"):
         match = re.match(r"^##\s+(\S+)(?:\s+\{#([^}]+)\})?", line)
         if match and not line.strip().startswith("## Overview"):
-            if current_table:
-                tables.append(
-                    {
-                        "name": current_table,
-                        "anchor": current_anchor,
-                        "columns": columns,
-                    }
-                )
-            # Strip Markdown escaping (e.g. `\_VARIANT_OCCURRENCE`) from the name.
-            current_table = match.group(1).replace("\\", "")
-            current_anchor = match.group(2)
-            columns = []
+            current = {
+                # Strip Markdown escaping (e.g. `\_VARIANT_OCCURRENCE`).
+                "name": match.group(1).replace("\\", ""),
+                "anchor": match.group(2),
+                "fields": 0,
+            }
+            tables.append(current)
             continue
 
-        col_match = re.search(r"\*\*`([^`]+)`\*\*", line)
-        if col_match and current_table:
-            columns.append(col_match.group(1))
-
-    if current_table:
-        tables.append(
-            {"name": current_table, "anchor": current_anchor, "columns": columns}
-        )
+        count = FIELD_COUNT.match(line)
+        if count and current:
+            current["fields"] = int(count.group(1))
 
     return tables
 
@@ -145,9 +158,12 @@ def generate_llms_txt(config, docs_dir, base_url):
                 html_page = page.replace(".qmd", ".html")
                 # Prefer the heading's explicit {#anchor}; fall back to the name.
                 anchor = table["anchor"] or table["name"].lower()
-                url = f"{base_url.rstrip('/')}/{html_page}#{anchor}" if base_url else f"{html_page}#{anchor}"
-                col_count = len(table["columns"])
-                lines.append(f"- [{table['name']}]({url}): {col_count} columns")
+                url = (
+                    f"{base_url.rstrip('/')}/{html_page}#{anchor}"
+                    if base_url
+                    else f"{html_page}#{anchor}"
+                )
+                lines.append(f"- [{table['name']}]({url}): {table['fields']} fields")
 
     lines.append("")
     return "\n".join(lines)

@@ -13,5 +13,13 @@ dependencies = [
     "pyyaml>=6.0.2",
     "requests>=2.32.5",
     "tabulate>=0.9.0",
-    "db-dtypes>=1.7.1"
+    "db-dtypes>=1.7.1",
+    # Pinned exactly, not floored. The workbook is no longer committed, so this
+    # no longer has to match a checked-in binary — but uv.lock is gitignored and
+    # the site is published by hand from whichever contributor's machine, so the
+    # pin is the only thing making the published workbook the same artifact
+    # whoever runs `quarto publish`. Measured — 3.2.0 and 3.2.9 produce different
+    # bytes from identical data, while pandas 2.2.3 vs 3.0.3 produce the same
+    # bytes, so xlsxwriter alone decides the binary.
+    "xlsxwriter==3.2.9"
 ]

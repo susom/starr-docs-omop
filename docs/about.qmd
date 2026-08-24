@@ -11,6 +11,8 @@ Welcome to the STARR-OMOP Documentation
   - [Getting Access](getting_access.qmd)
   - [Released Datasets](released_datasets.qmd)
   - [Technical Specifications](starr_omop54.qmd)
+  - [Data Model Tables](omop_data_model.qmd)
+  - [Data Dictionary](omop_data_dictionary.qmd)
   - [Changes from OMOP-CDM 5.3 to 5.4](changes_53_to_54.qmd)
   - [FAQ](faq.qmd)
 

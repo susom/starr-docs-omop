@@ -14,12 +14,24 @@ docs/_site/
 # Temporary files
 .temp/
 
+# Python bytecode (scripts/ import each other, so this appears on any run)
+__pycache__/
+
 *.css
 *.html
 *.pdf
 *.js
 *.woff
 
+# The data dictionary workbook is build output like every other generated page:
+# a pre-render hook writes it from the dbt models on each render and publish, so
+# committing it only adds a binary that goes stale between regenerations.
+docs/downloads/*.xlsx
+
 # But keep Stanford theme assets
 !docs/styles.css
 !docs/fonts/*.woff
+
+# ...and hand-written site scripts (docs/assets/ holds only source, never build
+# output, so it is safe to un-ignore wholesale)
+!docs/assets/*.js

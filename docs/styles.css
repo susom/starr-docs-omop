@@ -1,13 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Roboto+Slab:wght@300;400;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
-
-@font-face {
-  font-family: "Web Font";
-  src: url("fonts/webfont.woff") format("woff"), url("fonts/webfont.ttf") format("truetype");
-  font-weight: 300;
-  font-display: swap;
-}
-
-
 :root {
   --red-vivid: #8C1515;
   --red-dark: #820000;
@@ -16,6 +6,12 @@
   --cool-grey: #4D4F53;
   --white: #FFFFFF;
   --black: #2E2D29;
+
+  /* The dictionary renders the same rows twice — the Tabulator grid when
+     JavaScript runs, the static table when it does not. They read as one table
+     only if they are the same size, so both take it from here rather than
+     each carrying its own literal. */
+  --dd-table-font-size: 0.9rem;
 }
 
 /* Base styles */
@@ -157,6 +153,18 @@ p, li, summary, td, th, .callout-body {
   word-break: break-word;
 }
 
+/* ...but never inside a data dictionary table. `overflow-wrap: anywhere` does
+   not merely permit mid-word breaks: it drops the cell's min-content width to
+   a single character, which tells the table layout algorithm that any column
+   may legally shrink to one glyph. A six-column table then squeezes into a
+   stack of vertical letters instead of widening or scrolling. Prose pages
+   still want the rule above; data tables scroll instead (`.dd-static`). */
+.data-dictionary-table td,
+.data-dictionary-table th {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
 code, .sourceCode {
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -286,6 +294,717 @@ border-bottom: 0;
 .datatables table.table thead th {
   font-family: inherit;
   font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
+   Data dictionary page (docs/omop_data_dictionary.qmd)
+
+   The generator emits every table as plain HTML inside a `.dd-static` wrapper.
+   docs/assets/data-dictionary.js reads those tables and replaces each with a
+   Tabulator grid; the static markup stays in the document for site search,
+   printing, and visitors without JavaScript. Both presentations are styled
+   here.
+   ------------------------------------------------------------------------ */
+
+/* --- Static tables: the fallback, and what search and print see --------- */
+
+/* A real horizontal scroll container. The legacy `table { display: block;
+   overflow: auto }` rule further down was meant to do this, but it never
+   engaged while cells could shrink to one character. */
+.dd-static {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.dd-static table.data-dictionary-table {
+  display: table;
+  width: 100%;
+}
+
+.dd-static table.data-dictionary-table tbody tr:nth-child(odd) {
+  background-color: var(--red-extra-light);
+}
+
+.dd-static table.data-dictionary-table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.dd-static table.data-dictionary-table thead th {
+  font-family: inherit;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #f6f8fa;
+}
+
+/* Table, field and type values read as code, so give them a monospace face.
+   The class comes from the column registry in scripts/generate_exports.py and
+   is written onto every matching cell, which is what lets a new column arrive
+   already styled. This used to be a list of `:nth-child()` selectors per
+   layout, so a column inserted anywhere but the end silently re-styled the
+   wrong ones. */
+.dd-static td.dd-mono {
+  font-family: var(--bs-font-monospace, monospace);
+  white-space: nowrap;
+}
+
+.dd-static td.dd-align-center {
+  text-align: center;
+}
+
+.dd-static td.dd-align-right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-dictionary-table {
+  font-size: var(--dd-table-font-size);
+}
+
+/* --- Tab rail: one panel at a time instead of 45 stacked sections ------- */
+
+/* Vertical rather than a horizontal tab strip: 43 table names of ~20
+   characters wrap to six or seven rows and push the content below the fold. */
+.dd-browser {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+.dd-rail {
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 2rem);
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background-color: var(--white, #fff);
+}
+
+.dd-rail-filter {
+  flex: none;
+  margin: 0.5rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.85rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.dd-rail-filter:focus {
+  outline: 2px solid var(--red-vivid);
+  outline-offset: -1px;
+}
+
+.dd-rail-list {
+  overflow-y: auto;
+  padding: 0 0.4rem 0.5rem;
+}
+
+.dd-rail-group {
+  margin: 0.7rem 0.5rem 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.dd-rail-item {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+  padding: 0.3rem 0.5rem;
+  border: 0;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #212529;
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.dd-rail-item:hover {
+  background-color: var(--red-extra-light);
+}
+
+.dd-rail-item[aria-selected="true"] {
+  background-color: var(--red-vivid);
+  color: var(--white, #fff);
+  font-weight: 600;
+}
+
+.dd-rail-name {
+  overflow-wrap: anywhere;
+}
+
+/* Why a table the filter text does not appear in is still listed: it holds
+   fields that do. */
+.dd-rail-hint {
+  flex: none;
+  margin-left: auto;
+  padding: 0 0.3rem;
+  border-radius: 8px;
+  background-color: var(--red-light, #b1040e);
+  color: var(--white, #fff);
+  font-family: var(--bs-font-sans-serif, sans-serif);
+  font-size: 0.65rem;
+  white-space: nowrap;
+}
+
+.dd-rail-count {
+  flex: none;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.dd-rail-item[aria-selected="true"] .dd-rail-count {
+  opacity: 0.85;
+}
+
+.dd-rail-item[aria-selected="true"] .dd-rail-hint {
+  background-color: var(--white, #fff);
+  color: var(--red-vivid);
+}
+
+.dd-rail-empty {
+  margin: 0 0.9rem 0.75rem;
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.dd-panels > section > h2 {
+  margin-top: 0;
+}
+
+/* Under ~992px the two-column split stops paying for itself: the rail goes
+   full width above the panel and gives up its sticky positioning. */
+@media (max-width: 991.98px) {
+  .dd-browser {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .dd-rail {
+    position: static;
+    max-height: 15rem;
+  }
+}
+
+/* --- Toolbar above each grid -------------------------------------------- */
+
+.dd-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.dd-search {
+  flex: 1 1 20rem;
+  max-width: 30rem;
+  border: 1px solid #dfe2e5;
+  border-radius: 3px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.dd-search:focus {
+  border-color: var(--red-light);
+  outline: 2px solid var(--red-extra-light);
+}
+
+/* Lux sizes `.btn-sm` with a hard `font-size: 10px`, which is both too small to
+   read comfortably and the only text on the page that ignores the root size.
+   Compounding with `.btn` outranks it, so the toolbar stays legible without
+   restyling every small button on the site. */
+.dd-button.btn {
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.dd-button:hover,
+.dd-button:focus {
+  border-color: var(--red-vivid);
+  color: var(--red-vivid);
+}
+
+/* Toggles that are currently on. `aria-pressed` is the state; this is only
+   how it looks, so the two cannot drift apart. */
+.dd-button[aria-pressed="true"] {
+  border-color: var(--red-vivid);
+  background-color: var(--red-vivid);
+  color: var(--white, #fff);
+}
+
+.dd-button[aria-pressed="true"]:hover,
+.dd-button[aria-pressed="true"]:focus {
+  background-color: var(--red-dark);
+  border-color: var(--red-dark);
+  color: var(--white, #fff);
+}
+
+.dd-select {
+  border: 1px solid #dfe2e5;
+  border-radius: 3px;
+  padding: 0.25rem 0.35rem;
+  font-size: 0.85rem;
+  background-color: var(--white, #fff);
+}
+
+.dd-select:focus {
+  border-color: var(--red-light);
+  outline: 2px solid var(--red-extra-light);
+}
+
+.dd-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  color: var(--cool-grey);
+  font-size: 0.85rem;
+}
+
+.dd-count {
+  color: var(--cool-grey);
+  font-size: 0.85rem;
+  margin-left: auto;
+}
+
+/* --- Column manager ------------------------------------------------------
+
+   Tabulator's built-in column menu is right-click only, which is neither
+   discoverable nor reachable from a keyboard. This is a labelled button and a
+   popover of real checkboxes instead.
+   ---------------------------------------------------------------------- */
+
+.dd-cols {
+  position: relative;
+}
+
+.dd-cols-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  min-width: 17rem;
+  max-height: 22rem;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background-color: var(--white, #fff);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+}
+
+.dd-cols-menu[hidden] {
+  display: none;
+}
+
+.dd-cols-presets {
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #eceff1;
+}
+
+.dd-cols-preset-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--cool-grey);
+}
+
+.dd-cols-preset-label .dd-select {
+  flex: 1;
+}
+
+.dd-cols-list {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dd-cols-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0;
+}
+
+.dd-cols-check {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+/* The last visible column keeps its box ticked and disabled — the grid cannot
+   be emptied — so say why on hover rather than just refusing the click. */
+.dd-cols-check:has(input:disabled) {
+  cursor: not-allowed;
+  color: var(--cool-grey);
+}
+
+.dd-icon-button {
+  padding: 0.05rem 0.35rem;
+  line-height: 1.2;
+}
+
+/* Muted, not faded. Bootstrap's disabled opacity applied to an outline button
+   whose only ink is a pale border leaves nothing on screen at all, and the two
+   rows that legitimately have one disabled arrow — the first and last column —
+   then look like they are missing a control rather than having a dead one. */
+.dd-icon-button:disabled {
+  opacity: 1;
+  border-color: #e6e8ea;
+  color: #b9bec3;
+}
+
+.dd-icon {
+  font-size: 0.85rem;
+}
+
+/* Chevrons drawn from two borders rather than typeset from U+2190/U+2192.
+   Arrow glyphs are missing from enough font stacks that the reorder buttons
+   can come out as tofu boxes; a rotated corner needs no font at all. They
+   point left and right, not up and down: the list runs vertically but the
+   move it performs is horizontal, and the button's label says so. */
+.dd-icon-left,
+.dd-icon-right {
+  display: block;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin: 0.2rem 0.15rem;
+  border-top: 1.5px solid currentcolor;
+  border-left: 1.5px solid currentcolor;
+}
+
+.dd-icon-left {
+  transform: rotate(-45deg);
+}
+
+.dd-icon-right {
+  transform: rotate(135deg);
+}
+
+/* --- Change badges -------------------------------------------------------
+
+   Fields added or retyped since the committed baseline in
+   data/dictionary_baseline.json. Absent entirely when there is no baseline.
+   ---------------------------------------------------------------------- */
+
+.dd-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.35rem;
+  border-radius: 8px;
+  font-family: var(--bs-font-sans-serif, sans-serif);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  vertical-align: baseline;
+}
+
+.dd-badge-new {
+  background-color: #1b7f3b;
+  color: var(--white, #fff);
+}
+
+.dd-badge-changed {
+  background-color: #8a5a00;
+  color: var(--white, #fff);
+}
+
+/* --- Row detail drawer ---------------------------------------------------
+
+   A row read vertically costs no grid width, so columns that will not fit
+   side by side are still one click away.
+   ---------------------------------------------------------------------- */
+
+.dd-drawer {
+  margin: 0.6rem 0 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #dee2e6;
+  border-left: 3px solid var(--red-vivid);
+  border-radius: 4px;
+  background-color: #fbfbfc;
+}
+
+.dd-drawer[hidden] {
+  display: none;
+}
+
+.dd-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.dd-drawer-title {
+  margin: 0;
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.dd-drawer-body {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.2rem 0.9rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.85rem;
+}
+
+.dd-drawer-body dt {
+  color: var(--cool-grey);
+  font-weight: 600;
+}
+
+.dd-drawer-body dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.dd-drawer-body dd.dd-mono {
+  font-family: var(--bs-font-monospace, monospace);
+}
+
+/* --- Tabulator grid, in the Stanford palette ---------------------------- */
+
+/* Tabulator adds `.tabulator` to the element it is handed, and that element is
+   the `.dd-grid` host itself (data-dictionary.js). So these are compound
+   selectors, `.dd-grid.tabulator`, not descendant ones — a space here matches
+   nothing and quietly hands the grid back to Tabulator's stock theme. */
+.dd-grid.tabulator {
+  border: 1px solid #dfe2e5;
+  font-size: var(--dd-table-font-size);
+  background-color: var(--white);
+}
+
+.dd-grid.tabulator .tabulator-header {
+  background-color: #f6f8fa;
+  border-bottom: 2px solid var(--red-vivid);
+}
+
+.dd-grid.tabulator .tabulator-col {
+  background-color: #f6f8fa;
+}
+
+.dd-grid.tabulator .tabulator-col-title {
+  font-weight: 600;
+  color: var(--black);
+}
+
+.dd-grid.tabulator .tabulator-header-filter input,
+.dd-grid.tabulator .tabulator-header-filter select {
+  border: 1px solid #dfe2e5;
+  border-radius: 3px;
+  padding: 0.15rem 0.3rem;
+  font-weight: 400;
+}
+
+.dd-grid.tabulator .tabulator-header-filter input:focus,
+.dd-grid.tabulator .tabulator-header-filter select:focus {
+  border-color: var(--red-light);
+  outline: 2px solid var(--red-extra-light);
+}
+
+.dd-grid .tabulator-row.tabulator-row-odd {
+  background-color: var(--red-extra-light);
+}
+
+.dd-grid .tabulator-row.tabulator-selectable:hover,
+.dd-grid .tabulator-row:hover {
+  background-color: #f0f0f0;
+}
+
+.dd-grid .tabulator-row .tabulator-cell {
+  padding: 5px 10px;
+  border-right: 1px solid #eceff1;
+  vertical-align: top;
+}
+
+.dd-grid .tabulator-row .tabulator-cell.dd-mono {
+  font-family: var(--bs-font-monospace, monospace);
+}
+
+/* Compact density: the same rows, roughly a third more of them on screen.
+   Scanning 504 field names is a different job from reading one description,
+   and the toolbar toggle is how you say which you are doing. */
+.dd-density-compact .tabulator-row .tabulator-cell {
+  padding: 1px 6px;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+/* Compound again: `.dd-density-compact` is toggled onto the same host element
+   that carries `.tabulator`. */
+.dd-density-compact.tabulator .tabulator-header .tabulator-col-content {
+  padding: 2px 6px;
+}
+
+/* Group headers, when the toolbar's Group control is set. */
+.dd-grid.tabulator .tabulator-group {
+  border-bottom: 1px solid #dfe2e5;
+  background-color: #eef1f4;
+  font-weight: 600;
+}
+
+.dd-grid.tabulator .tabulator-group.tabulator-group-visible .tabulator-arrow {
+  border-top-color: var(--red-vivid);
+}
+
+.dd-grid.tabulator .tabulator-group .tabulator-arrow {
+  border-left-color: var(--red-vivid);
+}
+
+/* Frozen identifier columns need an opaque background of their own, or the
+   scrolling cells show through them. */
+.dd-grid .tabulator-row .tabulator-cell.tabulator-frozen {
+  background-color: inherit;
+}
+
+.dd-grid .tabulator-row.tabulator-row-odd .tabulator-cell.tabulator-frozen {
+  background-color: var(--red-extra-light);
+}
+
+.dd-grid .tabulator-row.tabulator-row-even .tabulator-cell.tabulator-frozen {
+  background-color: var(--white);
+}
+
+/* Descriptions longer than a couple of lines are clamped, and expand when the
+   control is activated (docs/assets/data-dictionary.js). */
+.dd-desc {
+  white-space: normal;
+  line-height: 1.45;
+}
+
+/* Clamped descriptions are rendered as a <button> so they can be reached with
+   Tab and opened with Enter or Space. These rules take the button chrome back
+   off so it still reads as prose. `display` is deliberately absent: the clamp
+   rules below own it, and setting it here would outrank `.dd-desc-clamped` and
+   break the clamp. */
+button.dd-desc {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+button.dd-desc:focus-visible {
+  outline: 2px solid var(--red-vivid);
+  outline-offset: 2px;
+}
+
+.dd-desc-clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.dd-desc-clamped.dd-desc-open {
+  display: block;
+  -webkit-line-clamp: none;
+  line-clamp: none;
+  overflow: visible;
+}
+
+/* --- Phone: six columns do not fit, so stop pretending they do ---------- */
+
+/* Under 768px the grid starts on the Compact column set and the row drawer
+   carries everything else. These rules give the toolbar and the drawer a
+   single-column shape at that width. */
+@media (max-width: 767.98px) {
+  .dd-toolbar {
+    gap: 0.35rem;
+  }
+
+  .dd-search {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .dd-count {
+    margin-left: 0;
+  }
+
+  .dd-cols-menu {
+    right: 0;
+    left: auto;
+    min-width: min(20rem, calc(100vw - 2rem));
+  }
+
+  .dd-drawer-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0 0;
+  }
+
+  .dd-drawer-body dd {
+    margin-bottom: 0.4rem;
+  }
+}
+
+/* --- Print: the grids are virtualised, so print the static tables ------- */
+
+@media print {
+  .dd-toolbar,
+  .dd-grid,
+  .dd-drawer,
+  .dd-rail {
+    display: none !important;
+  }
+
+  .dd-static[hidden] {
+    display: block !important;
+  }
+
+  .dd-static {
+    overflow-x: visible;
+  }
+
+  /* Printing wants the whole dictionary, not whichever tab happens to be
+     open, so every panel comes back. */
+  .dd-browser {
+    display: block;
+  }
+
+  .dd-panels > section[hidden] {
+    display: block !important;
+  }
+}
+
+/* Download button on the data dictionary page. */
+.data-dictionary-download,
+.data-dictionary-download:visited {
+  background-color: var(--red-vivid);
+  border-color: var(--red-vivid);
+  color: var(--white);
+}
+
+.data-dictionary-download:hover,
+.data-dictionary-download:focus {
+  background-color: var(--red-dark);
+  border-color: var(--red-dark);
+  color: var(--white);
 }
 
 /* Tabset styles */

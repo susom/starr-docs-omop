@@ -2,6 +2,9 @@ project:
   type: website
   pre-render:
     - ../scripts/generate_docs.py omop
+    # Writes omop_data_dictionary.qmd and downloads/*.xlsx. Must precede
+    # generate_llms_txt.py, which reads the dictionary page.
+    - ../scripts/generate_exports.py omop
     - ../scripts/generate_faq.py
     - ../scripts/generate_llms_txt.py --base-url "https://shiny-funicular-j1po82z.pages.github.io/about/"
   render:
@@ -13,9 +16,12 @@ project:
     - changes_53_to_54.qmd
     - released_datasets.qmd
     - getting_access.qmd
+    - omop_data_dictionary.qmd
   resources:
     - llms.txt
     - llms-full.txt
+    - downloads/
+    - assets/
 
 website:
   title: "STARR-OMOP Docs"
@@ -45,6 +51,18 @@ website:
               href: omop_data_model.qmd#cohort
             - text: "cohort_definition"
               href: omop_data_model.qmd#cohort_definition
+            - text: "concept"
+              href: omop_data_model.qmd#concept
+            - text: "concept_ancestor"
+              href: omop_data_model.qmd#concept_ancestor
+            - text: "concept_class"
+              href: omop_data_model.qmd#concept_class
+            - text: "concept_relationship"
+              href: omop_data_model.qmd#concept_relationship
+            - text: "concept_synonym"
+              href: omop_data_model.qmd#concept_synonym
+            - text: "condition_era"
+              href: omop_data_model.qmd#condition_era
             - text: "condition_occurrence"
               href: omop_data_model.qmd#condition_occurrence
             - text: "cost"
@@ -53,16 +71,22 @@ website:
               href: omop_data_model.qmd#death
             - text: "device_exposure"
               href: omop_data_model.qmd#device_exposure
+            - text: "domain"
+              href: omop_data_model.qmd#domain
             - text: "dose_era"
               href: omop_data_model.qmd#dose_era
             - text: "drug_era"
               href: omop_data_model.qmd#drug_era
             - text: "drug_exposure"
               href: omop_data_model.qmd#drug_exposure
+            - text: "drug_strength"
+              href: omop_data_model.qmd#drug_strength
             - text: "episode"
               href: omop_data_model.qmd#episode
             - text: "episode_event"
               href: omop_data_model.qmd#episode_event
+            - text: "fact_relationship"
+              href: omop_data_model.qmd#fact_relationship
             - text: "image_occurrence"
               href: omop_data_model.qmd#image_occurrence
             - text: "location"
@@ -87,16 +111,26 @@ website:
               href: omop_data_model.qmd#procedure_occurrence
             - text: "provider"
               href: omop_data_model.qmd#provider
+            - text: "relationship"
+              href: omop_data_model.qmd#relationship
+            - text: "source_to_concept_map"
+              href: omop_data_model.qmd#source_to_concept_map
             - text: "specimen"
               href: omop_data_model.qmd#specimen
             - text: "visit_detail"
               href: omop_data_model.qmd#visit_detail
             - text: "visit_occurrence"
               href: omop_data_model.qmd#visit_occurrence
+            - text: "vocabulary"
+              href: omop_data_model.qmd#vocabulary
+            - text: "_external_death_records"
+              href: omop_data_model.qmd#external_death_records
             - text: "_variant_occurrence"
               href: omop_data_model.qmd#variant_occurrence
             - text: "_whole_slide_imaging"
               href: omop_data_model.qmd#whole_slide_imaging
+        - text: "Data Dictionary"
+          href: omop_data_dictionary.qmd
       - text: "STARR-OMOP v5.3"
         href: about.qmd#53_docs
       - text: "FAQ"
@@ -113,6 +147,8 @@ website:
             href: starr_omop54.qmd
           - text: "Data Model Tables"
             href: omop_data_model.qmd
+          - text: "Data Dictionary"
+            href: omop_data_dictionary.qmd
       - text: "STARR-OMOP v5.3"
         href: about.qmd#53_docs
       - text: "FAQ"
@@ -128,6 +164,9 @@ website:
             href: llms.txt
           - text: "llms-full.txt"
             href: llms-full.txt
+      - text: "Download"
+        icon: download
+        href: downloads/starr_omop_data_dictionary.xlsx
 
     tools:
       - icon: github
