@@ -1384,6 +1384,12 @@
     var host = document.createElement("div");
     host.className = "dd-grid";
 
+    /* Roving tab stop: exactly one row is ever in the Tab order, so leaving
+       the grid is one Tab press rather than one per row. Arrow Up/Down moves
+       which row holds it (see the keydown handler below); rowFormatter only
+       ever grants "0" to the row matching this key. */
+    var activeRowKey = null;
+
     var options = {
       data: rows,
       index: "_i",
@@ -1416,9 +1422,20 @@
         "-v" +
         columnsDigest(specs),
       /* Rows must be keyboard-reachable so that Enter/Space can open the
-         row-detail drawer for users who navigate without a pointer device. */
+         row-detail drawer for users who navigate without a pointer device.
+         Only the active row gets tabindex 0; a row rendered for the first
+         time (initial paint, or scrolled into view under virtual rendering)
+         defaults to active if nothing has claimed the key yet. */
       rowFormatter: function (row) {
-        row.getElement().setAttribute("tabindex", "0");
+        if (activeRowKey === null) {
+          activeRowKey = row.getData()._i;
+        }
+        row
+          .getElement()
+          .setAttribute(
+            "tabindex",
+            row.getData()._i === activeRowKey ? "0" : "-1"
+          );
       }
     };
     if (layout.height) {
@@ -1471,11 +1488,67 @@
       drawer.show(row.getData(), event.detail === 0, event.target);
     });
 
-    /* Keyboard activation: Enter or Space on a focused row opens the drawer.
-       Rows carry tabindex="0" (set by rowFormatter above) so they are
-       reachable via Tab and arrow keys without a pointer device. */
+    /* Moves the roving tab stop to `row`. `moveFocus` is false for the
+       filter safety net below: reassigning which row holds tabindex 0 must
+       not itself steal focus from, say, the search box the user is typing
+       into. Only an actual keyboard nav (arrow keys) passes true, which also
+       scrolls a virtual-rendered row into view before focusing it. */
+    function activateRow(row, moveFocus) {
+      if (!row) {
+        return;
+      }
+      var prevKey = activeRowKey;
+      activeRowKey = row.getData()._i;
+      if (prevKey !== null && prevKey !== activeRowKey) {
+        var prevRow = grid.getRow(prevKey);
+        var prevEl = prevRow && prevRow.getElement();
+        if (prevEl) {
+          prevEl.setAttribute("tabindex", "-1");
+        }
+      }
+      var apply = function () {
+        var el = row.getElement();
+        if (el) {
+          el.setAttribute("tabindex", "0");
+          if (moveFocus) {
+            el.focus();
+          }
+        }
+      };
+      if (!moveFocus) {
+        apply();
+        return;
+      }
+      var scrolled;
+      try {
+        scrolled = grid.scrollToRow(row, "nearest", false);
+      } catch (err) {
+        scrolled = null;
+      }
+      Promise.resolve(scrolled).catch(function () {}).then(apply);
+    }
+
+    /* If a filter drops the active row, the roving stop would vanish with
+       it; fall back to the new first visible row so the grid always keeps
+       exactly one Tab stop. */
+    function ensureActiveRow(activeRows) {
+      if (
+        !activeRows.length ||
+        activeRows.some(function (row) {
+          return row.getData()._i === activeRowKey;
+        })
+      ) {
+        return;
+      }
+      activateRow(activeRows[0], false);
+    }
+
+    /* Keyboard activation: Enter or Space on the focused row opens the
+       drawer; Up/Down moves which row holds the roving tab stop. */
     host.addEventListener("keydown", function (event) {
-      if (event.key !== "Enter" && event.key !== " ") {
+      var isActivate = event.key === "Enter" || event.key === " ";
+      var isNav = event.key === "ArrowDown" || event.key === "ArrowUp";
+      if (!isActivate && !isNav) {
         return;
       }
       if (event.target && event.target.closest("button, a, input, select")) {
@@ -1486,11 +1559,30 @@
       if (!rowEl) {
         return;
       }
-      event.preventDefault();
       var row = grid.getRow(rowEl);
-      if (row) {
-        drawer.show(row.getData(), true, rowEl);
+      if (!row) {
+        return;
       }
+      if (isActivate) {
+        event.preventDefault();
+        drawer.show(row.getData(), true, rowEl);
+        return;
+      }
+      var activeRows = grid.getRows(true);
+      var idx = activeRows.indexOf(row);
+      if (idx === -1) {
+        return;
+      }
+      var nextIdx = event.key === "ArrowDown" ? idx + 1 : idx - 1;
+      if (nextIdx < 0 || nextIdx >= activeRows.length) {
+        return;
+      }
+      event.preventDefault();
+      activateRow(activeRows[nextIdx], true);
+    });
+
+    grid.on("dataFiltered", function (filters, rows) {
+      ensureActiveRow(rows);
     });
 
     grid.on("tableBuilt", function () {
