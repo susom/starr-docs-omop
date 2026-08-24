@@ -1,5 +1,5 @@
 /*
- * Data dictionary grids — progressive enhancement for omop_data_dictionary.qmd.
+ * Data dictionary grids — progressive enhancement for the data dictionary page.
  *
  * Every table on that page is rendered by scripts/generate_exports.py as plain
  * semantic HTML inside a `.dd-static` wrapper. This script does two things to
@@ -8,7 +8,7 @@
  *   - replaces each table with a Tabulator grid: frozen identifier columns,
  *     per-column header filters, a column manager, grouping, a row detail
  *     drawer, and CSV export of the filtered view;
- *   - turns the page's 45 sections into tab panels behind a vertical rail, so
+ *   - turns the page's sections into tab panels behind a vertical rail, so
  *     reaching one table is a click rather than a long scroll.
  *
  * Reading from the DOM rather than from a separate JSON payload is deliberate:
@@ -62,7 +62,7 @@
     "dd-layout-all": {
       name: "all",
       label: "all fields",
-      csv: "starr_omop_all_fields",
+      csv: "all_fields",
       height: "72vh",
       freeze: true,
       render: "virtual"
@@ -70,7 +70,7 @@
     "dd-layout-index": {
       name: "index",
       label: "tables",
-      csv: "starr_omop_tables",
+      csv: "tables",
       maxHeight: "70vh",
       render: "basic"
     },
@@ -232,6 +232,33 @@
   }
 
   /* ---------------------------------------------------------- formatters */
+
+  /* The whole value on hover, wherever the column is too narrow to show it.
+     Columns here are fixed-width, so a value longer than its column ellipsises:
+     on STARR-Common the longest field name is 57 characters against a column
+     that holds about 32, so roughly one name in ten does. The row-detail drawer
+     remains the accessible route to a full value — a tooltip is hover-only, so
+     this is a shortcut for pointer users that takes nothing away from anyone
+     else.
+
+     It returns an element rather than a string on purpose. Tabulator assigns a
+     string tooltip with innerHTML, and these values reach the grid as text
+     read out of the static table, so a description containing `<img src=x
+     onerror=...>` would arrive here as live markup rather than as the
+     characters the page shows. An HTMLElement is used as-is, which keeps this
+     on the createElement-and-textContent path the rest of the file follows.
+
+     Returning "" for an empty value suppresses the popup: Tabulator only shows
+     one when the tooltip is truthy, 0, or false. */
+  function valueTooltip(event, cell) {
+    var value = cell.getValue();
+    if (value === undefined || value === null || value === "") {
+      return "";
+    }
+    var element = document.createElement("div");
+    element.textContent = String(value);
+    return element;
+  }
 
   /* A cell holding one or more table names, each linked to its section. Built
      with createElement and textContent throughout: the value is dbt data, and
@@ -1399,7 +1426,11 @@
       movableColumns: true,
       resizableColumnFit: false,
       placeholder: "No matching rows",
-      columnDefaults: { headerFilterLiveFilter: true, resizable: true },
+      columnDefaults: {
+        headerFilterLiveFilter: true,
+        resizable: true,
+        tooltip: valueTooltip
+      },
       /* Visibility is remembered, and per layout rather than per table: all 43
          per-table grids share one column set, so a choice made on PERSON
          should hold on MEASUREMENT. Widths are not — a saved width is how a
@@ -1446,9 +1477,14 @@
     }
 
     var grid = new Tabulator(host, options);
-    /* Name per-table downloads after the table itself, e.g. `dt-measurement`
-       becomes `starr_omop_measurement.csv`. */
-    var csvName = layout.csv || "starr_omop_" + table.id.replace(/^dt-/, "");
+    /* Name per-table downloads after the table itself, so the grid on
+       `dt-<table>` downloads as `<prefix>_<table>.csv`. The stem is read off
+       the table rather than written here: generate_exports.py puts its export
+       config's `csv_prefix` on every static table, so this file is the same
+       script on every STARR documentation site instead of one fork per site. */
+    var csvPrefix = table.getAttribute("data-dd-csv") || "starr";
+    var csvName =
+      csvPrefix + "_" + (layout.csv || table.id.replace(/^dt-/, ""));
 
     var section = table.closest("section");
     var context = {

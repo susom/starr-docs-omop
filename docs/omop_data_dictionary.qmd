@@ -67,7 +67,7 @@ For what each table is for and how Stanford populates it, see [OMOP CDM v5.4 Dat
 All 504 fields across 43 tables. Search here to find which table contains a given field.
 
 <div class="dd-static">
-<table id="dt-all-fields" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-all">
+<table id="dt-all-fields" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-all" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="table" data-dd-mono="true" data-dd-identifier="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="input" data-dd-links="table" data-dd-width="200">Table</th>
@@ -4627,7 +4627,7 @@ All 504 fields across 43 tables. Search here to find which table contains a give
 43 tables. Click a table name to open its fields.
 
 <div class="dd-static">
-<table id="dt-index" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-index">
+<table id="dt-index" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-index" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="table" data-dd-mono="true" data-dd-identifier="true" data-dd-groupable="true" data-dd-compact="true" data-dd-filter="input" data-dd-links="table" data-dd-width="200">Table</th>
@@ -4908,7 +4908,7 @@ The CARE_SITE table contains a list of uniquely identified institutional (physic
 6 fields.
 
 <div class="dd-static">
-<table id="dt-care_site" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CARE_SITE">
+<table id="dt-care_site" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CARE_SITE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -4974,7 +4974,7 @@ The CDM_SOURCE table provides information about the source data and the process 
 11 fields.
 
 <div class="dd-static">
-<table id="dt-cdm_source" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CDM_SOURCE">
+<table id="dt-cdm_source" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CDM_SOURCE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5075,7 +5075,7 @@ The cohort table contains records identifying the subject(s) for defined cohort,
 4 fields.
 
 <div class="dd-static">
-<table id="dt-cohort" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="COHORT">
+<table id="dt-cohort" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="COHORT" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5127,7 +5127,7 @@ Cohorts are a set of subjects that satisfy a given combination of inclusion crit
 7 fields.
 
 <div class="dd-static">
-<table id="dt-cohort_definition" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="COHORT_DEFINITION">
+<table id="dt-cohort_definition" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="COHORT_DEFINITION" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5200,7 +5200,7 @@ The primary purpose of the CONCEPT table is to provide a standardized representa
 10 fields.
 
 <div class="dd-static">
-<table id="dt-concept" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT">
+<table id="dt-concept" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5294,7 +5294,7 @@ The CONCEPT_ANCESTOR table is designed to simplify observational analysis by pro
 4 fields.
 
 <div class="dd-static">
-<table id="dt-concept_ancestor" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_ANCESTOR">
+<table id="dt-concept_ancestor" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_ANCESTOR" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5346,7 +5346,7 @@ The CONCEPT_CLASS table includes semantic categories that reference the source s
 3 fields.
 
 <div class="dd-static">
-<table id="dt-concept_class" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_CLASS">
+<table id="dt-concept_class" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_CLASS" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5391,7 +5391,7 @@ The CONCEPT_RELATIONSHIP table contains records that define relationships betwee
 6 fields.
 
 <div class="dd-static">
-<table id="dt-concept_relationship" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_RELATIONSHIP">
+<table id="dt-concept_relationship" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_RELATIONSHIP" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5457,7 +5457,7 @@ The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations
 3 fields.
 
 <div class="dd-static">
-<table id="dt-concept_synonym" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_SYNONYM">
+<table id="dt-concept_synonym" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONCEPT_SYNONYM" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5500,7 +5500,7 @@ The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations
 6 fields.
 
 <div class="dd-static">
-<table id="dt-condition_era" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONDITION_ERA">
+<table id="dt-condition_era" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONDITION_ERA" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5564,7 +5564,7 @@ The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations
 16 fields.
 
 <div class="dd-static">
-<table id="dt-condition_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONDITION_OCCURRENCE">
+<table id="dt-condition_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="CONDITION_OCCURRENCE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5700,7 +5700,7 @@ The cost table captures the various financial aspects of healthcare events. It i
 22 fields.
 
 <div class="dd-static">
-<table id="dt-cost" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="COST">
+<table id="dt-cost" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="COST" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5878,7 +5878,7 @@ OMOP CDM v5.4 DEATH table. Stores information about a Person's death, including 
 7 fields.
 
 <div class="dd-static">
-<table id="dt-death" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DEATH">
+<table id="dt-death" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DEATH" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -5951,7 +5951,7 @@ The Device domain captures information about a persons exposure to a foreign phy
 19 fields.
 
 <div class="dd-static">
-<table id="dt-device_exposure" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DEVICE_EXPOSURE">
+<table id="dt-device_exposure" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DEVICE_EXPOSURE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6108,7 +6108,7 @@ The DOMAIN table includes a list of OMOP-defined Domains to which the Concepts o
 3 fields.
 
 <div class="dd-static">
-<table id="dt-domain" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DOMAIN">
+<table id="dt-domain" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DOMAIN" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6153,7 +6153,7 @@ The dose_era table captures the time periods (eras) during which a person is exp
 7 fields.
 
 <div class="dd-static">
-<table id="dt-dose_era" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DOSE_ERA">
+<table id="dt-dose_era" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DOSE_ERA" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6226,7 +6226,7 @@ A Drug Era is defined as a span of time when the Person is assumed to be exposed
 7 fields.
 
 <div class="dd-static">
-<table id="dt-drug_era" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DRUG_ERA">
+<table id="dt-drug_era" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DRUG_ERA" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6299,7 +6299,7 @@ The DRUG_EXPOSURE table captures records about the exposure to a Drug ingested o
 23 fields.
 
 <div class="dd-static">
-<table id="dt-drug_exposure" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DRUG_EXPOSURE">
+<table id="dt-drug_exposure" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DRUG_EXPOSURE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6484,7 +6484,7 @@ The DRUG_STRENGTH table contains structured content about the amount or concentr
 12 fields.
 
 <div class="dd-static">
-<table id="dt-drug_strength" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DRUG_STRENGTH">
+<table id="dt-drug_strength" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="DRUG_STRENGTH" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6592,7 +6592,7 @@ The episode table captures aggregated information about periods of continuous en
 13 fields.
 
 <div class="dd-static">
-<table id="dt-episode" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="EPISODE">
+<table id="dt-episode" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="EPISODE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6707,7 +6707,7 @@ The episode_event table captures the events that are part of an episode. It incl
 3 fields.
 
 <div class="dd-static">
-<table id="dt-episode_event" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="EPISODE_EVENT">
+<table id="dt-episode_event" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="EPISODE_EVENT" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6752,7 +6752,7 @@ The FACT_RELATIONSHIP table contains records about the relationships between fac
 5 fields.
 
 <div class="dd-static">
-<table id="dt-fact_relationship" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="FACT_RELATIONSHIP">
+<table id="dt-fact_relationship" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="FACT_RELATIONSHIP" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6811,7 +6811,7 @@ A record of image occurrences from the Vendor Neutral Archive (VNA). This does n
 17 fields.
 
 <div class="dd-static">
-<table id="dt-image_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="IMAGE_OCCURRENCE">
+<table id="dt-image_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="IMAGE_OCCURRENCE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -6954,7 +6954,7 @@ The location table represents a generic way to capture physical location or addr
 13 fields.
 
 <div class="dd-static">
-<table id="dt-location" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="LOCATION">
+<table id="dt-location" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="LOCATION" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -7069,7 +7069,7 @@ The MEASUREMENT table contains records of Measurements, i.e. structured values (
 23 fields.
 
 <div class="dd-static">
-<table id="dt-measurement" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="MEASUREMENT">
+<table id="dt-measurement" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="MEASUREMENT" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -7254,7 +7254,7 @@ The metadata table metadata information about a dataset that has been transforme
 9 fields.
 
 <div class="dd-static">
-<table id="dt-metadata" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="METADATA">
+<table id="dt-metadata" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="METADATA" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -7341,7 +7341,7 @@ The NOTE table captures unstructured information that was recorded by a provider
 17 fields.
 
 <div class="dd-static">
-<table id="dt-note" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="NOTE">
+<table id="dt-note" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="NOTE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -7484,7 +7484,7 @@ The note_nlp table encodes all output of NLP on clinical notes. Each row represe
 14 fields.
 
 <div class="dd-static">
-<table id="dt-note_nlp" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="NOTE_NLP">
+<table id="dt-note_nlp" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="NOTE_NLP" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -7606,7 +7606,7 @@ This table contains records of various observations made about individuals. It i
 21 fields.
 
 <div class="dd-static">
-<table id="dt-observation" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="OBSERVATION">
+<table id="dt-observation" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="OBSERVATION" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -7777,7 +7777,7 @@ The observation period table is intended to contain records of spans of time in 
 5 fields.
 
 <div class="dd-static">
-<table id="dt-observation_period" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="OBSERVATION_PERIOD">
+<table id="dt-observation_period" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="OBSERVATION_PERIOD" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -7836,7 +7836,7 @@ This table contains information about the period of time that a Person is contin
 17 fields.
 
 <div class="dd-static">
-<table id="dt-payer_plan_period" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PAYER_PLAN_PERIOD">
+<table id="dt-payer_plan_period" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PAYER_PLAN_PERIOD" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -7979,7 +7979,7 @@ This table serves as the central identity management for all Persons in the data
 18 fields.
 
 <div class="dd-static">
-<table id="dt-person" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PERSON">
+<table id="dt-person" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PERSON" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -8129,7 +8129,7 @@ The PROCEDURE_OCCURRENCE table contains records of procedures that have been per
 16 fields.
 
 <div class="dd-static">
-<table id="dt-procedure_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PROCEDURE_OCCURRENCE">
+<table id="dt-procedure_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PROCEDURE_OCCURRENCE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -8265,7 +8265,7 @@ The PROVIDER table contains a list of uniquely identified healthcare providers. 
 13 fields.
 
 <div class="dd-static">
-<table id="dt-provider" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PROVIDER">
+<table id="dt-provider" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="PROVIDER" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -8380,7 +8380,7 @@ The RELATIONSHIP table provides a reference list of all types of relationships t
 6 fields.
 
 <div class="dd-static">
-<table id="dt-relationship" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="RELATIONSHIP">
+<table id="dt-relationship" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="RELATIONSHIP" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -8446,7 +8446,7 @@ The SOURCE_TO_CONCEPT_MAP table is a legacy data structure within the OMOP Commo
 9 fields.
 
 <div class="dd-static">
-<table id="dt-source_to_concept_map" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="SOURCE_TO_CONCEPT_MAP">
+<table id="dt-source_to_concept_map" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="SOURCE_TO_CONCEPT_MAP" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -8533,7 +8533,7 @@ The specimen table captures data on biological samples, or specimens, from a per
 15 fields.
 
 <div class="dd-static">
-<table id="dt-specimen" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="SPECIMEN">
+<table id="dt-specimen" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="SPECIMEN" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -8662,7 +8662,7 @@ The VISIT_DETAIL table is an optional table used to represents details of each r
 19 fields.
 
 <div class="dd-static">
-<table id="dt-visit_detail" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="VISIT_DETAIL">
+<table id="dt-visit_detail" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="VISIT_DETAIL" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -8819,7 +8819,7 @@ This table contains Events where Persons engage with the healthcare system for a
 17 fields.
 
 <div class="dd-static">
-<table id="dt-visit_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="VISIT_OCCURRENCE">
+<table id="dt-visit_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="VISIT_OCCURRENCE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -8962,7 +8962,7 @@ The VOCABULARY table includes a list of the Vocabularies integrated from various
 5 fields.
 
 <div class="dd-static">
-<table id="dt-vocabulary" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="VOCABULARY">
+<table id="dt-vocabulary" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="VOCABULARY" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -9023,7 +9023,7 @@ Extension table storing one row per external death record per person. External s
 5 fields.
 
 <div class="dd-static">
-<table id="dt-external_death_records" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="_EXTERNAL_DEATH_RECORDS">
+<table id="dt-external_death_records" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="_EXTERNAL_DEATH_RECORDS" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -9084,7 +9084,7 @@ The VARIANT_OCCURRENCE table contains information about genetic variants identif
 28 fields.
 
 <div class="dd-static">
-<table id="dt-variant_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="_VARIANT_OCCURRENCE">
+<table id="dt-variant_occurrence" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="_VARIANT_OCCURRENCE" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>
@@ -9306,7 +9306,7 @@ OMOP extension table for whole slide imaging data from pathology specimens. It c
 20 fields.
 
 <div class="dd-static">
-<table id="dt-whole_slide_imaging" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="_WHOLE_SLIDE_IMAGING">
+<table id="dt-whole_slide_imaging" class="table table-sm table-striped table-hover data-dictionary-table dd-layout-fields" data-dd-table="_WHOLE_SLIDE_IMAGING" data-dd-csv="starr_omop">
 <thead>
 <tr>
 <th scope="col" data-dd-key="field" data-dd-mono="true" data-dd-identifier="true" data-dd-compact="true" data-dd-filter="input" data-dd-width="290">Field</th>

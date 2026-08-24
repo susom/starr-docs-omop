@@ -84,11 +84,15 @@ class _Exporter(ge.DataDictionaryExporter):
 
     ``tables`` is a property on the real class, so it is overridden rather
     than assigned, and ``__init__`` is skipped: none of this needs a manifest.
+
+    The export config is the real one rather than a stub, so the attributes
+    ``_to_html`` reads off it are the attributes the site ships.
     """
 
     names = ["PERSON", "CONCEPT"]
 
     def __init__(self, names=None):
+        self.export_config = ge.EXPORT_CONFIGS["omop"]
         if names is not None:
             self.names = names
 

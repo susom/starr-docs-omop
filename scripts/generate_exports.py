@@ -67,6 +67,11 @@ EXPORT_CONFIGS = {
         "workbook_title": "STARR-OMOP CDM v5.4 Data Dictionary",
         "cdm_version": "OMOP CDM v5.4",
         "model_page": "omop_data_model.qmd",
+        # Stem for the filenames the grid's CSV export offers. Reaches the
+        # browser as `data-dd-csv` on each static table rather than as a
+        # constant in data-dictionary.js, so the script stays identical to the
+        # one starr-docs-common ships.
+        "csv_prefix": "starr_omop",
     },
 }
 
@@ -1217,6 +1222,10 @@ class DataDictionaryExporter:
                         f"data-dictionary-table {layout}",
                     ),
                     ("data-dd-table", table_name),
+                    # Stem for this grid's CSV download. Lives here rather than
+                    # in data-dictionary.js so that script carries no per-site
+                    # constant and both documentation sites can run the same one.
+                    ("data-dd-csv", self.export_config["csv_prefix"]),
                 ]
             )
             + ">",
