@@ -1,5 +1,5 @@
 /*
- * Data dictionary grids — progressive enhancement for omop_data_dictionary.qmd.
+ * Data dictionary grids — progressive enhancement for the data dictionary page.
  *
  * Every table on that page is rendered by scripts/generate_exports.py as plain
  * semantic HTML inside a `.dd-static` wrapper. This script does two things to
@@ -8,7 +8,7 @@
  *   - replaces each table with a Tabulator grid: frozen identifier columns,
  *     per-column header filters, a column manager, grouping, a row detail
  *     drawer, and CSV export of the filtered view;
- *   - turns the page's 45 sections into tab panels behind a vertical rail, so
+ *   - turns the page's sections into tab panels behind a vertical rail, so
  *     reaching one table is a click rather than a long scroll.
  *
  * Reading from the DOM rather than from a separate JSON payload is deliberate:
@@ -62,7 +62,7 @@
     "dd-layout-all": {
       name: "all",
       label: "all fields",
-      csv: "starr_omop_all_fields",
+      csv: "all_fields",
       height: "72vh",
       freeze: true,
       render: "virtual"
@@ -70,7 +70,7 @@
     "dd-layout-index": {
       name: "index",
       label: "tables",
-      csv: "starr_omop_tables",
+      csv: "tables",
       maxHeight: "70vh",
       render: "basic"
     },
@@ -232,6 +232,33 @@
   }
 
   /* ---------------------------------------------------------- formatters */
+
+  /* The whole value on hover, wherever the column is too narrow to show it.
+     Columns here are fixed-width, so a value longer than its column ellipsises:
+     on STARR-Common the longest field name is 57 characters against a column
+     that holds about 32, so roughly one name in ten does. The row-detail drawer
+     remains the accessible route to a full value — a tooltip is hover-only, so
+     this is a shortcut for pointer users that takes nothing away from anyone
+     else.
+
+     It returns an element rather than a string on purpose. Tabulator assigns a
+     string tooltip with innerHTML, and these values reach the grid as text
+     read out of the static table, so a description containing `<img src=x
+     onerror=...>` would arrive here as live markup rather than as the
+     characters the page shows. An HTMLElement is used as-is, which keeps this
+     on the createElement-and-textContent path the rest of the file follows.
+
+     Returning "" for an empty value suppresses the popup: Tabulator only shows
+     one when the tooltip is truthy, 0, or false. */
+  function valueTooltip(event, cell) {
+    var value = cell.getValue();
+    if (value === undefined || value === null || value === "") {
+      return "";
+    }
+    var element = document.createElement("div");
+    element.textContent = String(value);
+    return element;
+  }
 
   /* A cell holding one or more table names, each linked to its section. Built
      with createElement and textContent throughout: the value is dbt data, and
@@ -1185,10 +1212,19 @@
 
   /* ------------------------------------------------------------ URL state */
 
-  /* The whole view goes in the URL — tab, search, visible columns, grouping,
-     density, expanded descriptions and every column filter — so a link pasted
+  /* The view goes in the URL — tab, search, visible columns, grouping,
+     density, the expand-all mode and every column filter — so a link pasted
      into a ticket reopens what the sender was looking at, not just the
-     section they were in. */
+     section they were in.
+
+     The one thing deliberately left out is the per-row expand/collapse
+     exceptions (`state.expanded` / `state.collapsed`). They are keyed by `_i`,
+     the row's position in the flattened field list, which is assigned at
+     generation time and shifts whenever a field is added or dropped upstream.
+     Putting them in a link would mean a URL shared today reopens with a
+     different set of rows expanded after the next dbt change — wrong rows,
+     silently, with nothing on screen to say so. The expand-all *mode* is
+     stable and is carried as `x`; the exceptions to it are session state. */
   /* The section whose grid currently owns the URL, and every built grid by
      section id. Both stay null/empty in the no-tabs fallback, where there is
      no single view for one URL to describe — so nothing is written. */
@@ -1399,7 +1435,11 @@
       movableColumns: true,
       resizableColumnFit: false,
       placeholder: "No matching rows",
-      columnDefaults: { headerFilterLiveFilter: true, resizable: true },
+      columnDefaults: {
+        headerFilterLiveFilter: true,
+        resizable: true,
+        tooltip: valueTooltip
+      },
       /* Visibility is remembered, and per layout rather than per table: all 43
          per-table grids share one column set, so a choice made on PERSON
          should hold on MEASUREMENT. Widths are not — a saved width is how a
@@ -1446,9 +1486,14 @@
     }
 
     var grid = new Tabulator(host, options);
-    /* Name per-table downloads after the table itself, e.g. `dt-measurement`
-       becomes `starr_omop_measurement.csv`. */
-    var csvName = layout.csv || "starr_omop_" + table.id.replace(/^dt-/, "");
+    /* Name per-table downloads after the table itself, so the grid on
+       `dt-<table>` downloads as `<prefix>_<table>.csv`. The stem is read off
+       the table rather than written here: generate_exports.py puts its export
+       config's `csv_prefix` on every static table, so this file is the same
+       script on every STARR documentation site instead of one fork per site. */
+    var csvPrefix = table.getAttribute("data-dd-csv") || "starr";
+    var csvName =
+      csvPrefix + "_" + (layout.csv || table.id.replace(/^dt-/, ""));
 
     var section = table.closest("section");
     var context = {
@@ -1543,6 +1588,33 @@
       activateRow(activeRows[0], false);
     }
 
+    /* Filtering is not the only way the row holding the stop can leave. The
+       All Fields grid renders ~40 rows and destroys the rest, and
+       `rowFormatter` only ever *reads* activeRowKey — so once the active row
+       scrolls out, every rendered row is written tabindex -1 and the grid has
+       no keyboard entry point at all. Measured on the 3,718-row STARR-Common
+       grid before this hook: scrolling to row 2500 left 40 rendered rows and
+       zero Tab stops, so Tab walked straight past the grid to the footer.
+
+       Reassign to the first rendered row whenever a render leaves none.
+       `moveFocus` is false: scrolling is not navigation, and stealing focus
+       mid-scroll would yank a reader out of wherever they were.
+
+       The row comes out of the DOM rather than `grid.getRows("visible")`
+       because this runs on a scroll handler: the guard above is one scoped
+       query that exits immediately in the common case, and the repair path
+       is `getRow(element)` rather than a walk of the display list. */
+    function ensureRenderedTabStop() {
+      if (host.querySelector('.tabulator-row[tabindex="0"]')) {
+        return;
+      }
+      var first = host.querySelector(".tabulator-row");
+      var row = first && grid.getRow(first);
+      if (row) {
+        activateRow(row, false);
+      }
+    }
+
     /* Keyboard activation: Enter or Space on the focused row opens the
        drawer; Up/Down moves which row holds the roving tab stop. */
     host.addEventListener("keydown", function (event) {
@@ -1581,6 +1653,14 @@
       activateRow(activeRows[nextIdx], true);
     });
 
+    /* `scrollVertical` is the only one of these that fires when the virtual
+       renderer swaps rows: measured on Tabulator 6.5.2, scrolling to row 2500
+       raised `scrollVertical` twice and `renderStarted`/`renderComplete` not
+       at all. `renderComplete` is still wired because it is what fires on a
+       redraw — a resize, or a column being shown — which discards the
+       rendered rows just as thoroughly. */
+    grid.on("scrollVertical", ensureRenderedTabStop);
+    grid.on("renderComplete", ensureRenderedTabStop);
     grid.on("dataFiltered", function (filters, rows) {
       ensureActiveRow(rows);
     });
