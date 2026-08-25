@@ -1212,10 +1212,19 @@
 
   /* ------------------------------------------------------------ URL state */
 
-  /* The whole view goes in the URL — tab, search, visible columns, grouping,
-     density, expanded descriptions and every column filter — so a link pasted
+  /* The view goes in the URL — tab, search, visible columns, grouping,
+     density, the expand-all mode and every column filter — so a link pasted
      into a ticket reopens what the sender was looking at, not just the
-     section they were in. */
+     section they were in.
+
+     The one thing deliberately left out is the per-row expand/collapse
+     exceptions (`state.expanded` / `state.collapsed`). They are keyed by `_i`,
+     the row's position in the flattened field list, which is assigned at
+     generation time and shifts whenever a field is added or dropped upstream.
+     Putting them in a link would mean a URL shared today reopens with a
+     different set of rows expanded after the next dbt change — wrong rows,
+     silently, with nothing on screen to say so. The expand-all *mode* is
+     stable and is carried as `x`; the exceptions to it are session state. */
   /* The section whose grid currently owns the URL, and every built grid by
      section id. Both stay null/empty in the no-tabs fallback, where there is
      no single view for one URL to describe — so nothing is written. */
@@ -1579,6 +1588,33 @@
       activateRow(activeRows[0], false);
     }
 
+    /* Filtering is not the only way the row holding the stop can leave. The
+       All Fields grid renders ~40 rows and destroys the rest, and
+       `rowFormatter` only ever *reads* activeRowKey — so once the active row
+       scrolls out, every rendered row is written tabindex -1 and the grid has
+       no keyboard entry point at all. Measured on the 3,718-row STARR-Common
+       grid before this hook: scrolling to row 2500 left 40 rendered rows and
+       zero Tab stops, so Tab walked straight past the grid to the footer.
+
+       Reassign to the first rendered row whenever a render leaves none.
+       `moveFocus` is false: scrolling is not navigation, and stealing focus
+       mid-scroll would yank a reader out of wherever they were.
+
+       The row comes out of the DOM rather than `grid.getRows("visible")`
+       because this runs on a scroll handler: the guard above is one scoped
+       query that exits immediately in the common case, and the repair path
+       is `getRow(element)` rather than a walk of the display list. */
+    function ensureRenderedTabStop() {
+      if (host.querySelector('.tabulator-row[tabindex="0"]')) {
+        return;
+      }
+      var first = host.querySelector(".tabulator-row");
+      var row = first && grid.getRow(first);
+      if (row) {
+        activateRow(row, false);
+      }
+    }
+
     /* Keyboard activation: Enter or Space on the focused row opens the
        drawer; Up/Down moves which row holds the roving tab stop. */
     host.addEventListener("keydown", function (event) {
@@ -1617,6 +1653,14 @@
       activateRow(activeRows[nextIdx], true);
     });
 
+    /* `scrollVertical` is the only one of these that fires when the virtual
+       renderer swaps rows: measured on Tabulator 6.5.2, scrolling to row 2500
+       raised `scrollVertical` twice and `renderStarted`/`renderComplete` not
+       at all. `renderComplete` is still wired because it is what fires on a
+       redraw — a resize, or a column being shown — which discards the
+       rendered rows just as thoroughly. */
+    grid.on("scrollVertical", ensureRenderedTabStop);
+    grid.on("renderComplete", ensureRenderedTabStop);
     grid.on("dataFiltered", function (filters, rows) {
       ensureActiveRow(rows);
     });
