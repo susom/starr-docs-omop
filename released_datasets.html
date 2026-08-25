@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c07f0bc3dcc3fe94ec5905ff223c2618.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-82a41fc973822f0975f5fff9a00553bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -114,6 +114,10 @@ ul.task-list li input[type="checkbox"] {
     <a class="dropdown-item" href="./omop_data_model.html">
  <span class="dropdown-text">Data Model Tables</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./omop_data_dictionary.html">
+ <span class="dropdown-text">Data Dictionary</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item">
@@ -148,6 +152,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
     </ul>
   </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./downloads/starr_omop_data_dictionary.xlsx"> <i class="bi bi-download" role="img">
+</i> 
+<span class="menu-text">Download</span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -228,6 +237,42 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#concept" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">concept</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#concept_ancestor" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">concept_ancestor</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#concept_class" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">concept_class</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#concept_relationship" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">concept_relationship</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#concept_synonym" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">concept_synonym</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#condition_era" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">condition_era</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./omop_data_model.html#condition_occurrence" class="sidebar-item-text sidebar-link">
  <span class="menu-text">condition_occurrence</span></a>
   </div>
@@ -252,6 +297,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#domain" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">domain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./omop_data_model.html#dose_era" class="sidebar-item-text sidebar-link">
  <span class="menu-text">dose_era</span></a>
   </div>
@@ -270,6 +321,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#drug_strength" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">drug_strength</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./omop_data_model.html#episode" class="sidebar-item-text sidebar-link">
  <span class="menu-text">episode</span></a>
   </div>
@@ -278,6 +335,12 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="./omop_data_model.html#episode_event" class="sidebar-item-text sidebar-link">
  <span class="menu-text">episode_event</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#fact_relationship" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fact_relationship</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -354,6 +417,18 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#relationship" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">relationship</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#source_to_concept_map" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">source_to_concept_map</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./omop_data_model.html#specimen" class="sidebar-item-text sidebar-link">
  <span class="menu-text">specimen</span></a>
   </div>
@@ -372,6 +447,18 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#vocabulary" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">vocabulary</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_model.html#external_death_records" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">_external_death_records</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./omop_data_model.html#variant_occurrence" class="sidebar-item-text sidebar-link">
  <span class="menu-text">_variant_occurrence</span></a>
   </div>
@@ -384,6 +471,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
       </ul>
   </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./omop_data_dictionary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Dictionary</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -575,7 +668,7 @@ Note
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/susom\.github\.io\/starr-docs-omop\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
