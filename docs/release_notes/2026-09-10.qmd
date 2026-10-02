@@ -1,0 +1,63 @@
+### Lab result values that were previously available only as free text now also provide a parsed comparison operator, numeric value, and unit {#star-12810}
+
+**What changed**
+
+Numeric lab results that were previously available only as free text (for example
+`>10 mg`) now also come with ready-to-use parts: a comparison operator, a number,
+and a unit. You no longer have to parse the text yourself to filter or aggregate on
+the numeric value.
+
+**Who is affected**
+
+- STARR OMOP 5.4
+- STARR Common
+
+**Action required**
+
+None. The original text value is unchanged; the new fields are additional.
+
+**Docs to extract**
+
+The same parsed values appear in two places — as new fields in STARR Common, and as
+standard OMOP fields in STARR OMOP 5.4.
+
+STARR Common — new fields on the SHC and LPCH lab result tables:
+
+| Field | Description |
+| --- | --- |
+| `operator_parsed_from_text_result` | Comparison operator when the result has one (`>`, `<`, `>=`, `<=`, `=`); empty otherwise |
+| `number_parsed_from_text_result` | The numeric value from the result |
+| `unit_parsed_from_text_result` | The unit of measure when the result has one |
+
+STARR OMOP 5.4 — standard `measurement` fields now populated from the parsed values:
+
+| Field | Description |
+| --- | --- |
+| `value_as_number` | The numeric value (when the source did not already provide a structured number) |
+| `operator_concept_id` | Standard concept for the comparison operator |
+| `unit_source_value` | The unit text from the result |
+| `unit_concept_id` | Standard concept mapped from that unit |
+| `value_source_value` | The original result text (unchanged) |
+
+**Example (illustrative, PHI-free)**
+
+STARR Common (SHC / LPCH lab result tables):
+
+| Result value | Operator | Number | Unit |
+| --- | --- | --- | --- |
+| `123` | | `123` | |
+| `10 mg` | | `10` | `mg` |
+| `>10` | `>` | `10` | |
+| `<=0.5` | `<=` | `0.5` | |
+| `1,234.56 mg` | | `1234.56` | `mg` |
+
+STARR OMOP 5.4 (`measurement`): the same values populate the standard fields
+(`operator_concept_id` holds the standard concept for the operator symbol shown):
+
+| `value_source_value` | `value_as_number` | `operator_concept_id` | `unit_source_value` |
+| --- | --- | --- | --- |
+| `123` | `123` | | |
+| `10 mg` | `10` | | `mg` |
+| `>10` | `10` | concept for `>` | |
+| `<=0.5` | `0.5` | concept for `<=` | |
+| `1,234.56 mg` | `1234.56` | | `mg` |

@@ -4,7 +4,7 @@ execute:
   echo: false
 ---
 
-A reverse-chronological log of STARR-OMOP dataset releases. The most recent release is listed first.
+A reverse-chronological log of STARR-OMOP dataset releases. The most recent release is listed first. What changed in each release is described in the [Release Notes](release_notes.qmd).
 
 ::: {.callout-note}
 Each dataset name below links directly to the Google Cloud Console, pinned to that dataset in your active GCP session. Query costs are billed to your own active billing project.

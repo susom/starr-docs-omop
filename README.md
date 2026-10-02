@@ -25,22 +25,24 @@ scripts/
   generate_docs.py      # Builds omop_data_model.qmd from starr-data-lake dbt YMLs
   generate_exports.py   # Builds the data dictionary page and Excel workbook
   generate_faq.py       # Builds faq.qmd from docs/faqs/q*.qmd entries
+  generate_release_notes.py  # Builds release_notes.qmd from docs/release_notes/*.qmd
   generate_llms_txt.py  # Builds llms.txt and llms-full.txt from the rendered site
 docs/
   _quarto.yml           # Quarto site config (pages, navbar, pre-render hooks)
   *.qmd                 # Site pages (about, getting_access, starr_omop54, ...)
-  assets/               # Hand-written site scripts (data dictionary grid)
+  assets/               # Hand-written site scripts (data dictionary grid, release notes sections)
   downloads/            # Generated downloadable artifacts (not committed)
   faqs/                 # Individual FAQ entries (see docs/faqs/README.md)
+  release_notes/        # One entry per dataset release (see docs/release_notes/README.md)
   styles.css, fonts/    # Stanford theme assets
 data/
   dictionary_baseline.json  # Last released field signatures (see below)
-tests/                  # Escaping and workbook-layout invariants
+tests/                  # Escaping, workbook-layout and release-notes invariants
 ```
 
 ## How the Site Is Built
 
-The pages `omop_data_model.qmd`, `omop_data_dictionary.qmd`, `faq.qmd`, `llms.txt`, `llms-full.txt`, and the Excel workbook `downloads/starr_omop_data_dictionary.xlsx` are **generated** — do not edit them by hand.
+The pages `omop_data_model.qmd`, `omop_data_dictionary.qmd`, `faq.qmd`, `release_notes.qmd`, `llms.txt`, `llms-full.txt`, and the Excel workbook `downloads/starr_omop_data_dictionary.xlsx` are **generated** — do not edit them by hand.
 
 The generated pages are committed so that a diff shows what a dbt change did to the docs. The workbook is not: it is a binary, nothing can be read out of its diff, and the same hooks rebuild it on every render and publish. Expect `docs/downloads/` to be empty in a fresh clone until you render.
 
@@ -49,9 +51,10 @@ They are produced automatically by the `pre-render` hooks declared in [docs/_qua
 1. `scripts/generate_docs.py omop` — sparse-clones [starr-data-lake](https://github.com/susom/starr-data-lake) and writes one section per table into `docs/omop_data_model.qmd`: what the table holds, and how many fields it has. It also rewrites the per-table list under **Data Model Tables** in `docs/_quarto.yml` (see below).
 2. `scripts/generate_exports.py omop` — sparse-clones the same repo and flattens the same models into `docs/omop_data_dictionary.qmd` and `docs/downloads/starr_omop_data_dictionary.xlsx`.
 3. `scripts/generate_faq.py` — collects every `docs/faqs/q*.qmd` entry into `docs/faq.qmd` (see [docs/faqs/README.md](docs/faqs/README.md)).
-4. `scripts/generate_llms_txt.py` — builds `docs/llms.txt` and `docs/llms-full.txt` from the site structure.
+4. `scripts/generate_release_notes.py` — checks every `docs/release_notes/YYYY-MM-DD.qmd` entry and assembles them into `docs/release_notes.qmd`, newest first and grouped by year and month. A failed check stops the render (see [docs/release_notes/README.md](docs/release_notes/README.md)).
+5. `scripts/generate_llms_txt.py` — builds `docs/llms.txt` and `docs/llms-full.txt` from the site structure.
 
-The order matters twice: step 4 reads the pages written by steps 1–3, and step 2 must run before it or `llms-full.txt` describes the previous dictionary.
+The order matters twice: step 5 reads the pages written by steps 1–4, and step 2 must run before it or `llms-full.txt` describes the previous dictionary.
 
 You can also run any of these scripts manually while iterating (see below).
 
@@ -107,13 +110,18 @@ python scripts/generate_exports.py omop --update-baseline
 
 Commit the result together with the page it produces.
 
+### Where release notes come from
+
+Release notes come from [starr-data-lake](https://github.com/susom/starr-data-lake) (STAR-12576). A change is included when its changelog entry carries the `STARR OMOP 5.4 Docs` tag, and the **User Impact** section of its pull request is published as written. Unlike the data model, release notes are not fetched at render time: pull request text can change after merge, and the changelog fold deletes the fragments that carry the tags. Each release's text is committed here as one file in `docs/release_notes/`; `generate_release_notes.py` only checks and assembles those files, so a render reads no network and the page changes only when an entry does.
+
 ### Tests
 
-`tests/` holds the invariants that are cheap to break and expensive to notice: HTML escaping on the generated page, and the workbook's registry-driven column formatting. They need no fixtures and no network.
+`tests/` holds the invariants that are cheap to break and expensive to notice: HTML escaping on the generated page, the workbook's registry-driven column formatting, and what the release-notes generator refuses. They need no fixtures and no network.
 
 ```bash
 python tests/test_html_escaping.py
 python tests/test_workbook_layout.py
+python tests/test_release_notes.py
 # or, if you have pytest: pytest tests
 ```
 

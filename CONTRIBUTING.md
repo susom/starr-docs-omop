@@ -12,7 +12,7 @@ websites documentation for page layout, navigation, and formatting options.
 
 - Make sure you can preview the site locally — see [Developer Guide](README.md#developer-guide) in the README.
 - Some pages are **generated** and must **not** be edited by hand:
-  `docs/omop_data_model.qmd`, `docs/faq.qmd`, `docs/llms.txt`, and `docs/llms-full.txt`.
+  `docs/omop_data_model.qmd`, `docs/faq.qmd`, `docs/release_notes.qmd`, `docs/llms.txt`, and `docs/llms-full.txt`.
   They are produced by the `pre-render` hooks defined in [docs/_quarto.yml](docs/_quarto.yml).
 
 ## Authoring Content
@@ -36,6 +36,15 @@ also runs automatically as a pre-render hook.
 
 FAQ entries live in [docs/faqs/](docs/faqs/) and are compiled into the FAQ page
 automatically. See [docs/faqs/README.md](docs/faqs/README.md) for the full authoring guide.
+
+### Publish Release Notes
+
+Each dataset release has one entry in [docs/release_notes/](docs/release_notes/), named for its
+snapshot date (`2026-09-10.qmd` for datasets ending in `_2026_09_10`). Entries are compiled into
+the Release Notes page automatically, newest first and grouped by year and month. An entry holds
+the **User Impact** sections of the starr-data-lake pull requests whose changelog entries carry the
+`STARR OMOP 5.4 Docs` tag, as written. See [docs/release_notes/README.md](docs/release_notes/README.md)
+for the full authoring guide.
 
 ### Edit Other Pages
 

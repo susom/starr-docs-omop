@@ -1,0 +1,21 @@
+<!--
+Copy this file to YYYY-MM-DD.qmd, named for the snapshot date in the release's
+dataset names (2026-09-10 for datasets ending in _2026_09_10). Take it from the
+dataset names, not from CHANGELOG.adoc, whose section date can be a few days
+later.
+
+Add one `###` section for each change whose changelog entry carries the
+`STARR OMOP 5.4 Docs` tag. Use the first sentence of that changelog entry as
+the heading, and paste the pull request's "User Impact / User-Facing Changes"
+section under it unchanged.
+
+Front matter is optional: `summary` adds one sentence under the release
+heading, and `title` replaces the default heading ("October 2026").
+
+Delete every comment, this one included: the page will not build while any
+remain. See README.md in this folder.
+-->
+
+### <!-- First sentence of the tagged changelog entry --> {#star-00000}
+
+<!-- The pull request's User Impact section, unchanged. -->
