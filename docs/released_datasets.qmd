@@ -34,9 +34,18 @@ These stable aliases always resolve to the most recent release. Use these for on
 
 The dated snapshots below are immutable — pin one for reproducible analyses.
 
+### September 2026
+
+Snapshot cut on **September 10, 2026** (`_2026_09_10`). The `_latest` aliases currently resolve to this release.
+
+- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_2026_09_10`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_2026_09_10&page=dataset)
+- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_2026_09_10`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_2026_09_10&page=dataset)
+- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_lite_2026_09_10`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_lite_2026_09_10&page=dataset)
+- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_lite_2026_09_10`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_lite_2026_09_10&page=dataset)
+
 ### June 2026
 
-Snapshot cut on **June 8, 2026** (`_2026_06_08`). The `_latest` aliases currently resolve to this release.
+Snapshot cut on **June 8, 2026** (`_2026_06_08`).
 
 - [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_2026_06_08`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_2026_06_08&page=dataset)
 - [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_2026_06_08`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_2026_06_08&page=dataset)

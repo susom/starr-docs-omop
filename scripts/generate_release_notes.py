@@ -116,8 +116,10 @@ INDEX_SEPARATOR = " \u00b7 "
 # changes inside an entry start at `###`. A `#` or `##` in an entry would
 # promote one change to the level of a whole year or release in the table of
 # contents, and split the release in Quarto's search, which has one result per
-# `##` section.
-RELEASE_LEVEL_HEADING = re.compile(r"\A#{1,2}\s")
+# `##` section. Indented ATX headings (up to 3 leading spaces in Markdown) and
+# Setext underlines (`=` or `-` under text) also promote changes to `#` or `##`.
+RELEASE_LEVEL_HEADING = re.compile(r"\A[ ]{0,3}#{1,2}(?:\s|\Z)")
+SETEXT_UNDERLINE = re.compile(r"\A[ ]{0,3}(=+|-+)[ \t]*\Z")
 FENCE = re.compile(r"\A\s*(```|~~~)")
 EXPLICIT_ID = re.compile(r"\{#([^}\s]+)")
 
@@ -126,6 +128,10 @@ EXPLICIT_ID = re.compile(r"\{#([^}\s]+)")
 # inside code blocks too, where example rows are often pasted.
 IDENTIFIER_PATTERNS = (
     (re.compile(r"\b\d{3}-\d{2}-\d{4}\b"), "an SSN-shaped number"),
+    (
+        re.compile(r"\bSSN\s*[:#]?\s*\d{9}\b", re.IGNORECASE),
+        "an SSN followed by digits",
+    ),
     (re.compile(r"\bMRN\s*[:#]?\s*\d", re.IGNORECASE), "an MRN followed by digits"),
 )
 
@@ -232,15 +238,29 @@ def check_entry(name: str, text: str) -> Tuple[Optional[Entry], List[str]]:
             problems.append(f"{name}: `{field}` still holds template guidance")
         problems.extend(identifier_problems(f"{name} ({field})", value))
 
+    if isinstance(title, str) and ("\n" in title or "\r" in title):
+        problems.append(f"{name}: `title` must be a single line")
+
+    prev_line = ""
     for number, line, fenced in numbered_lines(body, first_line):
         where = f"{name}:{number}"
-        if not fenced and RELEASE_LEVEL_HEADING.match(line):
-            problems.append(
-                f"{where}: start each change at `###`; `#` and `##` belong to the page"
-            )
+        if not fenced:
+            if RELEASE_LEVEL_HEADING.match(line):
+                problems.append(
+                    f"{where}: start each change at `###`; `#` and `##` belong to the page"
+                )
+            elif (
+                SETEXT_UNDERLINE.match(line)
+                and prev_line.strip()
+                and not prev_line.lstrip().startswith(("#", "<!--", "|"))
+            ):
+                problems.append(
+                    f"{where}: start each change at `###`; `#` and `##` belong to the page"
+                )
         if not fenced and "<!--" in line:
             problems.append(f"{where}: template guidance left in (an HTML comment)")
         problems.extend(identifier_problems(where, line))
+        prev_line = "" if fenced else line
     if not body.strip():
         problems.append(f"{name}: no changes; add at least one `###` section")
 

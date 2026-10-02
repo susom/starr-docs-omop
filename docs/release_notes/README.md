@@ -38,10 +38,10 @@ Once starr-data-lake's release-notes extractor writes entries (STAR-12576), copy
 [scripts/generate_release_notes.py](../../scripts/generate_release_notes.py) runs as a `pre-render` hook. It stops the render, so a bad entry is never published, when an entry:
 
 - is not named `YYYY-MM-DD.qmd` with a real date;
-- has an unclosed front matter block, keys other than `summary` and `title`, or a `summary` or `title` that is empty or not text;
-- uses a `#` or `##` heading, which belong to the page;
+- has an unclosed front matter block, keys other than `summary` and `title`, a `summary` or `title` that is empty or not text, or a multiline `title`;
+- uses a `#` or `##` heading (including indented ATX or Setext forms), which belong to the page;
 - still contains template guidance (any HTML comment);
-- contains an SSN-shaped number or `MRN` followed by digits, even inside a code block;
+- contains an SSN-shaped number (dashed or labeled nine-digit value) or `MRN` followed by digits, even inside a code block;
 - reuses an anchor that another section already has, including the page's own `#year-YYYY` and `#release-YYYY-MM-DD` anchors.
 
 Text is published as written, so the identifier check is only a backstop for example values that look real. If it fires, fix the example in the pull request and rebuild the entry.

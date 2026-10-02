@@ -185,6 +185,11 @@ def test_title_can_be_overridden():
     )
 
 
+def test_title_must_be_single_line():
+    problems = problems_for(entry(extra='title: "June 2026\\n# Extra"\n'))
+    assert any("title" in p and "single line" in p for p in problems), problems
+
+
 def test_identical_entries_render_identical_bytes():
     files = {"2026-06-08.qmd": entry(), "2026-10-15.qmd": entry(body="### Other\n")}
     assert rn.render_page(load(files)[0]) == rn.render_page(load(files)[0])
@@ -254,6 +259,14 @@ def test_a_misspelled_front_matter_key_is_refused():
 def test_changes_must_nest_under_the_release_heading():
     problems = problems_for(entry(body="## Too high\n\nText.\n"))
     assert any(":5:" in p and "###" in p for p in problems), problems
+    # Indented ATX headings up to 3 spaces must also be refused
+    assert any("###" in p for p in problems_for(entry(body="  ## Indented\n\nText.\n")))
+    assert any("###" in p for p in problems_for(entry(body="   # Level 1\n\nText.\n")))
+    # Setext headings must also be refused
+    assert any("###" in p for p in problems_for(entry(body="Title\n---\n\nText.\n")))
+    assert any("###" in p for p in problems_for(entry(body="Title\n===\n\nText.\n")))
+    # Thematic break preceded by a blank line is allowed
+    assert not problems_for(entry(body="### Change\n\nText.\n\n---\n\nMore text.\n"))
 
 
 def test_a_heading_inside_a_code_block_is_code():
@@ -269,6 +282,8 @@ def test_template_guidance_left_in_is_refused():
 def test_identifier_shaped_example_values_are_refused():
     assert problems_for(entry(body="### Change\n\n| MRN1234 | 1980-01-01 |\n"))
     assert problems_for(entry(body="### Change\n\n```\nssn = 123-45-6789\n```\n"))
+    assert problems_for(entry(body="### Change\n\nSSN: 123456789\n"))
+    assert problems_for(entry(body="### Change\n\n```\nssn 123456789\n```\n"))
     assert not problems_for(
         entry(body="### Change\n\n| person_id |\n|---|\n| 1001 |\n")
     )
