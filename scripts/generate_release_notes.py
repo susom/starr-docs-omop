@@ -120,7 +120,9 @@ INDEX_SEPARATOR = " \u00b7 "
 # Setext underlines (`=` or `-` under text) also promote changes to `#` or `##`.
 RELEASE_LEVEL_HEADING = re.compile(r"\A[ ]{0,3}#{1,2}(?:\s|\Z)")
 SETEXT_UNDERLINE = re.compile(r"\A[ ]{0,3}(=+|-+)[ \t]*\Z")
-FENCE = re.compile(r"\A\s*(```|~~~)")
+OPENING_FENCE = re.compile(r"\A[ ]{0,3}(`{3,}|~{3,})(.*)\Z")
+CLOSING_FENCE = re.compile(r"\A[ ]{0,3}(`{3,}|~{3,})[ \t]*\Z")
+FENCE = OPENING_FENCE
 EXPLICIT_ID = re.compile(r"\{#([^}\s]+)")
 
 # Entries are published as written, so these are a backstop, not a review: an
@@ -175,13 +177,33 @@ def numbered_lines(body: str, first_line: int) -> Iterator[Tuple[int, str, bool]
     The flag is True inside a fenced code block, where a ``##`` is a comment in
     the code being shown rather than a heading on the page.
     """
-    fenced = False
+    fence_char: Optional[str] = None
+    fence_len: int = 0
     for offset, line in enumerate(body.split("\n")):
-        if FENCE.match(line):
-            fenced = not fenced
+        if fence_char is None:
+            match = OPENING_FENCE.match(line)
+            if match:
+                delim = match.group(1)
+                char = delim[0]
+                # In CommonMark, backtick fences cannot have backticks in the info string
+                if char == "`" and "`" in match.group(2):
+                    yield first_line + offset, line, False
+                    continue
+                fence_char = char
+                fence_len = len(delim)
+                yield first_line + offset, line, True
+                continue
+            yield first_line + offset, line, False
+        else:
+            match = CLOSING_FENCE.match(line)
+            if match:
+                delim = match.group(1)
+                if delim[0] == fence_char and len(delim) >= fence_len:
+                    fence_char = None
+                    fence_len = 0
+                    yield first_line + offset, line, True
+                    continue
             yield first_line + offset, line, True
-            continue
-        yield first_line + offset, line, fenced
 
 
 def identifier_problems(where: str, text: str) -> List[str]:
@@ -240,6 +262,25 @@ def check_entry(name: str, text: str) -> Tuple[Optional[Entry], List[str]]:
 
     if isinstance(title, str) and ("\n" in title or "\r" in title):
         problems.append(f"{name}: `title` must be a single line")
+
+    if isinstance(summary, str) and summary:
+        prev_line = ""
+        for _, line, fenced in numbered_lines(summary, 1):
+            where = f"{name} (summary)"
+            if not fenced:
+                if RELEASE_LEVEL_HEADING.match(line):
+                    problems.append(
+                        f"{where}: start each change at `###`; `#` and `##` belong to the page"
+                    )
+                elif (
+                    SETEXT_UNDERLINE.match(line)
+                    and prev_line.strip()
+                    and not prev_line.lstrip().startswith(("#", "<!--", "|"))
+                ):
+                    problems.append(
+                        f"{where}: start each change at `###`; `#` and `##` belong to the page"
+                    )
+            prev_line = "" if fenced else line
 
     prev_line = ""
     for number, line, fenced in numbered_lines(body, first_line):

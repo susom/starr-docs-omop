@@ -267,11 +267,44 @@ def test_changes_must_nest_under_the_release_heading():
     assert any("###" in p for p in problems_for(entry(body="Title\n===\n\nText.\n")))
     # Thematic break preceded by a blank line is allowed
     assert not problems_for(entry(body="### Change\n\nText.\n\n---\n\nMore text.\n"))
+    # A four-space-indented literal is not a fence, so a following heading is caught
+    assert any(
+        "###" in p for p in problems_for(entry(body="    ```\n## Escaped\n\nText.\n"))
+    )
+    # Mismatched fence delimiters do not close the block or allow headings to escape
+    assert any(
+        "###" in p
+        for p in problems_for(entry(body="```\n~~~\n```\n## Escaped\n\nText.\n"))
+    )
+    assert any(
+        "###" in p
+        for p in problems_for(entry(body="~~~\n```\n~~~\n## Escaped\n\nText.\n"))
+    )
+    # A shorter closing fence does not close a longer opening fence
+    assert any(
+        "###" in p
+        for p in problems_for(entry(body="````\n```\n````\n## Escaped\n\nText.\n"))
+    )
+    # Summary headings that break the page structure are also refused
+    assert any("###" in p for p in problems_for(entry(summary="## Injected release")))
+    assert any("###" in p for p in problems_for(entry(summary="# Injected year")))
+    assert any("###" in p for p in problems_for(entry(summary="  ## Indented")))
+    assert any("###" in p for p in problems_for(entry(summary="Title\\n===\\n")))
+    assert any("###" in p for p in problems_for(entry(summary="Title\\n---\\n")))
 
 
 def test_a_heading_inside_a_code_block_is_code():
     body = "### Counting people\n\n```python\n# one row per person\nprint(1)\n```\n"
     assert not problems_for(entry(body=body))
+    # Tilde fences also protect code comments
+    tilde_body = "### Tildes\n\n~~~python\n# one row per person\nprint(1)\n~~~\n"
+    assert not problems_for(entry(body=tilde_body))
+    # Longer fences allow inner fences as literal code
+    nested_body = "### Nested\n\n````markdown\n```python\n# comment\n```\n````\n"
+    assert not problems_for(entry(body=nested_body))
+    # Comments inside code fences in a summary are not treated as headings
+    summary_code = "```python\n# comment\n```\nSummary sentence."
+    assert not problems_for(entry(summary=summary_code))
 
 
 def test_template_guidance_left_in_is_refused():
