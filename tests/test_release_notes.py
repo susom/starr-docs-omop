@@ -1,7 +1,7 @@
 """What the release-notes generator must refuse, and what it must guarantee.
 
-Entries are published as written, and the page they build is public, so the
-generator is the only check between an entry and the site.
+Entries are reviewed with their source changes and published as written. The
+generator adds structural and identifier checks before they reach the public site.
 These tests pin what it refuses -- structure that breaks the page, template
 guidance left in, example values that look like real identifiers -- and what it
 guarantees: newest release first, releases grouped under their year with an
@@ -15,6 +15,7 @@ Run with pytest, or directly::
     python tests/test_release_notes.py
 """
 
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -293,6 +294,23 @@ def test_changes_must_nest_under_the_release_heading():
     assert any("###" in p for p in problems_for(entry(summary="Title\\n---\\n")))
 
 
+def test_each_entry_requires_an_unfenced_level_three_heading():
+    for body in (
+        "",
+        "A change described only in prose.\n",
+        "#### Details without a change\n",
+        "```markdown\n### Example, not a change\n```\n",
+        "~~~markdown\n### Example, not a change\n~~~\n",
+        "    ### Indented code, not a change\n",
+        "###Not a heading\n",
+        r"\### Escaped, not a heading",
+    ):
+        problems = problems_for(entry(summary="### Summary heading", body=body))
+        assert any("at least one `###` section" in p for p in problems), body
+    for indent in range(4):
+        assert not problems_for(entry(body=" " * indent + "### Actual change\n"))
+
+
 def test_a_heading_inside_a_code_block_is_code():
     body = "### Counting people\n\n```python\n# one row per person\nprint(1)\n```\n"
     assert not problems_for(entry(body=body))
@@ -322,10 +340,109 @@ def test_identifier_shaped_example_values_are_refused():
     )
 
 
+def test_wrapped_and_formatted_identifiers_are_refused_with_source_locations():
+    for value in (
+        "MRN:\n1234567",
+        "MRN: **1234567**",
+        "**MRN:** `1234567`",
+        "[MRN](https://example.org): **1234567**",
+        "SSN:\n**123456789**",
+        "SSN = **123456789**",
+        "MRN = `1234567`",
+        "SSN: 123**456**789",
+        "MRN&colon;&nbsp;**1234567**",
+        "| MRN: | **1234567** |",
+        "| SSN | `123456789` |",
+        "| MRN | Result |\n| --- | --- |\n| **1234567** | Positive |",
+        "| Result | SSN |\n| --- | --- |\n| Positive | `123456789` |",
+    ):
+        problems = problems_for("### Change\n\n" + value + "\n")
+        assert problems, value
+        assert any(
+            re.match(r"2026-10-15\.qmd:\d+:", problem) for problem in problems
+        ), problems
+        assert not any("1234567" in problem for problem in problems), problems
+    assert problems_for(entry(summary="MRN: **1234567**"))
+    assert problems_for(entry(body="### Change\n\n```text\nMRN:\n1234567\n```\n"))
+    assert not problems_for(entry(body="### Change\n\nMRN: `EXAMPLE_MRN`\n"))
+
+
+def test_identifier_locations_survive_markdown_normalization():
+    for text, line in (
+        ("Intro.\nMRN:\n**1234567**", 21),
+        ("Intro.\nSSN: [123456789](https://example.org/\nmore)", 21),
+        (
+            "| Result | MRN |\n| --- | --- |\n| Positive | **1234567** |",
+            22,
+        ),
+    ):
+        problems = rn.identifier_problems("entry.qmd", text, first_line=20)
+        assert len(problems) == 1, problems
+        assert problems[0].startswith(f"entry.qmd:{line}:"), problems
+        assert "1234567" not in problems[0], problems
+
+
+def test_executable_or_private_note_content_is_refused():
+    for value in (
+        "<script>alert(1)</script>",
+        "```{python}\nprint('not executed')\n```",
+        "~~~{ruby}\nputs 'not executed'\n~~~",
+        "{{< include private.txt >}}",
+        "[Internal ticket](https://stanfordmed.atlassian.net/browse/STAR-1)",
+    ):
+        assert problems_for(entry(body="### Change\n\n" + value)), value
+
+
+def test_unclosed_code_fences_cannot_swallow_the_next_release():
+    for text in (
+        "### Change\n\n```python\nvalue = 1\n",
+        "### Change\n\n~~~text\nExample",
+    ):
+        assert any("close the fenced" in problem for problem in problems_for(text))
+    assert any(
+        "close the fenced" in problem
+        for problem in problems_for(entry(summary="```text\\nExample"))
+    )
+    assert not problems_for("### Change\n\n```text\nExample\n```")
+
+
 def test_anchors_are_unique_across_the_page():
     # Both entries carry CHANGE, and with it {#star-11694}.
     problems = load({"2026-06-08.qmd": entry(), "2026-10-15.qmd": entry()})[1]
     assert any("#star-11694" in problem for problem in problems), problems
+
+
+def test_anchors_in_titles_and_summaries_are_globally_unique():
+    for field in ("title", "summary"):
+        for ident in ("year-2026", "release-2026-10-15", "star-11694"):
+            value = f"[Details]{{#{ident}}}"
+            text = (
+                entry(summary=value)
+                if field == "summary"
+                else entry(extra=f'title: "{value}"\n')
+            )
+            problems = problems_for(text)
+            assert any(
+                f"#{ident} is already used" in problem for problem in problems
+            ), (field, ident, problems)
+        text = (
+            entry(summary="[Details]{#shared-span}", body="### October\n")
+            if field == "summary"
+            else entry(extra='title: "[Details]{#shared-span}"\n', body="### October\n")
+        )
+        problems = load(
+            {
+                "2026-10-15.qmd": text,
+                "2026-06-08.qmd": entry(body="### June\n\n[Details]{#shared-span}\n"),
+            }
+        )[1]
+        assert any("#shared-span is already used" in p for p in problems), problems
+    assert problems_for(
+        entry(summary="[Details]{#shared}", extra='title: "[Title]{#shared}"\n')
+    )
+    assert not problems_for(
+        entry(summary="[Details]{#summary-id}", extra='title: "[Title]{#title-id}"\n')
+    )
 
 
 def test_a_year_heading_anchor_cannot_be_reused():
@@ -352,10 +469,16 @@ def test_no_entries_still_builds_a_page():
     assert "\n# " not in page and "- **" not in page, page
 
 
-def test_a_release_missing_from_released_datasets_is_flagged():
-    entries = load({"2026-10-15.qmd": entry()})[0]
-    assert rn.snapshot_warnings(entries, "starr_omop_cdm54_confidential_2026_06_08")
-    assert not rn.snapshot_warnings(entries, "starr_omop_cdm54_confidential_2026_10_15")
+def test_a_release_missing_its_dataset_record_is_refused():
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        folder = root / "docs/release_notes"
+        folder.mkdir(parents=True)
+        (folder / "2026-10-15.qmd").write_text(entry(), encoding="utf-8")
+        problems = rn.entry_problems(root, [])
+    assert any("no available dataset record" in problem for problem in problems), (
+        problems
+    )
 
 
 def test_the_page_reaches_llms_txt():

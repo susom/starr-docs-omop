@@ -69,7 +69,8 @@ def strip_to_plaintext(text):
     text = re.sub(r"<details>\s*", "", text)
     text = re.sub(r"</details>\s*", "", text)
     text = re.sub(r"<summary>(.*?)</summary>", r"\1", text)
-    text = re.sub(r"<[^>]+>", "", text)
+    # A lab comparison such as `<0.5` is prose, not the start of an HTML tag.
+    text = re.sub(r"</?[A-Za-z][^>]*>|<!--.*?-->", "", text, flags=re.DOTALL)
     text = re.sub(r":::\s*\{[^}]*\}", "", text)
     text = re.sub(r":::", "", text)
     text = re.sub(r"\{#[^}]+\}", "", text)
@@ -79,6 +80,7 @@ def strip_to_plaintext(text):
     text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
     text = re.sub(r"\*\*`([^`]+)`\*\*", r"\1", text)
     text = re.sub(r"\*\(([^)]+)\)\*", r"(\1)", text)
+    text = "\n".join(line.rstrip() for line in text.splitlines())
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
 

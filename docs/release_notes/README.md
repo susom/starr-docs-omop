@@ -1,53 +1,195 @@
-# Authoring Release Notes
+# Authoring and Delivering Release Notes
 
-This folder holds one file per STARR-OMOP dataset release. They are compiled into the [Release Notes](../release_notes.qmd) page automatically. `docs/release_notes.qmd` is a **generated file**: do not edit it by hand, because your changes will be overwritten.
+**Write once with the code change, collect at dataset availability, render at site
+build.** This folder retains one fixed `.qmd` entry per snapshot. Its matching
+record in `data/releases/YYYY-MM-DD.json` supplies the release date, suffix,
+available variants, provenance, and entry checksum.
+
+`docs/release_notes.qmd` and `docs/released_datasets.qmd` are both generated.
+Do not edit either page, or an imported entry, by hand.
 
 ## How the Page Is Organized
 
-The page lists releases newest first, grouped by year and month:
+Releases are newest first: `# Year`, `## Month Year`, then `### Change`.
+The index and table of contents link years and releases; two snapshots in a month
+have distinct dates in the index. Quarto search indexes each release separately.
+The existing expandable years/months, Expand all / Collapse all, deep links,
+keyboard controls, print view, and no-JavaScript fallback are unchanged.
 
-- `# 2026`: one heading per year.
-- `## September 2026`: one heading per release, with the snapshot date and dataset suffix under it. This heading comes from the release's date, and the `title` front matter key replaces it.
-- `###`: the entry's changes, as written.
+## Write and Review the Note Upstream
 
-An index under the introduction links every release by year and month, and the table of contents lists every year and month; it leaves out the changes, whose headings are whole sentences. Quarto's site search returns one result per `##` section, so searching for a table or field name such as `operator_concept_id` lists the months that changed it.
+In starr-data-lake, put this block inside the existing changelog fragment:
 
-Each year and month heading opens and closes its section. The newest year and the newest release start open, and every other one starts closed, so a reader sees the latest changes first and older months as a short list. **Expand all** and **Collapse all** act on every section at once. A link into a closed section opens it, whether it comes from the index, the table of contents, a search result or a shared URL. In browsers that support `hidden="until-found"`, find-in-page searches closed sections too. Printing shows every section. The behaviour is [docs/assets/release-notes.js](../assets/release-notes.js), and the look is the release notes section of [docs/styles.css](../styles.css); both act only on this page. Without JavaScript, every section is open.
+```adoc
+////
+starr-user-note:
+  schema_version: 1
+  id: star-12345
+  audiences:
+    - STARR OMOP 5.4
+  title: Observation periods include notes
+  impact: |
+    A note-only encounter now contributes to `observation_period`.
+  action: |
+    Recompute cohorts if their inclusion depends on observation period coverage.
+////
+```
 
-## Where the Text Comes From
+`details` is optional Markdown, for example a field table or synthetic example.
+Keep the title to one line and at most 140 characters. Subheadings in the text
+start at `####`. The tool supplies `###` headings and release-qualified anchors,
+so the same ticket can appear in different snapshots without duplicate IDs.
 
-Release notes describe what changed **for users**, in the words of the engineers who made each change. They come from starr-data-lake (see STAR-12576), and nobody rewrites them on the way:
+For a change with no user-facing impact, keep `schema_version`, `id`, and
+`audiences`, but replace the public text fields with `no_user_impact: "<reason>"`.
+Link the fragment from the PR instead of copying the text into its description.
+The author and code reviewer approve the content with the implementation; the
+pipeline does not rewrite it or require a second monthly editorial pass.
 
-- A change is included when its changelog entry carries the `STARR OMOP 5.4 Docs` tag **and** its pull request has a filled **User Impact / User-Facing Changes** section. A change without the tag is left out, however good its text.
-- The User Impact section is published as written, under a heading taken from the first sentence of the tagged changelog entry.
+The upstream PR check covers `dbt/`, `src/`, and `deployments/` changes and all
+added/edited changelog fragments. It requires a new or updated note or explicit
+no-impact reason. An absent Docs tag no longer drops a change silently.
+`STARR OMOP 5.4` in `audiences` identifies this site's eligible notes. An audience
+for STARR Common can share the block, but Common-site delivery is outside this
+OMOP workflow.
 
-To change what a note says, edit the pull request's User Impact section and rebuild the entry. To leave a change out, remove its `STARR OMOP 5.4 Docs` tag.
+## Freeze an Identified Dataset Release
 
-## Adding a Release
+The shared `scripts/release_pipeline.py prepare` command creates an upstream
+`releases/omop/YYYY-MM-DD.yaml` draft from explicit previous and deployed source
+commits. It recovers fragments even after a changelog fold deletes them. Source
+revisions must be full commit SHAs on the release's first-parent history; a
+moving `main`, PR merge time, or changelog section date is not release identity.
 
-Once starr-data-lake's release-notes extractor writes entries (STAR-12576), copy its file here unchanged. Until then, or to build one by hand:
+The record contains:
 
-1. Name the file for the snapshot date in the release's dataset names: `2026-09-10.qmd` for datasets ending in `_2026_09_10`. Take it from the dataset names (the `dataset_suffix` of starr-data-lake's production OMOP deployment), not from `CHANGELOG.adoc`. The changelog section can be dated a few days later: the section for `_2026_09_10` is dated 2026-09-11.
-2. Add one `###` section per tagged change, laid out as in [_template.qmd](_template.qmd): the first sentence of its changelog entry as the heading, an anchor built from its Jira key, such as `{#star-11694}`, and then the pull request's User Impact section, unchanged. `#` and `##` belong to the page. Anchors must be unique across the page, so a ticket that returns in a later release gets a suffix there, such as `{#star-11694-2026-11}`.
-3. Front matter is optional. A `summary` adds one sentence under the release heading, and `title` replaces the default heading, the month and year (`October 2026`).
-4. Add the release's datasets to [Released Datasets](../released_datasets.qmd) if they are not listed yet. The generator warns when a release has notes but no datasets.
-5. Preview with `quarto preview` from `docs/`. The page is rebuilt on every render.
+| Field | Meaning |
+|---|---|
+| `schema_version` | `1` |
+| `release_date`, `dataset_suffix` | Matching snapshot identity, e.g. `2026-09-10` and `_2026_09_10` |
+| `previous_revision`, `source_revision` | Exact previous and newly deployed code revisions |
+| `status` | `draft` or explicitly `available` |
+| `available_at`, `availability_evidence` | Timezone-qualified availability timestamp and private deployment/run evidence |
+| `variants` | Available subset of `core`, `1pcent`, `lite`, `1pcent_lite`, in that order |
+| `revision`, `correction_reason` | Starts at `1` with no correction; later revisions explain the change |
+| `notes_status`, `no_changes_reason` | `published`, or explicit `no-user-facing-changes` with a public explanation |
+| `notes` | Every fragment, with `path`, `disposition` (`include`/`omit`), and an omission `reason` when applicable |
 
-## What the Generator Refuses
+Prepared legacy/missing-note decisions remain `unresolved`, never silently
+excluded. Export rejects missing, duplicate, foreign, or unresolved decisions.
+An explicit omission can account for a non-shipped feature, unrelated audience,
+or no-impact change; it must explain the decision. Legacy text cannot be
+published by guessing a missing impact statement.
 
-[scripts/generate_release_notes.py](../../scripts/generate_release_notes.py) runs as a `pre-render` hook. It stops the render, so a bad entry is never published, when an entry:
+Declare availability only after the listed snapshots are accessible and their
+`_latest` aliases have moved. The assertion comes from the release owner or a
+verified deployment-completion step. **A configured deployment, merged PR,
+GitHub release/tag, or built image is not that event.** The tool validates the
+record but does not probe BigQuery or prove the availability assertion.
 
-- is not named `YYYY-MM-DD.qmd` with a real date;
-- has an unclosed front matter block, keys other than `summary` and `title`, a `summary` or `title` that is empty or not text, or a multiline `title`;
-- uses a `#` or `##` heading (including indented ATX or Setext forms), which belong to the page;
-- still contains template guidance (any HTML comment);
-- contains an SSN-shaped number (dashed or labeled nine-digit value) or `MRN` followed by digits, even inside a code block;
-- reuses an anchor that another section already has, including the page's own `#year-YYYY` and `#release-YYYY-MM-DD` anchors.
+`export` freezes public metadata and note text into a JSON bundle. Private
+evidence, omission reasons, fragment paths, and raw PR bodies are not exported.
+Draft bundles can be inspected but are refused by the importer.
 
-Text is published as written, so the identifier check is only a backstop for example values that look real. If it fires, fix the example in the pull request and rebuild the entry.
+## Import and Build in Docker
 
-To check entries without rendering, run this from the repository root:
+From the docs repository root:
 
 ```bash
-python scripts/generate_release_notes.py --check
+docker build -f Dockerfile.site -t starr-docs-site .
+docker run --rm --network none \
+  -v "$PWD:/workspace" -v /path/to/public-bundles:/bundles:ro \
+  starr-docs-site python scripts/build_site.py \
+  --bundle /bundles/YYYY-MM-DD.json --offline
 ```
+
+This is the single synchronization-and-compilation command. It fails before
+rendering if the bundle is absent, invalid, not available, or inconsistent.
+Without `--bundle`, it renders committed releases only. Offline mode explicitly
+uses committed model pages and skips FAQ execution; production never uses that
+fallback.
+
+For an import without rendering, use `release_pipeline.py sync --bundle ...`.
+`generate_release_notes.py --check` validates the entire committed catalog and
+entries without writing pages. The pre-render hook generates both release pages
+from the same validated records, before the LLM indexes.
+
+Identical imports are no-ops, including file timestamps. Changed historical
+content needs exactly the next `revision` and a `correction_reason`. Checksums,
+global anchor validation, and pre-write validation prevent accidental partial
+or inconsistent delivery. The PR check also compares history with its base and
+rejects removed release records or unversioned corrections.
+
+For a text-only correction, commit the corrected note at the same fragment path
+and pin that full commit SHA in the included decision's optional `text_revision`.
+This override is accepted only for revision 2 or later with a correction reason,
+and preserves the original note ID. Keep `source_revision` at the code that
+actually built the dataset; a later editorial commit did not rebuild that data.
+The override is private provenance and is not copied into the public bundle.
+
+The initial January, June, and September 2026 records are the only permitted
+legacy records. No exact deployed revision or availability timestamp was proven
+for them, so those fields are explicitly null. September's existing entry is
+unchanged. January and June say notes were not recorded, not "no changes."
+The sample October entry in the earlier task artifacts is not an available
+dataset and is not installed in the production catalog.
+
+## Publication Checks
+
+The build refuses invalid filenames/dates, missing dataset records or entries,
+checksum mismatches, duplicate anchors, invalid front matter, and headings that
+escape their release section. Each entry needs at least one unfenced `###` change
+heading. Explicit IDs in titles, summaries, and bodies are checked together.
+The build also refuses template comments, raw HTML, executable Quarto
+cells/shortcodes, and private source-system links.
+
+Identifier checks scan raw and normalized Markdown, including wrapped labels,
+inline formatting, adjacent table cells, table header/value columns, and code
+examples. Errors name source lines without repeating identifier values.
+These checks are **backstops, not a guarantee that arbitrary prose is PHI-free**.
+Authors and reviewers must still use public-facing text and synthetic examples.
+
+## Automation Activation
+
+The shared tooling must land in this repository before the upstream workflows,
+which check out its `main`. The upstream integration supplies the changelog/PR
+templates, a required user-note check, an availability-record template, and a
+release-delivery workflow.
+
+In **starr-data-lake**, install a GitHub App on `starr-docs-omop` with Contents
+and Pull requests write permission. Set `RELEASE_DOCS_APP_ID` (Actions variable)
+and `RELEASE_DOCS_APP_PRIVATE_KEY` (Actions secret). Make
+`Validate versioned user notes` a required PR check.
+
+Delivery starts when an available record reaches upstream `main`, or by explicit
+workflow dispatch. It creates/updates `automation/omop-release-YYYY-MM-DD`, imports
+only the public bundle, runs the offline build, and fills this repository's actual
+PR template. Using an App token allows the generated PR to trigger this site's CI.
+For no additional editorial review, enable auto-merge, protect `main` with
+`Verify documentation`, and set upstream `RELEASE_DOCS_AUTOMERGE=true`. This
+requests normal auto-merge; it never bypasses branch rules. If several release
+PRs were prepared against the same base, rerun delivery after merging one to
+refresh the others' generated pages.
+
+In **starr-docs-omop**, configure:
+
+| Setting | Purpose |
+|---|---|
+| Pages source: GitHub Actions | Permits `deploy-pages`; preserves the existing Quarto site-path configuration |
+| `github-pages` environment | Limits production deployments to `main`; configure its normal approval rules |
+| `STARR_READ_APP_ID` variable | Separate read-only GitHub App installed on starr-data-lake |
+| `STARR_READ_APP_PRIVATE_KEY` secret | Key for that read-only App; never mounted into the build |
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` variable | Google federation provider trusted for this repository/environment |
+| `GCP_SERVICE_ACCOUNT` variable | Least-privilege account allowed to run the existing FAQ queries and read their training dataset |
+
+The Documentation workflow runs credential-free PR checks and a distinct,
+credentialed production build after merge to `main`. A supplied read-only source
+checkout lets both existing model generators use the same source without embedding
+GitHub credentials in Docker. Google credentials are ephemeral and mounted only
+for that production render. Source model refresh and FAQ execution remain enabled.
+Only a completed production render is uploaded to Pages.
+
+Missing settings or any synchronization/build error fail visibly. No App
+installation, secret, branch rule, Pages setting, or deployment is created merely
+by adding these files; those administrative activation steps must be completed
+in the repository settings.

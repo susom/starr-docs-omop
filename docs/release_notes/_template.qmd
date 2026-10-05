@@ -1,21 +1,21 @@
 <!--
-Copy this file to YYYY-MM-DD.qmd, named for the snapshot date in the release's
-dataset names (2026-09-10 for datasets ending in _2026_09_10). Take it from the
-dataset names, not from CHANGELOG.adoc, whose section date can be a few days
-later.
-
-Add one `###` section for each change whose changelog entry carries the
-`STARR OMOP 5.4 Docs` tag. Use the first sentence of that changelog entry as
-the heading, and paste the pull request's "User Impact / User-Facing Changes"
-section under it unchanged.
-
-Front matter is optional: `summary` adds one sentence under the release
-heading, and `title` replaces the default heading ("October 2026").
-
-Delete every comment, this one included: the page will not build while any
-remain. See README.md in this folder.
+Generated entry shape, for reference only. Normal delivery imports a fixed,
+available release bundle; do not copy this file into the catalog by hand.
+Write the source note in starr-data-lake's starr-user-note block and review it
+with the code change. See README.md for the authoring and availability contract.
+The importer checks the matching data/releases record and exact entry checksum.
 -->
 
-### <!-- First sentence of the tagged changelog entry --> {#star-00000}
+### <!-- Short title from the versioned note --> {#star-00000-YYYY-MM-DD}
 
-<!-- The pull request's User Impact section, unchanged. -->
+**What changed**
+
+<!-- Impact text from the versioned note. -->
+
+**Who is affected**
+
+<!-- Audiences from the versioned note. -->
+
+**Action required**
+
+<!-- Action text from the versioned note. -->

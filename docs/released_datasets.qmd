@@ -4,7 +4,7 @@ execute:
   echo: false
 ---
 
-A reverse-chronological log of STARR-OMOP dataset releases. The most recent release is listed first. What changed in each release is described in the [Release Notes](release_notes.qmd).
+A reverse-chronological log of available STARR-OMOP dataset releases. The same release records supply this page and the [Release Notes](release_notes.qmd).
 
 ::: {.callout-note}
 Each dataset name below links directly to the Google Cloud Console, pinned to that dataset in your active GCP session. Query costs are billed to your own active billing project.
@@ -12,31 +12,31 @@ Each dataset name below links directly to the Google Cloud Console, pinned to th
 
 ## Dataset Variants
 
-Every release ships in four variants. The suffix on the dataset name identifies each one:
+A release lists only the variants confirmed available:
 
-- **Core** (no suffix) — full PHI-scrubbed dataset: structured data plus clinical text and text-derived NLP concepts.
-- **`_1pcent`** — a random 1% sample of the core dataset, for testing and sandbox exploration.
-- **`_lite`** — structured data only; clinical text and NLP tables removed.
-- **`_1pcent_lite`** — a random 1% sample of the lite variant.
-
-The `_latest` alias always points to the most recent release snapshot.
+- **Core** (no suffix) - full PHI-scrubbed dataset: structured data plus clinical text and text-derived NLP concepts.
+- **`_1pcent`** - a random 1% sample of the core dataset, for testing and sandbox exploration.
+- **`_lite`** - structured data only; clinical text and NLP tables removed.
+- **`_1pcent_lite`** - a random 1% sample of the lite variant.
 
 ## Latest Datasets
 
-These stable aliases always resolve to the most recent release. Use these for ongoing work — they roll forward automatically with each new release.
+These stable aliases roll forward when their variant is declared available. Pin a dated snapshot instead when an analysis must be reproducible.
 
-- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_latest`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_latest&page=dataset)
-- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_latest`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_latest&page=dataset)
-- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_lite_latest`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_lite_latest&page=dataset)
-- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_lite_latest`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_lite_latest&page=dataset)
+- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_latest`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_latest&page=dataset) - `_2026_09_10`
+- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_latest`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_latest&page=dataset) - `_2026_09_10`
+- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_lite_latest`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_lite_latest&page=dataset) - `_2026_09_10`
+- [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_lite_latest`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_lite_latest&page=dataset) - `_2026_09_10`
 
 ## Release History
 
-The dated snapshots below are immutable — pin one for reproducible analyses.
+The dated snapshots below are immutable.
 
 ### September 2026
 
-Snapshot cut on **September 10, 2026** (`_2026_09_10`). The `_latest` aliases currently resolve to this release.
+Snapshot cut on **September 10, 2026** (`_2026_09_10`).
+
+[Read the release notes](release_notes.qmd#release-2026-09-10).
 
 - [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_2026_09_10`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_2026_09_10&page=dataset)
 - [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_2026_09_10`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_2026_09_10&page=dataset)
@@ -47,6 +47,8 @@ Snapshot cut on **September 10, 2026** (`_2026_09_10`). The `_latest` aliases cu
 
 Snapshot cut on **June 8, 2026** (`_2026_06_08`).
 
+Release notes were not recorded for this historical snapshot.
+
 - [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_2026_06_08`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_2026_06_08&page=dataset)
 - [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_2026_06_08`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_2026_06_08&page=dataset)
 - [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_lite_2026_06_08`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_lite_2026_06_08&page=dataset)
@@ -55,6 +57,8 @@ Snapshot cut on **June 8, 2026** (`_2026_06_08`).
 ### January 2026
 
 Snapshot cut on **January 18, 2026** (`_2026_01_18`).
+
+Release notes were not recorded for this historical snapshot.
 
 - [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_2026_01_18`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_2026_01_18&page=dataset)
 - [`som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_2026_01_18`](https://console.cloud.google.com/bigquery?p=som-rit-phi-starr-prod&d=starr_omop_cdm54_confidential_1pcent_2026_01_18&page=dataset)

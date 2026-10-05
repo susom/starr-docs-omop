@@ -6,8 +6,8 @@ project:
     # generate_llms_txt.py, which reads the dictionary page.
     - ../scripts/generate_exports.py omop
     - ../scripts/generate_faq.py
-    # Writes release_notes.qmd from docs/release_notes/*.qmd, and stops the
-    # render if an entry fails its checks. Must also precede generate_llms_txt.py.
+    # Validates fixed release records and entries, then writes both release
+    # pages. No live PR lookups. Must precede generate_llms_txt.py.
     - ../scripts/generate_release_notes.py
     - ../scripts/generate_llms_txt.py --base-url "https://shiny-funicular-j1po82z.pages.github.io/about/"
   render:

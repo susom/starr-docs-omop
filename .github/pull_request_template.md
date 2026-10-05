@@ -9,7 +9,7 @@
 <!-- Put an `x` in all boxes that apply. -->
 
 - [ ] 📄 New page or FAQ entry
-- [ ] 📰 Release notes entry (`docs/release_notes/*.qmd`)
+- [ ] 📰 Release notes entry (`docs/release_notes/*.qmd`) or dataset record (`data/releases/*.json`)
 - [ ] ✏️ Content update to an existing page or FAQ
 - [ ] 🛠️ Generator/script change (`scripts/*.py`)
 - [ ] 🗂️ Data model regeneration (`omop_data_model.qmd` inputs)
@@ -34,7 +34,7 @@
 
 - [ ] Ran `quarto preview` locally and the site renders without errors
 - [ ] Affected pages display and navigate correctly
-- [ ] I did **not** hand-edit generated files (`omop_data_model.qmd`, `faq.qmd`, `release_notes.qmd`, `llms.txt`, `llms-full.txt`)
+- [ ] I did **not** hand-edit generated files (`omop_data_model.qmd`, `faq.qmd`, `release_notes.qmd`, `released_datasets.qmd`, `llms.txt`, `llms-full.txt`)
 
 ## Screenshots
 

@@ -182,6 +182,19 @@ class DocGenerator:
 
     def clone_repository(self) -> Path:
         """Clone repository with sparse checkout."""
+        checkout = os.environ.get("STARR_DATA_LAKE_CHECKOUT")
+        if checkout is not None:
+            if not checkout:
+                raise ValueError("STARR_DATA_LAKE_CHECKOUT must not be empty")
+            repo_path = Path(checkout).resolve()
+            if not (repo_path / ".git").exists():
+                raise ValueError("STARR_DATA_LAKE_CHECKOUT must be a Git checkout")
+            if not (repo_path / self.config["yml_path"]).is_dir():
+                raise ValueError(
+                    "STARR_DATA_LAKE_CHECKOUT is missing the model directory"
+                )
+            print(f"Using the supplied starr-data-lake checkout: {repo_path}")
+            return repo_path
         print("Cloning starr-data-lake repository...")
 
         self.temp_dir = tempfile.mkdtemp(prefix="starr_docs_")
@@ -194,16 +207,27 @@ class DocGenerator:
         try:
             subprocess.run(
                 [
-                    "git", "clone", "--depth", "1",
-                    "--filter=blob:none", "--sparse",
-                    "--branch", "main",
-                    REPO_URL, str(repo_path),
+                    "git",
+                    "clone",
+                    "--depth",
+                    "1",
+                    "--filter=blob:none",
+                    "--sparse",
+                    "--branch",
+                    "main",
+                    REPO_URL,
+                    str(repo_path),
                 ],
-                check=True, capture_output=True, text=True,
+                check=True,
+                capture_output=True,
+                text=True,
             )
             subprocess.run(
                 ["git", "sparse-checkout", "set"] + sparse_paths,
-                cwd=repo_path, check=True, capture_output=True, text=True,
+                cwd=repo_path,
+                check=True,
+                capture_output=True,
+                text=True,
             )
             print(f"Repository cloned to {repo_path}")
             return repo_path
@@ -272,14 +296,16 @@ class DocGenerator:
                     "columns": [],
                 }
                 for column in model.get("columns", []):
-                    table_info["columns"].append({
-                        "name": column.get("name", ""),
-                        "description": column.get("description", "").strip(),
-                        "data_type": column.get("data_type", ""),
-                        "constraints": self._parse_constraints(
-                            column.get("constraints", [])
-                        ),
-                    })
+                    table_info["columns"].append(
+                        {
+                            "name": column.get("name", ""),
+                            "description": column.get("description", "").strip(),
+                            "data_type": column.get("data_type", ""),
+                            "constraints": self._parse_constraints(
+                                column.get("constraints", [])
+                            ),
+                        }
+                    )
                 tables.append(table_info)
             return tables
         except Exception as e:
@@ -301,7 +327,9 @@ class DocGenerator:
                 to_table = c.get("to", "")
                 to_columns = c.get("to_columns", [])
                 if to_columns:
-                    result.append(f"**Foreign Key** → `{to_table}({', '.join(to_columns)})`")
+                    result.append(
+                        f"**Foreign Key** → `{to_table}({', '.join(to_columns)})`"
+                    )
                 else:
                     result.append(f"**Foreign Key** → `{to_table}`")
         return result
@@ -409,7 +437,9 @@ class DocGenerator:
         pairs = [
             i - 1
             for i, line in enumerate(lines)
-            if i and href_marker in line and line.strip().startswith("href:")
+            if i
+            and href_marker in line
+            and line.strip().startswith("href:")
             and lines[i - 1].strip().startswith("- text:")
         ]
         if not pairs:
@@ -464,6 +494,7 @@ class DocGenerator:
         except Exception as e:
             print(f"Error during documentation generation: {e}")
             import traceback
+
             traceback.print_exc()
             sys.exit(1)
         finally:

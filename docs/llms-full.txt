@@ -137,7 +137,7 @@ This page describes what each table in the STARR-OMOP CDM v5.4 implementation ho
 
 ---
 
-## CARE_SITE 
+## CARE_SITE
 
 The CARE_SITE table contains a list of uniquely identified institutional
 (physical or organizational) units where healthcare delivery is practiced
@@ -150,7 +150,7 @@ services.
 
 ---
 
-## CDM_SOURCE 
+## CDM_SOURCE
 
 The CDM_SOURCE table provides information about the source data and the process used to transform the data into the OMOP Common Data Model.
 
@@ -158,7 +158,7 @@ The CDM_SOURCE table provides information about the source data and the process 
 
 ---
 
-## COHORT 
+## COHORT
 
 The cohort table contains records identifying the subject(s) for defined cohort, during each period where they fit the cohort definition(s) defined in the cohort_definition table.
 Cohorts typically include patients diagnosed with a specific condition, patients exposed to a particular drug, but can also be Providers who have performed a specific Procedure.
@@ -170,7 +170,7 @@ This table is not currently populated in STARR OMOP.
 
 ---
 
-## COHORT_DEFINITION 
+## COHORT_DEFINITION
 
 Cohorts are a set of subjects that satisfy a given combination of inclusion criteria for a duration of time.
 The COHORT_DEFINITION table provides a standardized structure for maintaining the rules governing the inclusion of a subject into a cohort, and can store operational programming code to instantiate the cohort within the OMOP Common Data Model.
@@ -180,7 +180,7 @@ This table is not currently populated in STARR OMOP.
 
 ---
 
-## CONCEPT 
+## CONCEPT
 
 The primary purpose of the CONCEPT table is to provide a standardized representation of medical Concepts, allowing for consistent querying and analysis across the healthcare databases.
 Users can join the CONCEPT table with other tables in the CDM to enrich clinical data with standardized Concept information or use the CONCEPT table as a reference for mapping clinical data from source terminologies to Standard Concepts.
@@ -191,7 +191,7 @@ Concepts can be classified into different domains, such as drug, procedure, cond
 
 ---
 
-## CONCEPT_ANCESTOR 
+## CONCEPT_ANCESTOR
 
 The CONCEPT_ANCESTOR table is designed to simplify observational analysis by providing the complete hierarchical relationships between Concepts.
 Only direct parent-child relationships between Concepts are stored in the CONCEPT_RELATIONSHIP table.
@@ -205,7 +205,7 @@ This table is entirely derived from the CONCEPT, CONCEPT_RELATIONSHIP, and RELAT
 
 ---
 
-## CONCEPT_CLASS 
+## CONCEPT_CLASS
 
 The CONCEPT_CLASS table includes semantic categories that reference the source structure of each Vocabulary.
 Concept Classes represent so-called horizontal (e.g. MedDRA, RxNorm) or vertical levels (e.g. SNOMED) of the vocabulary structure.
@@ -216,7 +216,7 @@ This reference table is populated with a single record for each Concept Class, w
 
 ---
 
-## CONCEPT_RELATIONSHIP 
+## CONCEPT_RELATIONSHIP
 
 The CONCEPT_RELATIONSHIP table contains records that define relationships between any two Concepts and the nature or type of the relationship.
 This table captures various types of relationships, including hierarchical, associative, and other semantic connections, enabling comprehensive analysis and interpretation of clinical concepts.
@@ -226,7 +226,7 @@ Each relationship type is defined in the RELATIONSHIP table.
 
 ---
 
-## CONCEPT_SYNONYM 
+## CONCEPT_SYNONYM
 
 The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations of Concept Name into various languages linked to specific concepts, providing researchers with a comprehensive view of how Concepts may be expressed or referenced.
 Researchers can leverage the CONCEPT_SYNONYM table to expand search capabilities and improve query accuracy by incorporating synonymous terms into data analysis and retrieval processes.
@@ -236,19 +236,19 @@ Also, researchers can enhance their mapping efforts between local terminologies 
 
 ---
 
-## CONDITION_ERA 
+## CONDITION_ERA
 
 **6 fields** — see them in the data dictionary.
 
 ---
 
-## CONDITION_OCCURRENCE 
+## CONDITION_OCCURRENCE
 
 **16 fields** — see them in the data dictionary.
 
 ---
 
-## COST 
+## COST
 
 The cost table captures the various financial aspects of healthcare events. It includes the cost of procedures, drug exposures, visits, and other healthcare events, and can capture charges, payments, and adjustments for these events. This table is not currently populated in STARR OMOP.
 
@@ -256,7 +256,7 @@ The cost table captures the various financial aspects of healthcare events. It i
 
 ---
 
-## DEATH 
+## DEATH
 
 OMOP CDM v5.4 DEATH table. Stores information about a Person's death, including the date/time, cause, and source type.
 
@@ -269,7 +269,7 @@ are stored in the `_external_death_records` extension table, one row per externa
 
 ---
 
-## DEVICE_EXPOSURE 
+## DEVICE_EXPOSURE
 
 The Device domain captures information about a persons exposure to a foreign physical object or instrument which is used for diagnostic or therapeutic purposes through a mechanism beyond chemical action.
 Devices include implantable objects (e.g. pacemakers, stents, artificial joints), medical equipment and supplies (e.g. bandages, crutches, syringes), other instruments used in medical procedures (e.g. sutures, defibrillators) and material used in clinical care (e.g. adhesives, body material, dental material, surgical material).
@@ -279,7 +279,7 @@ The distinction between Devices or supplies and Procedures are sometimes blurry,
 
 ---
 
-## DOMAIN 
+## DOMAIN
 
 The DOMAIN table includes a list of OMOP-defined Domains to which the Concepts of the Standardized Vocabularies can belong.
 A Domain represents a clinical definition whereby we assign matching Concepts for the standardized fields in the CDM tables.
@@ -290,7 +290,7 @@ This reference table is populated with a single record for each Domain, includin
 
 ---
 
-## DOSE_ERA 
+## DOSE_ERA
 
 The dose_era table captures the time periods (eras) during which a person is exposed to a particular dose of a drug. A Dose Era is defined as a span of time when the Person is assumed to be exposed to a constant dose of a specific active ingredient. This table is not currently populated in STARR OMOP.
 
@@ -298,7 +298,7 @@ The dose_era table captures the time periods (eras) during which a person is exp
 
 ---
 
-## DRUG_ERA 
+## DRUG_ERA
 
 A Drug Era is defined as a span of time when the Person is assumed to be exposed to a particular
 active ingredient. A Drug Era is not the same as a Drug Exposure: Exposures are individual records
@@ -310,7 +310,7 @@ table should be part of a drug era based on the dates of exposure.
 
 ---
 
-## DRUG_EXPOSURE 
+## DRUG_EXPOSURE
 
 The DRUG_EXPOSURE table captures records about the exposure to a Drug ingested or
 otherwise introduced into the body. A Drug is a biochemical substance formulated in
@@ -324,7 +324,7 @@ preferentially bringing in administration records, then dispense records then or
 
 ---
 
-## DRUG_STRENGTH 
+## DRUG_STRENGTH
 
 The DRUG_STRENGTH table contains structured content about the amount or concentration and associated units of a specific ingredient contained within a particular drug product.
 This table is supplemental information to support standardized analysis of drug utilization.
@@ -333,7 +333,7 @@ This table is supplemental information to support standardized analysis of drug 
 
 ---
 
-## EPISODE 
+## EPISODE
 
 The episode table captures aggregated information about periods of continuous engagement with healthcare or health maintenance activities. An episode is intended to represent a meaningful period of time within a broader context, such as a hospital stay, a period of illness, or a treatment cycle.
 The EPISODE table aggregates lower-level clinical events (VISIT_OCCURRENCE, DRUG_EXPOSURE, PROCEDURE_OCCURRENCE, DEVICE_EXPOSURE) into a higher-level abstraction representing clinically and analytically relevant disease phases, outcomes and treatments.
@@ -344,7 +344,7 @@ In STARR-OMOP, the EPISODE table is currently populated only with episodes repre
 
 ---
 
-## EPISODE_EVENT 
+## EPISODE_EVENT
 
 The episode_event table captures the events that are part of an episode. It includes various types of healthcare-related events such as condition occurrences, drug exposures, or procedures that occur as part of a single episode of care.
 The EPISODE_EVENT table connects qualifying clinical events (such as CONDITION_OCCURRENCE, DRUG_EXPOSURE, PROCEDURE_OCCURRENCE, MEASUREMENT) to the appropriate EPISODE entry.
@@ -356,7 +356,7 @@ This table is not currently populated in STARR OMOP.
 
 ---
 
-## FACT_RELATIONSHIP 
+## FACT_RELATIONSHIP
 
 The FACT_RELATIONSHIP table contains records about the relationships between facts stored as records in any table of the CDM.
 Relationships can be defined between facts from the same domain, or different domains. Currently, this table contains relationships
@@ -367,7 +367,7 @@ for babies delivered at Stanford. Relationships are always present in both direc
 
 ---
 
-## IMAGE_OCCURRENCE 
+## IMAGE_OCCURRENCE
 
 A record of image occurrences from the Vendor Neutral Archive (VNA). This does not include Echocardiograms, Ophthalmology images, or Pathology slides at present.
 We are also only including image occurrences that can be linked to the clarity procedure order information.
@@ -376,7 +376,7 @@ We are also only including image occurrences that can be linked to the clarity p
 
 ---
 
-## LOCATION 
+## LOCATION
 
 The location table represents a generic way to capture physical location or address information of Persons and Care Sites.
 
@@ -384,7 +384,7 @@ The location table represents a generic way to capture physical location or addr
 
 ---
 
-## MEASUREMENT 
+## MEASUREMENT
 
 The MEASUREMENT table contains records of Measurements, i.e. structured values (numerical or categorical) obtained through
 systematic and standardized examination or testing of a Person or Person’s sample.
@@ -393,7 +393,7 @@ systematic and standardized examination or testing of a Person or Person’s sam
 
 ---
 
-## METADATA 
+## METADATA
 
 The metadata table metadata information about a dataset that has been transformed to the OMOP Common Data Model. At the moment for STARR OMOP, this table only contains a single entry specifying the OMOP CDM version (in this case, OMOP CDM version 5.4.2).
 
@@ -401,7 +401,7 @@ The metadata table metadata information about a dataset that has been transforme
 
 ---
 
-## NOTE 
+## NOTE
 
 The NOTE table captures unstructured information that was recorded by a provider about a patient in free text notes on a given date.
 
@@ -409,7 +409,7 @@ The NOTE table captures unstructured information that was recorded by a provider
 
 ---
 
-## NOTE_NLP 
+## NOTE_NLP
 
 The note_nlp table encodes all output of NLP on clinical notes. Each row represents a single extracted term from a note.The note_nlp table captures the detailed outputs of natural language processing (NLP) applied to the unstructured text found in the note table. This table contains the detailed annotations, the corresponding note identifiers, and the concepts identified through the NLP pipeline. This table is not currently populated in STARR OMOP.
 
@@ -417,7 +417,7 @@ The note_nlp table encodes all output of NLP on clinical notes. Each row represe
 
 ---
 
-## OBSERVATION 
+## OBSERVATION
 
 This table contains records of various observations made about individuals.
 It includes social history factors, ethnicity background, pregnancy and delivery observations,
@@ -427,7 +427,7 @@ and other observations that are not captured in other tables.
 
 ---
 
-## OBSERVATION_PERIOD 
+## OBSERVATION_PERIOD
 
 The observation period table is intended to contain records of spans of time in which a patient's
 clinical event history is considered observable, i.e. clinical events that happen to the person are
@@ -440,7 +440,7 @@ that the event did not occur or if the patient was instead treated in a differen
 
 ---
 
-## PAYER_PLAN_PERIOD 
+## PAYER_PLAN_PERIOD
 
 This table contains information about the period of time that a Person is continuously enrolled under a specific
 health Plan benefit structure from a given Payer. Each Person receiving healthcare is typically covered by a
@@ -455,7 +455,7 @@ time periods in which they are valid for a Person (Payer Plan Periods) are recor
 
 ---
 
-## PERSON 
+## PERSON
 
 This table serves as the central identity management for all Persons in the database.
 It contains records that uniquely identify each person or patient, and some demographic information.
@@ -465,7 +465,7 @@ If the patient is present in both SHC and LPCH Clarity, the SHC patient record i
 
 ---
 
-## PROCEDURE_OCCURRENCE 
+## PROCEDURE_OCCURRENCE
 
 The PROCEDURE_OCCURRENCE table contains records of procedures that have been performed on patients.
 The procedures are typically performed by healthcare providers and are recorded in the source data.
@@ -475,7 +475,7 @@ For STARR-OMOP this includes ordered procedures and billed procedures.
 
 ---
 
-## PROVIDER 
+## PROVIDER
 
 The PROVIDER table contains a list of uniquely identified healthcare providers.
 These are individuals providing hands-on healthcare to patients, such as physicians, nurses, midwives, physical therapists etc.
@@ -484,7 +484,7 @@ These are individuals providing hands-on healthcare to patients, such as physici
 
 ---
 
-## RELATIONSHIP 
+## RELATIONSHIP
 
 The RELATIONSHIP table provides a reference list of all types of relationships that can be used to associate any two Concepts in the CONCEPT_RELATIONSHIP table, the respective reverse relationships, and their hierarchical characteristics.
 Note that Concepts representing relationships between the clinical facts in the FACT_RELATIONSHIP table are stored in the CONCEPT table and belong to the Relationship Domain.
@@ -493,7 +493,7 @@ Note that Concepts representing relationships between the clinical facts in the 
 
 ---
 
-## SOURCE_TO_CONCEPT_MAP 
+## SOURCE_TO_CONCEPT_MAP
 
 The SOURCE_TO_CONCEPT_MAP table is a legacy data structure within the OMOP Common Data Model, recommended for use in ETL processes to maintain local source codes which are not available as Concepts in the Standardized Vocabularies, and to establish mappings for each source code into a Standard Concept.
 STARR builds this table as an empty placeholder so that the OMOP 5.4 schema is complete; local source-code mappings are carried in the custom vocabulary instead.
@@ -502,7 +502,7 @@ STARR builds this table as an empty placeholder so that the OMOP 5.4 schema is c
 
 ---
 
-## SPECIMEN 
+## SPECIMEN
 
 The specimen table captures data on biological samples, or specimens, from a person. A specimen record indicates characteristics, such as date/time, specimen type, specimen source, and anatomic site of origin, in which the specimen was collected. This table is not currently populated in STARR OMOP.
 
@@ -510,7 +510,7 @@ The specimen table captures data on biological samples, or specimens, from a per
 
 ---
 
-## VISIT_DETAIL 
+## VISIT_DETAIL
 
 The VISIT_DETAIL table is an optional table used to represents details of each record in the parent VISIT_OCCURRENCE table.
 A good example of this would be the movement between units in a hospital during an inpatient stay.
@@ -521,7 +521,7 @@ The VISIT_DETAIL table is structurally very similar to VISIT_OCCURRENCE table an
 
 ---
 
-## VISIT_OCCURRENCE 
+## VISIT_OCCURRENCE
 
 This table contains Events where Persons engage with the healthcare system for a duration of time.
 They are often also called “Encounters”. Visits are defined by a configuration of circumstances
@@ -534,7 +534,7 @@ a longer period involving a stay in bed.
 
 ---
 
-## VOCABULARY 
+## VOCABULARY
 
 The VOCABULARY table includes a list of the Vocabularies integrated from various sources or created de novo in OMOP CDM.
 This reference table contains a single record for each Vocabulary and includes a descriptive name and other associated attributes for the Vocabulary.
@@ -545,7 +545,7 @@ Users can identify the version of a particular vocabulary used in the database, 
 
 ---
 
-## \_EXTERNAL_DEATH_RECORDS 
+## \_EXTERNAL_DEATH_RECORDS
 
 Extension table storing one row per external death record per person. External sources include
 CDPH (California Decedent Registry), LADMF (Limited Access Death Master File), other Clarity
@@ -565,7 +565,7 @@ This table is custom to STARR-OMOP and is not part of the standard OMOP CDM.
 
 ---
 
-## \_VARIANT_OCCURRENCE 
+## \_VARIANT_OCCURRENCE
 
 The VARIANT_OCCURRENCE table contains information about genetic variants identified in patients through genomic testing.
 This table is custom to STARR-OMOP and is not part of the standard OMOP CDM.
@@ -577,7 +577,7 @@ STAMP tests performed prior to this date are not currently included in this tabl
 
 ---
 
-## \_WHOLE_SLIDE_IMAGING 
+## \_WHOLE_SLIDE_IMAGING
 
 OMOP extension table for whole slide imaging data from pathology specimens. It contains both information
 from the PHI-scrubbed whole slide imaging files (svs or isyntac) and source clarity. This table only contains
@@ -645,6 +645,7 @@ Welcome to the STARR-OMOP Documentation
 
   - Getting Access
   - Released Datasets
+  - Release Notes
   - Technical Specifications
   - Data Model Tables
   - Data Dictionary
@@ -670,22 +671,22 @@ You may want to try searching to find the page's new location.
 # Changes from OMOP-CDM 5.3 to 5.4
 ============================================================
 
-We are pleased to release the first **STARR-OMOP CDM 5.4 dataset,** using the **August 2025 OHDSI vocabulary**. For ease of comparison, this dataset has been generated from the same source EHR data as the OMOP CDM 5.3 January 2026 release (which used the January 2023 OHDSI vocabulary). The two datasets are: 
+We are pleased to release the first **STARR-OMOP CDM 5.4 dataset,** using the **August 2025 OHDSI vocabulary**. For ease of comparison, this dataset has been generated from the same source EHR data as the OMOP CDM 5.3 January 2026 release (which used the January 2023 OHDSI vocabulary). The two datasets are:
 
 * **OMOP 5.3:** `som-rit-phi-starr-prod.starr_omop_cdm5_confidential_2026_01_18`
 * **OMOP 5.4:** `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_2026_01_18`
 
 We strongly encourage users to **compare their cohorts and analyses between the 5.3 and 5.4 datasets** and review any differences. Changes in vocabulary, mappings, and ETL logic may require adjustments in your downstream work in order to achieve the same study goals. We welcome feedback from users and ask that you please report any unexpected issues or questions to the STARR-OMOP team as soon as possible (email: starr-omop-support@stanford.edu).
 
-Based on user feedback during this transition period, we plan to **maintain both 5.3 and 5.4 in parallel for ONE additional release cycle** before fully transitioning to 5.4 and retiring 5.3. If your project requires a **static dataset using the previous CDM/vocabulary**, please copy the dataset into your own Nero GCP project to ensure long-term reproducibility. 
+Based on user feedback during this transition period, we plan to **maintain both 5.3 and 5.4 in parallel for ONE additional release cycle** before fully transitioning to 5.4 and retiring 5.3. If your project requires a **static dataset using the previous CDM/vocabulary**, please copy the dataset into your own Nero GCP project to ensure long-term reproducibility.
 
 Going forward, we plan to incorporate OHDSI vocabulary updates as they become available (twice a year), with a **short lag to allow for ETL updates, validation, and testing prior to release**.
 
-The release notes below are divided into the following sections for readability: 
+The release notes below are divided into the following sections for readability:
 
-* Key Updates and Potential Impact for Researchers, with some recommendations  
-* Table Specific Changes, including impact on overall row counts  
-* New and Upcoming Stanford Specific Data Domain Tables  
+* Key Updates and Potential Impact for Researchers, with some recommendations
+* Table Specific Changes, including impact on overall row counts
+* New and Upcoming Stanford Specific Data Domain Tables
 * Additional Details
 
 ## Key Updates and Potential Analysis Impact
@@ -1084,8 +1085,6 @@ The standardized vocabulary is central to the creation of an OMOP common data mo
 
 The OHDSI standardized vocabulary is released twice per year, and our goal is to remain closely aligned with these updates. Going forward, we plan to incorporate vocabulary updates on a regular basis, typically with a short lag to allow for ETL updates, validation, and testing prior to release.
 
-   
-
 To verify which version of the Athena vocabulary a particular STARR-OMOP dataset is using, check the `vocabulary_version` field on the `cdm_source` table.
 
 For projects that require a static version of OMOP using a specific vocabulary, we recommend creating a copy of the specific STARR-OMOP dataset in your own Nero GCP project to ensure long-term reproducibility of analyses.
@@ -1127,37 +1126,48 @@ Our general approach is to favor inclusion unless there is a clear data quality 
 # Released Datasets
 ============================================================
 
-A reverse-chronological log of STARR-OMOP dataset releases. The most recent release is listed first.
+A reverse-chronological log of available STARR-OMOP dataset releases. The same release records supply this page and the Release Notes.
 
 Each dataset name below links directly to the Google Cloud Console, pinned to that dataset in your active GCP session. Query costs are billed to your own active billing project.
 
 ## Dataset Variants
 
-Every release ships in four variants. The suffix on the dataset name identifies each one:
+A release lists only the variants confirmed available:
 
-- **Core** (no suffix) — full PHI-scrubbed dataset: structured data plus clinical text and text-derived NLP concepts.
-- _1pcent — a random 1% sample of the core dataset, for testing and sandbox exploration.
-- _lite — structured data only; clinical text and NLP tables removed.
-- _1pcent_lite — a random 1% sample of the lite variant.
-
-The `_latest` alias always points to the most recent release snapshot.
+- **Core** (no suffix) - full PHI-scrubbed dataset: structured data plus clinical text and text-derived NLP concepts.
+- _1pcent - a random 1% sample of the core dataset, for testing and sandbox exploration.
+- _lite - structured data only; clinical text and NLP tables removed.
+- _1pcent_lite - a random 1% sample of the lite variant.
 
 ## Latest Datasets
 
-These stable aliases always resolve to the most recent release. Use these for ongoing work — they roll forward automatically with each new release.
+These stable aliases roll forward when their variant is declared available. Pin a dated snapshot instead when an analysis must be reproducible.
 
-- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_latest`
-- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_latest`
-- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_lite_latest`
-- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_lite_latest`
+- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_latest` - `_2026_09_10`
+- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_latest` - `_2026_09_10`
+- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_lite_latest` - `_2026_09_10`
+- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_lite_latest` - `_2026_09_10`
 
 ## Release History
 
-The dated snapshots below are immutable — pin one for reproducible analyses.
+The dated snapshots below are immutable.
+
+### September 2026
+
+Snapshot cut on **September 10, 2026** (`_2026_09_10`).
+
+Read the release notes.
+
+- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_2026_09_10`
+- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_2026_09_10`
+- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_lite_2026_09_10`
+- `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_lite_2026_09_10`
 
 ### June 2026
 
-Snapshot cut on **June 8, 2026** (`_2026_06_08`). The `_latest` aliases currently resolve to this release.
+Snapshot cut on **June 8, 2026** (`_2026_06_08`).
+
+Release notes were not recorded for this historical snapshot.
 
 - `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_2026_06_08`
 - `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_2026_06_08`
@@ -1168,10 +1178,91 @@ Snapshot cut on **June 8, 2026** (`_2026_06_08`). The `_latest` aliases currentl
 
 Snapshot cut on **January 18, 2026** (`_2026_01_18`).
 
+Release notes were not recorded for this historical snapshot.
+
 - `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_2026_01_18`
 - `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_2026_01_18`
 - `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_lite_2026_01_18`
 - `som-rit-phi-starr-prod.starr_omop_cdm54_confidential_1pcent_lite_2026_01_18`
+
+============================================================
+# Release Notes
+What changed for users in each STARR-OMOP v5.4 dataset release
+============================================================
+
+What changed for users in each STARR-OMOP v5.4 dataset release, newest first and grouped by year and month. Each release is a dated, immutable snapshot; Released Datasets lists its dataset names. To find the releases that changed a table or field, search the site for its name.
+
+- **2026:** September
+
+# 2026
+
+## September 2026
+
+Snapshot cut on **September 10, 2026** (`_2026_09_10`). Dataset names are on Released Datasets.
+
+### Lab result values that were previously available only as free text now also provide a parsed comparison operator, numeric value, and unit
+
+**What changed**
+
+Numeric lab results that were previously available only as free text (for example
+`>10 mg`) now also come with ready-to-use parts: a comparison operator, a number,
+and a unit. You no longer have to parse the text yourself to filter or aggregate on
+the numeric value.
+
+**Who is affected**
+
+- STARR OMOP 5.4
+- STARR Common
+
+**Action required**
+
+None. The original text value is unchanged; the new fields are additional.
+
+**Docs to extract**
+
+The same parsed values appear in two places — as new fields in STARR Common, and as
+standard OMOP fields in STARR OMOP 5.4.
+
+STARR Common — new fields on the SHC and LPCH lab result tables:
+
+| Field | Description |
+| --- | --- |
+| `operator_parsed_from_text_result` | Comparison operator when the result has one (`>`, `<`, `>=`, `<=`, `=`); empty otherwise |
+| `number_parsed_from_text_result` | The numeric value from the result |
+| `unit_parsed_from_text_result` | The unit of measure when the result has one |
+
+STARR OMOP 5.4 — standard `measurement` fields now populated from the parsed values:
+
+| Field | Description |
+| --- | --- |
+| `value_as_number` | The numeric value (when the source did not already provide a structured number) |
+| `operator_concept_id` | Standard concept for the comparison operator |
+| `unit_source_value` | The unit text from the result |
+| `unit_concept_id` | Standard concept mapped from that unit |
+| `value_source_value` | The original result text (unchanged) |
+
+**Example (illustrative, PHI-free)**
+
+STARR Common (SHC / LPCH lab result tables):
+
+| Result value | Operator | Number | Unit |
+| --- | --- | --- | --- |
+| `123` | | `123` | |
+| `10 mg` | | `10` | `mg` |
+| `>10` | `>` | `10` | |
+| `<=0.5` | `<=` | `0.5` | |
+| `1,234.56 mg` | | `1234.56` | `mg` |
+
+STARR OMOP 5.4 (`measurement`): the same values populate the standard fields
+(`operator_concept_id` holds the standard concept for the operator symbol shown):
+
+| `value_source_value` | `value_as_number` | `operator_concept_id` | `unit_source_value` |
+| --- | --- | --- | --- |
+| `123` | `123` | | |
+| `10 mg` | `10` | | `mg` |
+| `>10` | `10` | concept for `>` | |
+| `<=0.5` | `0.5` | concept for `<=` | |
+| `1,234.56 mg` | `1234.56` | | `mg` |
 
 ============================================================
 # Getting Access to STARR-OMOP v5.4
@@ -1198,11 +1289,9 @@ Steps 1 and 2 can be done in parallel.
 
 4. **Email the STARR-OMOP support team** to request the dataset in BigQuery. Include your **Nero GCP project name** and your **PI's ORCID**.
 
-   
    Email starr-omop-support@stanford.edu with the exact subject line:
 
    > Requesting STARR-OMOP-confidential data in BigQuery
-   
 
 #### Which Dataset Do I Need?
 
@@ -1261,7 +1350,7 @@ For what each table is for and how Stanford populates it, see OMOP CDM v5.4 Data
 
 ---
 
-## All Fields 
+## All Fields
 
 All 504 fields across 43 tables. Search here to find which table contains a given field.
 
@@ -5293,7 +5382,7 @@ Note_id for associated pathology report. It is possible that a slide link to mor
 
 ---
 
-## Tables 
+## Tables
 
 43 tables. Click a table name to open its fields.
 
@@ -5517,7 +5606,7 @@ OMOP extension table for whole slide imaging data from pathology specimens. It c
 
 ---
 
-## CARE_SITE 
+## CARE_SITE
 
 The CARE_SITE table contains a list of uniquely identified institutional (physical or organizational) units where healthcare delivery is practiced (offices, wards, hospitals, clinics, etc.). For Stanford University, this includes a range of care sites from inpatient hospital facilities to outpatient clinics and specialized centers such as immunization and campus-specific health services.
 
@@ -5567,7 +5656,7 @@ The source value representing the place of service of the care site as it appear
 
 ---
 
-## CDM_SOURCE 
+## CDM_SOURCE
 
 The CDM_SOURCE table provides information about the source data and the process used to transform the data into the OMOP Common Data Model.
 
@@ -5647,7 +5736,7 @@ Version of the OMOP Vocabulary used in this CDM instance.
 
 ---
 
-## COHORT 
+## COHORT
 
 The cohort table contains records identifying the subject(s) for defined cohort, during each period where they fit the cohort definition(s) defined in the cohort_definition table. Cohorts typically include patients diagnosed with a specific condition, patients exposed to a particular drug, but can also be Providers who have performed a specific Procedure. The subject of a cohort can have multiple, discrete records in the cohort table per cohort_definition_id, subject_id, and non-overlapping time periods. The definition of the cohort is contained within the COHORT_DEFINITION table. This table is not currently populated in STARR OMOP.
 
@@ -5685,7 +5774,7 @@ The end date for the time period during which the person is in the cohort.
 
 ---
 
-## COHORT_DEFINITION 
+## COHORT_DEFINITION
 
 Cohorts are a set of subjects that satisfy a given combination of inclusion criteria for a duration of time. The COHORT_DEFINITION table provides a standardized structure for maintaining the rules governing the inclusion of a subject into a cohort, and can store operational programming code to instantiate the cohort within the OMOP Common Data Model. This table is not currently populated in STARR OMOP.
 
@@ -5741,7 +5830,7 @@ A date to indicate when the Cohort was initiated in the COHORT table.
 
 ---
 
-## CONCEPT 
+## CONCEPT
 
 The primary purpose of the CONCEPT table is to provide a standardized representation of medical Concepts, allowing for consistent querying and analysis across the healthcare databases. Users can join the CONCEPT table with other tables in the CDM to enrich clinical data with standardized Concept information or use the CONCEPT table as a reference for mapping clinical data from source terminologies to Standard Concepts. Each concept is uniquely identified by a concept_id and has a concept_name, which describes the concept. Concepts can be classified into different domains, such as drug, procedure, condition, etc., and can have relationships with other concepts.
 
@@ -5815,7 +5904,7 @@ Reason the Concept was invalidated. Possible values are D (deleted), U (replaced
 
 ---
 
-## CONCEPT_ANCESTOR 
+## CONCEPT_ANCESTOR
 
 The CONCEPT_ANCESTOR table is designed to simplify observational analysis by providing the complete hierarchical relationships between Concepts. Only direct parent-child relationships between Concepts are stored in the CONCEPT_RELATIONSHIP table. To determine higher-level ancestry connections, all individual direct relationships would have to be navigated at analysis time. The CONCEPT_ANCESTOR table includes records for all parent-child relationships, as well as grandparent-grandchild relationships and those of any other level of lineage for Standard or Classification concepts. Using the CONCEPT_ANCESTOR table allows for querying for all descendants of a hierarchical concept, and the other way around. For example, drug ingredients and drug products, beneath them in the hierarchy, are all descendants of a drug class ancestor. This table is entirely derived from the CONCEPT, CONCEPT_RELATIONSHIP, and RELATIONSHIP tables.
 
@@ -5853,7 +5942,7 @@ The maximum separation in number of levels of hierarchy between ancestor and des
 
 ---
 
-## CONCEPT_CLASS 
+## CONCEPT_CLASS
 
 The CONCEPT_CLASS table includes semantic categories that reference the source structure of each Vocabulary. Concept Classes represent so-called horizontal (e.g. MedDRA, RxNorm) or vertical levels (e.g. SNOMED) of the vocabulary structure. Vocabularies without any Concept Classes, such as HCPCS, use the vocabulary_id as the Concept Class. This reference table is populated with a single record for each Concept Class, which includes a Concept Class ID and a fully specified Concept Class name.
 
@@ -5885,7 +5974,7 @@ An identifier for the concept that represents the Concept Class. The concept_cla
 
 ---
 
-## CONCEPT_RELATIONSHIP 
+## CONCEPT_RELATIONSHIP
 
 The CONCEPT_RELATIONSHIP table contains records that define relationships between any two Concepts and the nature or type of the relationship. This table captures various types of relationships, including hierarchical, associative, and other semantic connections, enabling comprehensive analysis and interpretation of clinical concepts. Each relationship type is defined in the RELATIONSHIP table.
 
@@ -5935,7 +6024,7 @@ Reason the Concept was invalidated. Possible values are D (deleted), U (replaced
 
 ---
 
-## CONCEPT_SYNONYM 
+## CONCEPT_SYNONYM
 
 The CONCEPT_SYNONYM table captures alternative terms, synonyms, and translations of Concept Name into various languages linked to specific concepts, providing researchers with a comprehensive view of how Concepts may be expressed or referenced. Researchers can leverage the CONCEPT_SYNONYM table to expand search capabilities and improve query accuracy by incorporating synonymous terms into data analysis and retrieval processes. Also, researchers can enhance their mapping efforts between local terminologies and standardized concepts by identifying synonymous terms associated with concepts in the CONCEPT_SYNONYM table.
 
@@ -5967,7 +6056,7 @@ Foreign key to the CONCEPT table indicating the language to which the Concept Sy
 
 ---
 
-## CONDITION_ERA 
+## CONDITION_ERA
 
 6 fields.
 
@@ -6015,7 +6104,7 @@ The number of condition occurrences that contributed to this condition era.
 
 ---
 
-## CONDITION_OCCURRENCE 
+## CONDITION_OCCURRENCE
 
 16 fields.
 
@@ -6123,7 +6212,7 @@ The verbatim value of the original condition status information as it appears in
 
 ---
 
-## COST 
+## COST
 
 The cost table captures the various financial aspects of healthcare events. It includes the cost of procedures, drug exposures, visits, and other healthcare events, and can capture charges, payments, and adjustments for these events. This table is not currently populated in STARR OMOP.
 
@@ -6269,7 +6358,7 @@ Diagnosis Related Group for the services associated with the cost record, as rec
 
 ---
 
-## DEATH 
+## DEATH
 
 OMOP CDM v5.4 DEATH table. Stores information about a Person's death, including the date/time, cause, and source type. In STARR-OMOP, the cause of death fields are not currently available from source systems and remain NULL. This table contains only EHR-sourced (Epic) death records. External death records (CDPH, LADMF, DMF, etc.) are stored in the `_external_death_records` extension table, one row per external death record per person.
 
@@ -6325,7 +6414,7 @@ A foreign key to a concept representing the cause-of-death code, if the code bel
 
 ---
 
-## DEVICE_EXPOSURE 
+## DEVICE_EXPOSURE
 
 The Device domain captures information about a persons exposure to a foreign physical object or instrument which is used for diagnostic or therapeutic purposes through a mechanism beyond chemical action. Devices include implantable objects (e.g. pacemakers, stents, artificial joints), medical equipment and supplies (e.g. bandages, crutches, syringes), other instruments used in medical procedures (e.g. sutures, defibrillators) and material used in clinical care (e.g. adhesives, body material, dental material, surgical material). The distinction between Devices or supplies and Procedures are sometimes blurry, but the former are physical objects while the latter are actions, often to apply a Device or supply.
 
@@ -6453,7 +6542,7 @@ A foreign key to a concept representing the UNIT_SOURCE_VALUE and may not necess
 
 ---
 
-## DOMAIN 
+## DOMAIN
 
 The DOMAIN table includes a list of OMOP-defined Domains to which the Concepts of the Standardized Vocabularies can belong. A Domain represents a clinical definition whereby we assign matching Concepts for the standardized fields in the CDM tables. For example, the Condition Domain contains Concepts that describe a patient condition, and these Concepts can only be used in the condition_concept_id field of the CONDITION_OCCURRENCE and CONDITION_ERA tables. This reference table is populated with a single record for each Domain, including a Domain ID and a descriptive name for every Domain.
 
@@ -6485,7 +6574,7 @@ An identifier representing the domain concept the DOMAIN record belongs to. The 
 
 ---
 
-## DOSE_ERA 
+## DOSE_ERA
 
 The dose_era table captures the time periods (eras) during which a person is exposed to a particular dose of a drug. A Dose Era is defined as a span of time when the Person is assumed to be exposed to a constant dose of a specific active ingredient. This table is not currently populated in STARR OMOP.
 
@@ -6541,7 +6630,7 @@ The end date of the dose era associated with the dose_era record.
 
 ---
 
-## DRUG_ERA 
+## DRUG_ERA
 
 A Drug Era is defined as a span of time when the Person is assumed to be exposed to a particular active ingredient. A Drug Era is not the same as a Drug Exposure: Exposures are individual records corresponding to the source when Drug was delivered to the Person, while successive periods of Drug Exposures are combined under certain rules to produce continuous Drug Eras. Every record in the DRUG_EXPOSURE table should be part of a drug era based on the dates of exposure.
 
@@ -6585,7 +6674,7 @@ INT64
 
 ---
 
-## DRUG_EXPOSURE 
+## DRUG_EXPOSURE
 
 The DRUG_EXPOSURE table captures records about the exposure to a Drug ingested or otherwise introduced into the body. A Drug is a biochemical substance formulated in such a way that when administered to a Person it will exert a certain biochemical effect on the metabolism. Drugs include prescription and over-the-counter medicines, vaccines, and large-molecule biologic therapies. Radiological devices ingested or applied locally do not count as Drugs. This table contains one record per exposure, preferentially bringing in administration records, then dispense records then order records.
 
@@ -6737,7 +6826,7 @@ This field houses the verbatim value from the source data representing the dose 
 
 ---
 
-## DRUG_STRENGTH 
+## DRUG_STRENGTH
 
 The DRUG_STRENGTH table contains structured content about the amount or concentration and associated units of a specific ingredient contained within a particular drug product. This table is supplemental information to support standardized analysis of drug utilization.
 
@@ -6823,7 +6912,7 @@ Reason the Concept was invalidated. Possible values are D (deleted), U (replaced
 
 ---
 
-## EPISODE 
+## EPISODE
 
 The episode table captures aggregated information about periods of continuous engagement with healthcare or health maintenance activities. An episode is intended to represent a meaningful period of time within a broader context, such as a hospital stay, a period of illness, or a treatment cycle. The EPISODE table aggregates lower-level clinical events (VISIT_OCCURRENCE, DRUG_EXPOSURE, PROCEDURE_OCCURRENCE, DEVICE_EXPOSURE) into a higher-level abstraction representing clinically and analytically relevant disease phases, outcomes and treatments. The EPISODE_EVENT table connects qualifying clinical events (VISIT_OCCURRENCE, DRUG_EXPOSURE, PROCEDURE_OCCURRENCE, DEVICE_EXPOSURE) to the appropriate EPISODE entry. For example, cancers including their development over time, their treatment, and final resolution. In STARR-OMOP, the EPISODE table is currently populated only with episodes representing treatment plans (primarily for cancer patients). The EPISODE_EVENT table is currently not populated in STARR-OMOP.
 
@@ -6915,7 +7004,7 @@ A foreign key to the predefined concept identifier in the Standardized Vocabular
 
 ---
 
-## EPISODE_EVENT 
+## EPISODE_EVENT
 
 The episode_event table captures the events that are part of an episode. It includes various types of healthcare-related events such as condition occurrences, drug exposures, or procedures that occur as part of a single episode of care. The EPISODE_EVENT table connects qualifying clinical events (such as CONDITION_OCCURRENCE, DRUG_EXPOSURE, PROCEDURE_OCCURRENCE, MEASUREMENT) to the appropriate EPISODE entry. For example, linking the precise location of the metastasis (cancer modifier in MEASUREMENT) to the disease episode. This connecting table is used instead of the FACT_RELATIONSHIP table for linking low-level events to abstracted Episodes. This table is not currently populated in STARR OMOP.
 
@@ -6947,7 +7036,7 @@ A foreign key to the Standardized Vocabularies that identifies the table and/or 
 
 ---
 
-## FACT_RELATIONSHIP 
+## FACT_RELATIONSHIP
 
 The FACT_RELATIONSHIP table contains records about the relationships between facts stored as records in any table of the CDM. Relationships can be defined between facts from the same domain, or different domains. Currently, this table contains relationships between systolic and diastolic blood pressures taken from the same patient encounter record, as well as mother-baby relationships for babies delivered at Stanford. Relationships are always present in both directions, so there are two rows for any given fact pairing.
 
@@ -6991,7 +7080,7 @@ A foreign key to the predefined concept in the Standardized Vocabularies reflect
 
 ---
 
-## IMAGE_OCCURRENCE 
+## IMAGE_OCCURRENCE
 
 A record of image occurrences from the Vendor Neutral Archive (VNA). This does not include Echocardiograms, Ophthalmology images, or Pathology slides at present. We are also only including image occurrences that can be linked to the clarity procedure order information.
 
@@ -7107,7 +7196,7 @@ Number Composite Object Instances within a specific Series that match the search
 
 ---
 
-## LOCATION 
+## LOCATION
 
 The location table represents a generic way to capture physical location or address information of Persons and Care Sites.
 
@@ -7199,7 +7288,7 @@ The census block group of the location.
 
 ---
 
-## MEASUREMENT 
+## MEASUREMENT
 
 The MEASUREMENT table contains records of Measurements, i.e. structured values (numerical or categorical) obtained through systematic and standardized examination or testing of a Person or Person’s sample.
 
@@ -7351,7 +7440,7 @@ If the Measurement record is related to another record in the database, this fie
 
 ---
 
-## METADATA 
+## METADATA
 
 The metadata table metadata information about a dataset that has been transformed to the OMOP Common Data Model. At the moment for STARR OMOP, this table only contains a single entry specifying the OMOP CDM version (in this case, OMOP CDM version 5.4.2).
 
@@ -7419,7 +7508,7 @@ The datetime when the metadata record was added to the dataset.
 
 ---
 
-## NOTE 
+## NOTE
 
 The NOTE table captures unstructured information that was recorded by a provider about a patient in free text notes on a given date.
 
@@ -7535,7 +7624,7 @@ The accession number associated with the note, only available for pathology repo
 
 ---
 
-## NOTE_NLP 
+## NOTE_NLP
 
 The note_nlp table encodes all output of NLP on clinical notes. Each row represents a single extracted term from a note.The note_nlp table captures the detailed outputs of natural language processing (NLP) applied to the unstructured text found in the note table. This table contains the detailed annotations, the corresponding note identifiers, and the concepts identified through the NLP pipeline. This table is not currently populated in STARR OMOP.
 
@@ -7633,7 +7722,7 @@ Various modification qualifiers for the term. Negation = false Subject = patient
 
 ---
 
-## OBSERVATION 
+## OBSERVATION
 
 This table contains records of various observations made about individuals. It includes social history factors, ethnicity background, pregnancy and delivery observations, and other observations that are not captured in other tables.
 
@@ -7773,7 +7862,7 @@ If the Observation record is related to another record in the database, this fie
 
 ---
 
-## OBSERVATION_PERIOD 
+## OBSERVATION_PERIOD
 
 The observation period table is intended to contain records of spans of time in which a patient's clinical event history is considered observable, i.e. clinical events that happen to the person are recorded in the event tables, and absence of records indicate such events did not occur during this span of time. Please note that since STARR-OMOP only contains records of clinical events that are present in the Stanford EHR systems, it is not possible to determine if the absence of an event means that the event did not occur or if the patient was instead treated in a different healthcare system.
 
@@ -7815,7 +7904,7 @@ A foreign key identifier to a standard concept_id in the concept table for the t
 
 ---
 
-## PAYER_PLAN_PERIOD 
+## PAYER_PLAN_PERIOD
 
 This table contains information about the period of time that a Person is continuously enrolled under a specific health Plan benefit structure from a given Payer. Each Person receiving healthcare is typically covered by a health benefit plan, which fully/partially pays for (or directly provides) the care (billable healthcare services). These benefit plans are provided by payers, such as health insurances or state or government agencies. In each plan the details of the health benefits are defined for the Person or her family, and the health benefit Plan might change over time with increasing utilization (reaching certain cost thresholds such as deductibles), plan availability and purchasing choices of the Person. The unique combinations of Payer organizations, health benefit Plans and time periods in which they are valid for a Person (Payer Plan Periods) are recorded in this table.
 
@@ -7931,7 +8020,7 @@ This field represents the plan stop reason as mapped from the source data. We ar
 
 ---
 
-## PERSON 
+## PERSON
 
 This table serves as the central identity management for all Persons in the database. It contains records that uniquely identify each person or patient, and some demographic information. If the patient is present in both SHC and LPCH Clarity, the SHC patient record is used.
 
@@ -8053,7 +8142,7 @@ Foreign key to the concept in the Concept table representing the patient&#x27;s 
 
 ---
 
-## PROCEDURE_OCCURRENCE 
+## PROCEDURE_OCCURRENCE
 
 The PROCEDURE_OCCURRENCE table contains records of procedures that have been performed on patients. The procedures are typically performed by healthcare providers and are recorded in the source data. For STARR-OMOP this includes ordered procedures and billed procedures.
 
@@ -8163,7 +8252,7 @@ This field houses the four possible modifiers found in the source data. It is a 
 
 ---
 
-## PROVIDER 
+## PROVIDER
 
 The PROVIDER table contains a list of uniquely identified healthcare providers. These are individuals providing hands-on healthcare to patients, such as physicians, nurses, midwives, physical therapists etc.
 
@@ -8255,7 +8344,7 @@ The concept ID representing the source value, if available. This may be a custom
 
 ---
 
-## RELATIONSHIP 
+## RELATIONSHIP
 
 The RELATIONSHIP table provides a reference list of all types of relationships that can be used to associate any two Concepts in the CONCEPT_RELATIONSHIP table, the respective reverse relationships, and their hierarchical characteristics. Note that Concepts representing relationships between the clinical facts in the FACT_RELATIONSHIP table are stored in the CONCEPT table and belong to the Relationship Domain.
 
@@ -8305,7 +8394,7 @@ A foreign key to the CONCEPT table for the unique relationship concept.
 
 ---
 
-## SOURCE_TO_CONCEPT_MAP 
+## SOURCE_TO_CONCEPT_MAP
 
 The SOURCE_TO_CONCEPT_MAP table is a legacy data structure within the OMOP Common Data Model, recommended for use in ETL processes to maintain local source codes which are not available as Concepts in the Standardized Vocabularies, and to establish mappings for each source code into a Standard Concept. STARR builds this table as an empty placeholder so that the OMOP 5.4 schema is complete; local source-code mappings are carried in the custom vocabulary instead.
 
@@ -8373,7 +8462,7 @@ Reason the mapping instance was invalidated. Possible values are D (deleted), U 
 
 ---
 
-## SPECIMEN 
+## SPECIMEN
 
 The specimen table captures data on biological samples, or specimens, from a person. A specimen record indicates characteristics, such as date/time, specimen type, specimen source, and anatomic site of origin, in which the specimen was collected. This table is not currently populated in STARR OMOP.
 
@@ -8477,7 +8566,7 @@ The source code for the disease status associated with the specimen as it appear
 
 ---
 
-## VISIT_DETAIL 
+## VISIT_DETAIL
 
 The VISIT_DETAIL table is an optional table used to represents details of each record in the parent VISIT_OCCURRENCE table. A good example of this would be the movement between units in a hospital during an inpatient stay. For every record in the VISIT_OCCURRENCE table there may be 0 or more records in the VISIT_DETAIL table. The VISIT_DETAIL table is structurally very similar to VISIT_OCCURRENCE table and belongs to the visit domain.
 
@@ -8605,7 +8694,7 @@ A foreign key to the visit occurrence record that subsumes the visit detail reco
 
 ---
 
-## VISIT_OCCURRENCE 
+## VISIT_OCCURRENCE
 
 This table contains Events where Persons engage with the healthcare system for a duration of time. They are often also called “Encounters”. Visits are defined by a configuration of circumstances under which they occur, such as (i) whether the patient comes to a healthcare institution, the other way around, or the interaction is remote, (ii) whether and what kind of trained medical staff is delivering the service during the Visit, and (iii) whether the Visit is transient or for a longer period involving a stay in bed.
 
@@ -8721,7 +8810,7 @@ A foreign key identifier to the visit in the visit table that immediately preced
 
 ---
 
-## VOCABULARY 
+## VOCABULARY
 
 The VOCABULARY table includes a list of the Vocabularies integrated from various sources or created de novo in OMOP CDM. This reference table contains a single record for each Vocabulary and includes a descriptive name and other associated attributes for the Vocabulary. The primary purpose of the VOCABULARY table is to provide explicit information about specific vocabulary versions and the references to the sources from which they are asserted. Users can identify the version of a particular vocabulary used in the database, enabling consistency and reproducibility in data analysis.
 
@@ -8765,7 +8854,7 @@ An identifier for the vocabulary that the VOCABULARY record belongs to. The voca
 
 ---
 
-## \_EXTERNAL_DEATH_RECORDS 
+## \_EXTERNAL_DEATH_RECORDS
 
 *Stanford extension — not part of the standard OMOP CDM v5.4.*
 
@@ -8811,7 +8900,7 @@ Provenance label identifying the external source of this death record. Known val
 
 ---
 
-## \_VARIANT_OCCURRENCE 
+## \_VARIANT_OCCURRENCE
 
 *Stanford extension — not part of the standard OMOP CDM v5.4.*
 
@@ -8995,7 +9084,7 @@ The specimen source associated with the order for the variant record, such as &#
 
 ---
 
-## \_WHOLE_SLIDE_IMAGING 
+## \_WHOLE_SLIDE_IMAGING
 
 *Stanford extension — not part of the standard OMOP CDM v5.4.*
 

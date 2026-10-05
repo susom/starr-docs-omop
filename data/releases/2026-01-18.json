@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "release_date": "2026-01-18",
+  "dataset_suffix": "_2026_01_18",
+  "status": "available",
+  "source_revision": null,
+  "available_at": null,
+  "variants": ["core", "1pcent", "lite", "1pcent_lite"],
+  "revision": 1,
+  "notes_status": "not-recorded",
+  "note_ids": [],
+  "entry_sha256": null,
+  "correction_reason": null,
+  "legacy": true
+}

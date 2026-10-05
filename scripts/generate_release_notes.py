@@ -8,11 +8,10 @@ so an entry and a release on the Released Datasets page share one key. The
 date of the release's section in starr-data-lake's ``CHANGELOG.adoc`` can be a
 few days off: the section for ``_2026_09_10`` is dated 2026-09-11.
 
-An entry holds, as written, the User Impact sections of the starr-data-lake
-pull requests whose changelog entries carry the ``STARR OMOP 5.4 Docs`` tag
-(STAR-12576). Nothing here fetches them: pull request text can change after
-merge, and the changelog fold deletes the tagged fragments. The hook only
-checks the committed entries and assembles them into ``docs/release_notes.qmd``,
+An entry holds reviewed, versioned user notes delivered with an explicit
+dataset-availability record (the September entry predates that contract).
+Nothing here fetches live pull requests. The hook checks committed entries
+against ``data/releases/`` and generates both release pages from those records,
 newest first and grouped by year and month::
 
     # 2026                  one heading per year
@@ -37,12 +36,21 @@ publish`` before an entry that breaks the rules can reach the site.
 
 import argparse
 import datetime as dt
+import html
 import re
 import sys
 from dataclasses import dataclass
 from itertools import groupby
 from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Tuple
+
+from release_catalog import (
+    MONTHS,
+    entry_problems,
+    load_catalog,
+    long_date,
+    render_datasets,
+)
 
 try:
     import yaml
@@ -59,23 +67,6 @@ RELEASED_DATASETS = "released_datasets.qmd"
 ENTRY_NAME = re.compile(r"\A(\d{4}-\d{2}-\d{2})\.qmd\Z")
 FRONT_MATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)(.*)\Z", re.DOTALL)
 FRONT_MATTER_KEYS = ("summary", "title")
-
-# Spelled out rather than taken from strftime, whose month names follow the
-# locale of whoever happens to run `quarto publish`.
-MONTHS = (
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-)
 
 # docs/assets/release-notes.js finds the year and release sections by these
 # prefixes; tests/test_release_notes.py checks that the two still agree.
@@ -123,6 +114,7 @@ SETEXT_UNDERLINE = re.compile(r"\A[ ]{0,3}(=+|-+)[ \t]*\Z")
 OPENING_FENCE = re.compile(r"\A[ ]{0,3}(`{3,}|~{3,})(.*)\Z")
 CLOSING_FENCE = re.compile(r"\A[ ]{0,3}(`{3,}|~{3,})[ \t]*\Z")
 FENCE = OPENING_FENCE
+CHANGE_LEVEL_HEADING = re.compile(r"\A[ ]{0,3}###(?:\s|\Z)")
 EXPLICIT_ID = re.compile(r"\{#([^}\s]+)")
 
 # Entries are published as written, so these are a backstop, not a review: an
@@ -131,10 +123,10 @@ EXPLICIT_ID = re.compile(r"\{#([^}\s]+)")
 IDENTIFIER_PATTERNS = (
     (re.compile(r"\b\d{3}-\d{2}-\d{4}\b"), "an SSN-shaped number"),
     (
-        re.compile(r"\bSSN\s*[:#]?\s*\d{9}\b", re.IGNORECASE),
+        re.compile(r"\bSSN\s*[:#=]?\s*\d{9}\b", re.IGNORECASE),
         "an SSN followed by digits",
     ),
-    (re.compile(r"\bMRN\s*[:#]?\s*\d", re.IGNORECASE), "an MRN followed by digits"),
+    (re.compile(r"\bMRN\s*[:#=]?\s*\d", re.IGNORECASE), "an MRN followed by digits"),
 )
 
 
@@ -153,10 +145,6 @@ class Entry:
     def suffix(self) -> str:
         """Dataset-name suffix of the snapshot: 2026-06-08 -> ``_2026_06_08``."""
         return "_" + self.date.isoformat().replace("-", "_")
-
-
-def long_date(date: dt.date) -> str:
-    return f"{MONTHS[date.month - 1]} {date.day}, {date.year}"
 
 
 def year_anchor(year: int) -> str:
@@ -179,7 +167,7 @@ def numbered_lines(body: str, first_line: int) -> Iterator[Tuple[int, str, bool]
     """
     fence_char: Optional[str] = None
     fence_len: int = 0
-    for offset, line in enumerate(body.split("\n")):
+    for offset, line in enumerate(body.replace("\r\n", "\n").split("\n")):
         if fence_char is None:
             match = OPENING_FENCE.match(line)
             if match:
@@ -206,12 +194,95 @@ def numbered_lines(body: str, first_line: int) -> Iterator[Tuple[int, str, bool]
             yield first_line + offset, line, True
 
 
-def identifier_problems(where: str, text: str) -> List[str]:
+TABLE_SEPARATOR = re.compile(
+    r"^[ \t]*\|?[ \t]*:?-{3,}:?[ \t]*(?:\|[ \t]*:?-{3,}:?[ \t]*)*\|?[ \t]*$",
+    re.MULTILINE,
+)
+
+
+def identifier_text(text: str) -> str:
+    """Project visible Markdown for scanning, preserving physical newlines."""
+
+    def blank(match: re.Match) -> str:
+        return "\n" * match.group().count("\n")
+
+    text = re.sub(
+        r"&(?:#[xX][0-9a-fA-F]+|#\d+|[A-Za-z]+);",
+        lambda match: html.unescape(match.group())
+        .replace("\n", " ")
+        .replace("\r", " "),
+        text,
+    )
+    text = TABLE_SEPARATOR.sub(blank, text)
+    text = re.sub(r"(?<=\])\([^)]*\)", blank, text)
+    text = re.sub(r"<[^>\n]+>", "", text)
+    text = re.sub(r"[\\`*_~\[\]]", "", text)
+    return text.replace("|", " ")
+
+
+def identifier_problems(
+    where: str, text: str, first_line: Optional[int] = None
+) -> List[str]:
+    findings = set()
+    for content in (text, identifier_text(text)):
+        for pattern, label in IDENTIFIER_PATTERNS:
+            for match in pattern.finditer(content):
+                line = content.count("\n", 0, match.start())
+                findings.add((line, label))
+    # In a column-oriented table the label is in the header, not adjacent to
+    # the value. Scan that label with each value, reporting the value's row.
+    headers = []
+    lines = text.splitlines()
+    for offset, line in enumerate(lines):
+        if TABLE_SEPARATOR.fullmatch(line) and offset and "|" in lines[offset - 1]:
+            headers = lines[offset - 1].strip().strip("|").split("|")
+            continue
+        if not line.strip() or "|" not in line:
+            headers = []
+        if headers:
+            cells = line.strip().strip("|").split("|")
+            for header, cell in zip(headers, cells):
+                for pattern, label in IDENTIFIER_PATTERNS:
+                    if pattern.search(
+                        identifier_text(f"{header.rstrip().rstrip(':')}: {cell}")
+                    ):
+                        findings.add((offset, label))
     return [
-        f"{where}: {label}; example values must be synthetic and must not look real"
-        for pattern, label in IDENTIFIER_PATTERNS
-        if pattern.search(text)
+        f"{where}{':' + str(first_line + line) if first_line is not None else ''}: "
+        f"{label}; example values must be synthetic and must not look real"
+        for line, label in sorted(findings)
     ]
+
+
+def publication_problems(
+    where: str, text: str, first_line: Optional[int] = None
+) -> List[str]:
+    problems = identifier_problems(where, text, first_line)
+    if re.search(r"<[A-Za-z!/][^>]*>", text):
+        problems.append(f"{where}: raw HTML is not allowed in public notes")
+    if re.search(
+        r"\{\{[<%]|\{(?:python|r|bash|sh|julia|ojs|sql)\b|^[ ]{0,3}(?:`{3,}|~{3,})\s*\{",
+        text,
+        re.IGNORECASE | re.MULTILINE,
+    ):
+        problems.append(
+            f"{where}: executable cells and Quarto shortcodes are not allowed"
+        )
+    if re.search(
+        r"https?://(?:github\.com/susom/starr-data-lake|stanfordmed\.atlassian\.net)(?:[/#?]|\b)",
+        text,
+        re.IGNORECASE,
+    ):
+        problems.append(
+            f"{where}: remove links to private source systems before publication"
+        )
+    return problems
+
+
+def has_unclosed_fence(text: str) -> bool:
+    # An added blank line is outside a closed fence even if the final original
+    # line is the closing delimiter (which numbered_lines marks as code).
+    return list(numbered_lines(text + "\n", 1))[-1][2]
 
 
 def check_entry(name: str, text: str) -> Tuple[Optional[Entry], List[str]]:
@@ -258,12 +329,14 @@ def check_entry(name: str, text: str) -> Tuple[Optional[Entry], List[str]]:
             continue
         if "<!--" in value:
             problems.append(f"{name}: `{field}` still holds template guidance")
-        problems.extend(identifier_problems(f"{name} ({field})", value))
+        problems.extend(publication_problems(f"{name} ({field})", value))
 
     if isinstance(title, str) and ("\n" in title or "\r" in title):
         problems.append(f"{name}: `title` must be a single line")
 
     if isinstance(summary, str) and summary:
+        if has_unclosed_fence(summary):
+            problems.append(f"{name} (summary): close the fenced code block")
         prev_line = ""
         for _, line, fenced in numbered_lines(summary, 1):
             where = f"{name} (summary)"
@@ -282,10 +355,12 @@ def check_entry(name: str, text: str) -> Tuple[Optional[Entry], List[str]]:
                     )
             prev_line = "" if fenced else line
 
+    has_change = False
     prev_line = ""
     for number, line, fenced in numbered_lines(body, first_line):
         where = f"{name}:{number}"
         if not fenced:
+            has_change |= bool(CHANGE_LEVEL_HEADING.match(line))
             if RELEASE_LEVEL_HEADING.match(line):
                 problems.append(
                     f"{where}: start each change at `###`; `#` and `##` belong to the page"
@@ -300,9 +375,11 @@ def check_entry(name: str, text: str) -> Tuple[Optional[Entry], List[str]]:
                 )
         if not fenced and "<!--" in line:
             problems.append(f"{where}: template guidance left in (an HTML comment)")
-        problems.extend(identifier_problems(where, line))
         prev_line = "" if fenced else line
-    if not body.strip():
+    problems.extend(publication_problems(name, body, first_line))
+    if has_unclosed_fence(body):
+        problems.append(f"{name}: close the fenced code block before the next release")
+    if not has_change:
         problems.append(f"{name}: no changes; add at least one `###` section")
 
     if problems:
@@ -318,13 +395,19 @@ def anchor_problems(entries: List[Entry]) -> List[str]:
         owner[year_anchor(entry.date.year)] = f"the page's {entry.date.year} heading"
     problems = []
     for entry in entries:
-        for ident in EXPLICIT_ID.findall(entry.body):
-            if ident in owner:
-                problems.append(
-                    f"{entry.date}.qmd: anchor #{ident} is already used by {owner[ident]}"
-                )
-            else:
-                owner[ident] = f"{entry.date}.qmd"
+        for field, content in (
+            ("title", entry.title),
+            ("summary", entry.summary),
+            ("body", entry.body),
+        ):
+            where = f"{entry.date}.qmd ({field})"
+            for ident in EXPLICIT_ID.findall(content):
+                if ident in owner:
+                    problems.append(
+                        f"{where}: anchor #{ident} is already used by {owner[ident]}"
+                    )
+                else:
+                    owner[ident] = where
     return problems
 
 
@@ -344,15 +427,6 @@ def load_entries(entries_dir: Path) -> Tuple[List[Entry], List[str]]:
     entries.sort(key=lambda entry: entry.date, reverse=True)
     problems.extend(anchor_problems(entries))
     return entries, problems
-
-
-def snapshot_warnings(entries: List[Entry], released_datasets: str) -> List[str]:
-    """Releases with notes but no dataset on the hand-maintained datasets page."""
-    return [
-        f"{entry.date}.qmd: no `{entry.suffix}` dataset on {RELEASED_DATASETS} yet"
-        for entry in entries
-        if entry.suffix not in released_datasets
-    ]
 
 
 def render_release(entry: Entry) -> str:
@@ -409,8 +483,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    docs_dir = Path(__file__).resolve().parent.parent / "docs"
+    root = Path(__file__).resolve().parent.parent
+    docs_dir = root / "docs"
     entries, problems = load_entries(docs_dir / ENTRIES_DIR)
+    try:
+        releases = load_catalog(root)
+        problems.extend(entry_problems(root, releases))
+    except (OSError, ValueError) as error:
+        print(f"Release catalog cannot be published: {error}", file=sys.stderr)
+        return 1
     if problems:
         print(
             "Release notes cannot be published until these are fixed:", file=sys.stderr
@@ -419,18 +500,16 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f"  - {problem}", file=sys.stderr)
         return 1
 
-    datasets_page = docs_dir / RELEASED_DATASETS
-    datasets = (
-        datasets_page.read_text(encoding="utf-8") if datasets_page.exists() else ""
-    )
-    for warning in snapshot_warnings(entries, datasets):
-        print(f"Warning: {warning}")
-
     if args.check:
         print(f"Release notes: {len(entries)} entries pass the checks")
         return 0
     (docs_dir / OUTPUT_FILE).write_text(render_page(entries), encoding="utf-8")
-    print(f"Generated {OUTPUT_FILE} from {len(entries)} release entries")
+    (docs_dir / RELEASED_DATASETS).write_text(
+        render_datasets(releases), encoding="utf-8"
+    )
+    print(
+        f"Generated {OUTPUT_FILE} and {RELEASED_DATASETS} from {len(releases)} release records"
+    )
     return 0
 
 
