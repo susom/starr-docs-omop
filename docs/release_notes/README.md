@@ -114,11 +114,16 @@ For an import without rendering, use `release_pipeline.py sync --bundle ...`.
 entries without writing pages. The pre-render hook generates both release pages
 from the same validated records, before the LLM indexes.
 
-Identical imports are no-ops, including file timestamps. Changed historical
-content needs exactly the next `revision` and a `correction_reason`. Checksums,
-global anchor validation, and pre-write validation prevent accidental partial
-or inconsistent delivery. The PR check also compares history with its base and
-rejects removed release records or unversioned corrections.
+Identical imports are no-ops, including file timestamps. Imported files get the
+permissions a plain write would give them (an existing file keeps its mode), so
+a sync run as root in Docker leaves a bind-mounted checkout readable by its
+owner and other users.
+
+Changed historical content needs exactly the next `revision` and a
+`correction_reason`. Checksums, global anchor validation, and pre-write
+validation prevent accidental partial or inconsistent delivery. The PR check
+also compares history with its base and rejects removed release records or
+unversioned corrections.
 
 For a text-only correction, commit the corrected note at the same fragment path
 and pin that full commit SHA in the included decision's optional `text_revision`.
@@ -142,6 +147,27 @@ escape their release section. Each entry needs at least one unfenced `###` chang
 heading. Explicit IDs in titles, summaries, and bodies are checked together.
 The build also refuses template comments, raw HTML, executable Quarto
 cells/shortcodes, and private source-system links.
+
+Markdown is read by Pandoc, which can do more than prose needs, so the text of a
+note is also checked for markup that runs script or changes the page:
+
+- **Links and images:** a destination must be `http`, `https`, `mailto`, a
+  relative path, or an `#anchor`. This covers inline links, reference
+  definitions, and image sources, and a scheme hidden behind padding, such as
+  spaces, a backslash, a character reference, or a quote or table marker, is
+  still found.
+- **Attributes:** the only one allowed is an anchor, `{#id}`. A note cannot set a
+  class, a style, or an event handler, and cannot use `:::` fenced divs.
+- **Page metadata:** a line of `---` directly followed by text starts a YAML
+  block, also inside a quote or a list. Leave a blank line after a horizontal
+  rule.
+- **Tables:** use pipe tables. Grid tables are refused.
+- **Control characters** are refused. Write `&lt;` for a literal `<`, since a tag
+  with no closing `>` would take its end from whatever follows it.
+
+These are refused **even inside code blocks**, because deciding what Pandoc reads
+as code is where such a check goes wrong. To show a `{`, a `:::`, a grid border,
+or a `---` line followed by text in an example, describe it in prose.
 
 Identifier checks scan raw and normalized Markdown, including wrapped labels,
 inline formatting, adjacent table cells, table header/value columns, and code

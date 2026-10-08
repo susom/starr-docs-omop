@@ -10,7 +10,9 @@ import contextlib
 import copy
 import io
 import json
+import os
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -232,6 +234,42 @@ class ReleasePipelineTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValueError):
                 pipeline.parse_note(fragment(dict(NOTE, **{field: text})), PATH)
 
+    def test_notes_cannot_carry_script_attributes_or_metadata_into_the_page(self):
+        for field, text, problem in (
+            ("title", "[Run](javascript:alert(1))", "link destination"),
+            ("title", "Observation periods {onclick=1}", "attribute"),
+            ("impact", "[Details](&#106;avascript:alert(1))", "link destination"),
+            (
+                "impact",
+                "[Details](&nbsp;\u202fjavascript:alert(1))",
+                "link destination",
+            ),
+            ("impact", "Text\n\n---\nheader-includes: x\n---", "metadata"),
+            ("impact", "- > ---\n  > header-includes: x", "metadata"),
+            ("details", "+---+\n| --- |\n| lang: x |\n+---+", "grid table"),
+            ("action", "[ref]: javascript:alert(1)", "link destination"),
+            ("action", '[Run]{onclick="alert(1)"}', "attribute"),
+            ("details", "::: warning\nCareful.\n:::", "fenced div"),
+            ("details", '```json\n{"a": 1}\n```', "attribute"),
+            ("details", '<div onclick="alert(1)"', "raw HTML"),
+            ("details", "Text\x01more.", "control character"),
+        ):
+            with self.subTest(field=field, text=text):
+                with self.assertRaisesRegex(ValueError, problem):
+                    pipeline.parse_note(fragment(dict(NOTE, **{field: text})), PATH)
+        with self.assertRaisesRegex(ValueError, "link destination"):
+            pipeline.parse_note(
+                fragment(dict(NOTE, audiences=["[x](javascript:alert(1))"])), PATH
+            )
+        safe = dict(
+            NOTE,
+            details="See [the table](https://example.org/person) and "
+            "[Released Datasets](released_datasets.qmd#_2026_10_15).",
+        )
+        self.assertEqual(
+            pipeline.parse_note(fragment(safe), PATH).details, safe["details"]
+        )
+
     def test_code_pr_requires_changed_note_even_without_a_docs_tag(self):
         (self.repo / "dbt/models").mkdir(parents=True)
         (self.repo / "dbt/models/model.sql").write_text("select 1\n")
@@ -408,6 +446,43 @@ class ReleasePipelineTests(unittest.TestCase):
             with self.assertRaisesRegex(OSError, "simulated"):
                 pipeline.sync_bundle(self.docs, self.bundle())
         self.assertEqual(before, self.snapshot())
+
+    def test_imported_files_get_the_mode_a_plain_write_would(self):
+        folder = self.root / "modes"
+        previous = os.umask(0o022)
+        try:
+            created = folder / "created.qmd"
+            pipeline.atomic_write(created, "created\n")
+            os.umask(0o002)
+            shared = folder / "shared.qmd"
+            pipeline.atomic_write(shared, "shared\n")
+        finally:
+            os.umask(previous)
+        self.assertEqual(stat.S_IMODE(created.stat().st_mode), 0o644)
+        self.assertEqual(stat.S_IMODE(shared.stat().st_mode), 0o664)
+        existing = folder / "existing.qmd"
+        existing.write_text("old\n")
+        existing.chmod(0o640)
+        pipeline.atomic_write(existing, "new\n")
+        self.assertEqual(existing.read_text(), "new\n")
+        self.assertEqual(stat.S_IMODE(existing.stat().st_mode), 0o640)
+        self.assertEqual(
+            sorted(path.name for path in folder.iterdir()),
+            ["created.qmd", "existing.qmd", "shared.qmd"],
+        )
+
+    def test_a_synced_release_can_be_read_by_other_users_of_the_checkout(self):
+        bundle = self.bundle()
+        previous = os.umask(0o022)
+        try:
+            pipeline.sync_bundle(self.docs, bundle)
+        finally:
+            os.umask(previous)
+        for path in (
+            self.docs / "docs/release_notes" / f"{DATE}.qmd",
+            self.docs / catalog.CATALOG_DIR / f"{DATE}.json",
+        ):
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o644, path)
 
     def test_both_pages_use_the_same_record_and_partial_variants(self):
         self.record["variants"] = ["core", "lite"]

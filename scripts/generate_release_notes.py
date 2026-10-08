@@ -129,6 +129,53 @@ IDENTIFIER_PATTERNS = (
     (re.compile(r"\bMRN\s*[:#=]?\s*\d", re.IGNORECASE), "an MRN followed by digits"),
 )
 
+# Notes are plain Markdown, and Pandoc reads Markdown with more power than
+# prose needs: a link can run script, an attribute list can add an event
+# handler, a YAML block in the middle of the page can put a script in its head,
+# and a tag with no `>` of its own takes its end from whatever follows. These
+# are refused wherever they appear, code blocks included. Deciding what Pandoc
+# would read as code is where a check like this goes wrong, so it does not try.
+SAFE_URL_SCHEMES = frozenset({"http", "https", "mailto"})
+# Pandoc resolves backslash escapes and character references in a destination
+# and drops the spaces around it, so `&nbsp;` or a backslash in front of the
+# scheme is padding too. A browser then ignores tabs and newlines inside a URL,
+# so any that a reference adds are dropped to leave the scheme whole.
+BACKSLASH_ESCAPE = re.compile(r"\\([!-/:-@\[-`{-~])")
+CHARACTER_REFERENCE = re.compile(
+    r"&(?:#[0-9]+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*);?"
+)
+TAB_OR_NEWLINE = re.compile(r"[\t\n\r]")
+# The lookahead reads the destination without consuming it, so a link written
+# right after another is still found. It skips what can stand between a link
+# and its destination: spaces, a backslash before one, a line break, and the
+# `>` or `|` that starts the next line inside a quote or a table cell. The
+# destination is then the whole run up to the next space, however long,
+# because padding in front of a scheme must not hide it.
+LINK_TARGET = re.compile(r"\](?:\(|:)(?=[\s<>|\\\x00-\x20]*(\S*))")
+URL_SCHEME = re.compile(r"\A([A-Za-z][A-Za-z0-9+.\-]*):")
+# A browser ignores spaces and control characters before a URL.
+LEADING_JUNK = re.compile(r"\A[\s<\\\x00-\x20\x7f]+")
+# A grid table's cells are read as blocks, so a `---` line in one starts a
+# metadata block like any other, behind a border the container check below
+# does not follow.
+GRID_TABLE = re.compile(r"\+[-=:]+\+")
+# The one attribute a note may set: an anchor to link to.
+ANCHOR_ID = re.compile(r"\{#[A-Za-z0-9_][A-Za-z0-9_:.\-]*\}")
+CONTROL_CHARACTER = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
+# A tag with no `>` of its own takes its end from whatever follows it, in the
+# next release if need be, so the opening is enough.
+RAW_HTML = re.compile(r"<(?:[^\W\d_]|[!/?])")
+# `---` at the start of a block is where Pandoc starts a YAML metadata block,
+# unless a blank line follows, and a block starts after any run of quote and
+# list-item markers, in any order: `>`, `-`, `+`, `*`, `1.`, `(a)`, `#.`,
+# `(@)`, and `:` or `~` before a definition. Pandoc's blank is only spaces and
+# tabs, so a line of other Unicode spaces is text.
+CONTAINER_MARKER = (
+    r"(?:>|[-+*:~](?=[ \t])|\(?(?:\d+|[A-Za-z]{1,8}|#|@[\w-]*)[.)](?=[ \t]))"
+)
+YAML_BLOCK_START = re.compile(rf"\A(?:[ \t]*{CONTAINER_MARKER})*[ \t]*---\Z")
+TEXT_AFTER_MARKERS = re.compile(r"\A[ \t>]*[^ \t>]")
+
 
 @dataclass(frozen=True)
 class Entry:
@@ -254,12 +301,88 @@ def identifier_problems(
     ]
 
 
+def resolve_escapes(line: str) -> str:
+    """The line with backslash escapes and character references resolved."""
+    return CHARACTER_REFERENCE.sub(
+        lambda reference: TAB_OR_NEWLINE.sub("", html.unescape(reference.group())),
+        BACKSLASH_ESCAPE.sub(r"\1", line),
+    )
+
+
+def url_scheme(destination: str) -> Optional[str]:
+    """The scheme a browser finds in a resolved destination, if it has one."""
+    scheme = URL_SCHEME.match(LEADING_JUNK.sub("", destination))
+    return scheme.group(1).lower() if scheme else None
+
+
+def markup_problems(
+    where: str, text: str, first_line: Optional[int] = None
+) -> List[str]:
+    """Markup that runs script, sets attributes, or adds page metadata.
+
+    The text is read the way the page is built, line by line without trailing
+    whitespace. Everything is refused wherever it appears, code blocks
+    included: Pandoc reads a line as code only after quotes, lists, tables and
+    fences, which this check would have to mirror exactly.
+    """
+    lines = [line.rstrip() for line in text.replace("\r\n", "\n").split("\n")]
+    text = "\n".join(lines)
+    findings = set()
+
+    def report(offset: int, message: str, source: str = text) -> None:
+        findings.add((source.count("\n", 0, offset), message))
+
+    # Resolved line by line, so line numbers still match the text.
+    resolved = "\n".join(resolve_escapes(line) for line in lines)
+    for match in LINK_TARGET.finditer(resolved):
+        scheme = url_scheme(match.group(1))
+        if scheme is not None and scheme not in SAFE_URL_SCHEMES:
+            report(
+                match.start(),
+                "link destinations must be http, https, mailto, "
+                "a relative path, or an #anchor",
+                resolved,
+            )
+    for match in GRID_TABLE.finditer(text):
+        report(match.start(), "grid tables are not allowed; use a pipe table")
+    # Blanked out in place, so offsets and line numbers still match the text.
+    unanchored = ANCHOR_ID.sub(lambda anchor: " " * len(anchor.group()), text)
+    for match in re.finditer(r"\{", unanchored):
+        report(
+            match.start(),
+            "attributes are not allowed; the only one a note may set is an "
+            "anchor, {#id}",
+        )
+    for match in re.finditer(":::", text):
+        report(match.start(), "fenced divs (:::) are not allowed")
+    for match in CONTROL_CHARACTER.finditer(text):
+        report(match.start(), "control characters are not allowed")
+    for index, line in enumerate(lines[:-1]):
+        if YAML_BLOCK_START.match(line) and TEXT_AFTER_MARKERS.match(lines[index + 1]):
+            findings.add(
+                (
+                    index,
+                    "a line of --- directly followed by text starts a metadata "
+                    "block; leave a blank line after a horizontal rule",
+                )
+            )
+    return [
+        f"{where}{':' + str(first_line + line) if first_line is not None else ''}: "
+        f"{message}"
+        for line, message in sorted(findings)
+    ]
+
+
 def publication_problems(
     where: str, text: str, first_line: Optional[int] = None
 ) -> List[str]:
     problems = identifier_problems(where, text, first_line)
-    if re.search(r"<[A-Za-z!/][^>]*>", text):
-        problems.append(f"{where}: raw HTML is not allowed in public notes")
+    problems.extend(markup_problems(where, text, first_line))
+    if RAW_HTML.search(text):
+        problems.append(
+            f"{where}: raw HTML is not allowed in public notes; "
+            "write &lt; for a literal <"
+        )
     if re.search(
         r"\{\{[<%]|\{(?:python|r|bash|sh|julia|ojs|sql)\b|^[ ]{0,3}(?:`{3,}|~{3,})\s*\{",
         text,
@@ -312,6 +435,9 @@ def check_entry(name: str, text: str) -> Tuple[Optional[Entry], List[str]]:
             return None, [f"{name}: front matter must be a set of `key: value` lines"]
         body = parsed.group(2)
         first_line = text.count("\n", 0, parsed.start(2)) + 1
+    # The page keeps each line without its trailing whitespace, so that is the
+    # text to check: a fence closed by a trailing Unicode space is closed there.
+    body = "\n".join(line.rstrip() for line in body.split("\n"))
 
     problems = []
     unknown = sorted(str(key) for key in meta if key not in FRONT_MATTER_KEYS)
@@ -384,8 +510,7 @@ def check_entry(name: str, text: str) -> Tuple[Optional[Entry], List[str]]:
 
     if problems:
         return None, problems
-    tidy_body = "\n".join(line.rstrip() for line in body.split("\n")).strip("\n")
-    return Entry(date, title.strip(), " ".join(summary.split()), tidy_body), []
+    return Entry(date, title.strip(), " ".join(summary.split()), body.strip("\n")), []
 
 
 def anchor_problems(entries: List[Entry]) -> List[str]:

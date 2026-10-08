@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -468,7 +469,14 @@ def check_evolution(old: catalog.Release | None, new: catalog.Release) -> None:
         )
 
 
+def current_umask() -> int:
+    mask = os.umask(0)
+    os.umask(mask)
+    return mask
+
+
 def atomic_write(path: Path, content: str) -> None:
+    """Replace ``path`` in one step, leaving it as a plain write would."""
     path.parent.mkdir(parents=True, exist_ok=True)
     temp = None
     try:
@@ -479,6 +487,14 @@ def atomic_write(path: Path, content: str) -> None:
             stream.write(content)
             stream.flush()
             os.fsync(stream.fileno())
+        # A temporary file is readable by its owner only, and the sync runs as
+        # root in Docker on a checkout the host reads: keep the destination's
+        # mode, or give a new file the default one.
+        try:
+            mode = stat.S_IMODE(path.stat().st_mode)
+        except FileNotFoundError:
+            mode = 0o666 & ~current_umask()
+        os.chmod(temp, mode)
         temp.replace(path)
     finally:
         if temp is not None:
