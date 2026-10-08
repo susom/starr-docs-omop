@@ -1,0 +1,121 @@
+name: Documentation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Build the site tool image
+        run: docker build -f Dockerfile.site -t starr-docs-site .
+      - name: Check release history
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace" starr-docs-site \
+            python scripts/release_pipeline.py check-history --base "$BASE_SHA"
+      - name: Test and lint
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace" starr-docs-site sh -ec '
+            for test in tests/test_*.py; do python "$test"; done
+            ruff check scripts/release_catalog.py scripts/release_pipeline.py scripts/build_site.py scripts/generate_release_notes.py tests/test_release_pipeline.py tests/test_release_notes.py
+            ruff format --check scripts/release_catalog.py scripts/release_pipeline.py scripts/build_site.py scripts/generate_release_notes.py tests/test_release_pipeline.py tests/test_release_notes.py
+            python scripts/generate_release_notes.py --check
+          '
+      - name: Render a credential-free preview
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace" starr-docs-site \
+            python scripts/build_site.py --offline
+      - uses: actions/upload-artifact@v4
+        with:
+          name: documentation-preview
+          path: docs/_site/
+          retention-days: 7
+
+  publish:
+    name: Publish documentation
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: site
+          persist-credentials: false
+      - name: Require production configuration
+        env:
+          APP_ID: ${{ vars.STARR_READ_APP_ID }}
+          WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$APP_ID" || { echo "::error::Set STARR_READ_APP_ID"; exit 1; }
+          test -n "$WIF_PROVIDER" || { echo "::error::Set GCP_WORKLOAD_IDENTITY_PROVIDER"; exit 1; }
+          test -n "$SERVICE_ACCOUNT" || { echo "::error::Set GCP_SERVICE_ACCOUNT"; exit 1; }
+      - name: Build the site tool image
+        run: docker build -f site/Dockerfile.site -t starr-docs-site site
+      - uses: actions/create-github-app-token@v2
+        id: source-token
+        with:
+          app-id: ${{ vars.STARR_READ_APP_ID }}
+          private-key: ${{ secrets.STARR_READ_APP_PRIVATE_KEY }}
+          owner: susom
+          repositories: starr-data-lake
+          permission-contents: read
+      - uses: actions/checkout@v4
+        with:
+          repository: susom/starr-data-lake
+          ref: main
+          path: upstream
+          fetch-depth: 1
+          persist-credentials: false
+          token: ${{ steps.source-token.outputs.token }}
+      - uses: google-github-actions/auth@v2
+        id: google-auth
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+      - name: Render production without fallbacks
+        env:
+          CREDENTIALS_FILE: ${{ steps.google-auth.outputs.credentials_file_path }}
+        run: |
+          docker run --rm \
+            -v "$PWD/site:/workspace" \
+            -v "$PWD/upstream:/upstream:ro" \
+            -v "$CREDENTIALS_FILE:/gcp/credentials.json:ro" \
+            -e GOOGLE_APPLICATION_CREDENTIALS=/gcp/credentials.json \
+            -e STARR_DATA_LAKE_CHECKOUT=/upstream \
+            starr-docs-site sh -ec '
+              git config --global --add safe.directory /upstream
+              python scripts/build_site.py
+            '
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/docs/_site/
+      - uses: actions/deploy-pages@v4
+        id: deployment

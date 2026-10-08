@@ -11,6 +11,7 @@
 - [Page Not Found](https://shiny-funicular-j1po82z.pages.github.io/about/404.html)
 - [Changes from OMOP-CDM 5.3 to 5.4](https://shiny-funicular-j1po82z.pages.github.io/about/changes_53_to_54.html)
 - [Released Datasets](https://shiny-funicular-j1po82z.pages.github.io/about/released_datasets.html)
+- [Release Notes](https://shiny-funicular-j1po82z.pages.github.io/about/release_notes.html): What changed for users in each STARR-OMOP v5.4 dataset release
 - [Getting Access to STARR-OMOP v5.4](https://shiny-funicular-j1po82z.pages.github.io/about/getting_access.html)
 - [OMOP Data Dictionary](https://shiny-funicular-j1po82z.pages.github.io/about/omop_data_dictionary.html): Every STARR-OMOP CDM v5.4 table and field in one searchable page, downloadable as an Excel workbook.
 

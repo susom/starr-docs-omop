@@ -1,0 +1,21 @@
+<!--
+Generated entry shape, for reference only. Normal delivery imports a fixed,
+available release bundle; do not copy this file into the catalog by hand.
+Write the source note in starr-data-lake's starr-user-note block and review it
+with the code change. See README.md for the authoring and availability contract.
+The importer checks the matching data/releases record and exact entry checksum.
+-->
+
+### <!-- Short title from the versioned note --> {#star-00000-YYYY-MM-DD}
+
+**What changed**
+
+<!-- Impact text from the versioned note. -->
+
+**Who is affected**
+
+<!-- Audiences from the versioned note. -->
+
+**Action required**
+
+<!-- Action text from the versioned note. -->

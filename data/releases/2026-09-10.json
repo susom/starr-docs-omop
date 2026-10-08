@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "release_date": "2026-09-10",
+  "dataset_suffix": "_2026_09_10",
+  "status": "available",
+  "source_revision": null,
+  "available_at": null,
+  "variants": ["core", "1pcent", "lite", "1pcent_lite"],
+  "revision": 1,
+  "notes_status": "published",
+  "note_ids": ["star-12810"],
+  "entry_sha256": "b073e1ed41bbfcf5d8e78dc2fcabe21bcaafd9a173f75bbec5566d8996a3a7e1",
+  "correction_reason": null,
+  "legacy": true
+}

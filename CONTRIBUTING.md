@@ -12,7 +12,8 @@ websites documentation for page layout, navigation, and formatting options.
 
 - Make sure you can preview the site locally — see [Developer Guide](README.md#developer-guide) in the README.
 - Some pages are **generated** and must **not** be edited by hand:
-  `docs/omop_data_model.qmd`, `docs/faq.qmd`, `docs/llms.txt`, and `docs/llms-full.txt`.
+  `docs/omop_data_model.qmd`, `docs/faq.qmd`, `docs/release_notes.qmd`,
+  `docs/released_datasets.qmd`, `docs/llms.txt`, and `docs/llms-full.txt`.
   They are produced by the `pre-render` hooks defined in [docs/_quarto.yml](docs/_quarto.yml).
 
 ## Authoring Content
@@ -37,10 +38,27 @@ also runs automatically as a pre-render hook.
 FAQ entries live in [docs/faqs/](docs/faqs/) and are compiled into the FAQ page
 automatically. See [docs/faqs/README.md](docs/faqs/README.md) for the full authoring guide.
 
+### Publish Release Notes
+
+Author the user-facing note with the upstream code change, in its versioned
+changelog fragment. The PR links the note rather than duplicating it. Relevant
+changes require either a note or an explicit no-impact reason.
+
+When the dataset is actually available, import its fixed public bundle. This
+adds one availability record in `data/releases/` and one dated entry in
+[docs/release_notes/](docs/release_notes/). Both public release pages are generated
+from those same inputs. Do not manually add a release to `released_datasets.qmd`
+or regenerate historical notes from edited PR descriptions. Corrections require
+an incremented revision and a reason.
+
+Use the Docker commands in [the release guide](docs/release_notes/README.md) to
+import and preview. That guide also describes the upstream contract, availability
+gate, automation, and the limited legacy migration.
+
 ### Edit Other Pages
 
 The remaining pages (`about.qmd`, `getting_access.qmd`, `starr_omop54.qmd`,
-`changes_53_to_54.qmd`, `released_datasets.qmd`, `404.qmd`) are hand-authored `.qmd`
+`changes_53_to_54.qmd`, `404.qmd`) are hand-authored `.qmd`
 files in `docs/`. Edit them directly and preview to verify. See the Quarto docs for
 [website pages](https://quarto.org/docs/websites/#pages), [navigation](https://quarto.org/docs/websites/website-navigation.html),
 and [Markdown authoring](https://quarto.org/docs/authoring/markdown-basics.html).
@@ -135,4 +153,6 @@ refactor(scripts): simplify llms.txt generation
 4. Confirm you did **not** hand-edit any generated files.
 5. Open a pull request; the [pull request template](.github/pull_request_template.md)
    is applied automatically — fill it in.
-6. After the PR is merged, publish the site (see [Publishing the Website](README.md#publishing-the-website)).
+6. After merge, the configured Documentation workflow publishes the site. Check
+   its production result; a passing offline preview is not a deployment (see
+   [Publishing the Website](README.md#publishing-the-website)).

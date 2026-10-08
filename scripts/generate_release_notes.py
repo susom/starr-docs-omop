@@ -1,0 +1,642 @@
+#!/usr/bin/env python3
+"""
+Generate the Release Notes page from the entries in docs/release_notes/.
+
+Every STARR-OMOP dataset release has one entry, ``docs/release_notes/YYYY-MM-DD.qmd``,
+named for the date that suffixes its dataset names (2026-09-10 -> ``_2026_09_10``),
+so an entry and a release on the Released Datasets page share one key. The
+date of the release's section in starr-data-lake's ``CHANGELOG.adoc`` can be a
+few days off: the section for ``_2026_09_10`` is dated 2026-09-11.
+
+An entry holds reviewed, versioned user notes delivered with an explicit
+dataset-availability record (the September entry predates that contract).
+Nothing here fetches live pull requests. The hook checks committed entries
+against ``data/releases/`` and generates both release pages from those records,
+newest first and grouped by year and month::
+
+    # 2026                  one heading per year
+    ## September 2026       one per release, titled with its month and year
+    ### <change>            the entry's own sections
+
+Quarto's search has one result per ``##`` section, so a search hit names the
+month a change shipped in. An index under the introduction links every
+release, by year and month, and the table of contents lists the years and
+months. The page's script, ``docs/assets/release-notes.js``, makes each year and
+month open and close, with the newest open; without it every section is open.
+The hook reads no network and no clock, so unchanged entries always produce
+identical bytes.
+
+Usage:
+    python scripts/generate_release_notes.py          # check, then write the page
+    python scripts/generate_release_notes.py --check  # check only
+
+A failed check exits non-zero, which stops ``quarto render`` and ``quarto
+publish`` before an entry that breaks the rules can reach the site.
+"""
+
+import argparse
+import datetime as dt
+import html
+import re
+import sys
+from dataclasses import dataclass
+from itertools import groupby
+from pathlib import Path
+from typing import Dict, Iterator, List, Optional, Tuple
+
+from release_catalog import (
+    MONTHS,
+    entry_problems,
+    load_catalog,
+    long_date,
+    render_datasets,
+)
+
+try:
+    import yaml
+except ImportError:
+    print("Error: PyYAML not found.")
+    print("Please activate the virtual environment: source .venv/bin/activate")
+    sys.exit(1)
+
+
+ENTRIES_DIR = "release_notes"
+OUTPUT_FILE = "release_notes.qmd"
+RELEASED_DATASETS = "released_datasets.qmd"
+
+ENTRY_NAME = re.compile(r"\A(\d{4}-\d{2}-\d{2})\.qmd\Z")
+FRONT_MATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)(.*)\Z", re.DOTALL)
+FRONT_MATTER_KEYS = ("summary", "title")
+
+# docs/assets/release-notes.js finds the year and release sections by these
+# prefixes; tests/test_release_notes.py checks that the two still agree.
+YEAR_ANCHOR_PREFIX = "year-"
+RELEASE_ANCHOR_PREFIX = "release-"
+# Raw HTML, so Quarto leaves the path as written: relative to the page, which
+# renders at the root of the site.
+PAGE_SCRIPT = "assets/release-notes.js"
+PAGE_CLASS = "release-notes"
+
+PAGE_HEADER = (
+    "---\n"
+    'title: "Release Notes"\n'
+    'description: "What changed for users in each STARR-OMOP v5.4 dataset release"\n'
+    # Scopes the page's rules in styles.css, and its script, to this page.
+    f"body-classes: {PAGE_CLASS}\n"
+    # Years and months only: a change's heading is a whole sentence, too long
+    # for the sidebar, and its month already leads to it.
+    "toc-depth: 2\n"
+    # Quarto opens only the top level of the table of contents (the years) by
+    # default; 2 keeps every month in view too.
+    "toc-expand: 2\n"
+    "include-in-header:\n"
+    "  text: |\n"
+    f'    <script defer src="{PAGE_SCRIPT}"></script>\n'
+    "---\n"
+    "\n"
+    "What changed for users in each STARR-OMOP v5.4 dataset release, newest first "
+    "and grouped by year and month. Each release is a dated, immutable snapshot; "
+    f"[Released Datasets]({RELEASED_DATASETS}) lists its dataset names. "
+    "To find the releases that changed a table or field, search the site for its "
+    "name.\n"
+)
+NO_ENTRIES = "No release notes have been published yet.\n"
+INDEX_SEPARATOR = " \u00b7 "
+
+# The page gives each year a `#` heading and each release a `##` heading, so the
+# changes inside an entry start at `###`. A `#` or `##` in an entry would
+# promote one change to the level of a whole year or release in the table of
+# contents, and split the release in Quarto's search, which has one result per
+# `##` section. Indented ATX headings (up to 3 leading spaces in Markdown) and
+# Setext underlines (`=` or `-` under text) also promote changes to `#` or `##`.
+RELEASE_LEVEL_HEADING = re.compile(r"\A[ ]{0,3}#{1,2}(?:\s|\Z)")
+SETEXT_UNDERLINE = re.compile(r"\A[ ]{0,3}(=+|-+)[ \t]*\Z")
+OPENING_FENCE = re.compile(r"\A[ ]{0,3}(`{3,}|~{3,})(.*)\Z")
+CLOSING_FENCE = re.compile(r"\A[ ]{0,3}(`{3,}|~{3,})[ \t]*\Z")
+FENCE = OPENING_FENCE
+CHANGE_LEVEL_HEADING = re.compile(r"\A[ ]{0,3}###(?:\s|\Z)")
+EXPLICIT_ID = re.compile(r"\{#([^}\s]+)")
+
+# Entries are published as written, so these are a backstop, not a review: an
+# example value that looks like a real identifier stops the render. They apply
+# inside code blocks too, where example rows are often pasted.
+IDENTIFIER_PATTERNS = (
+    (re.compile(r"\b\d{3}-\d{2}-\d{4}\b"), "an SSN-shaped number"),
+    (
+        re.compile(r"\bSSN\s*[:#=]?\s*\d{9}\b", re.IGNORECASE),
+        "an SSN followed by digits",
+    ),
+    (re.compile(r"\bMRN\s*[:#=]?\s*\d", re.IGNORECASE), "an MRN followed by digits"),
+)
+
+# Notes are plain Markdown, and Pandoc reads Markdown with more power than
+# prose needs: a link can run script, an attribute list can add an event
+# handler, a YAML block in the middle of the page can put a script in its head,
+# and a tag with no `>` of its own takes its end from whatever follows. These
+# are refused wherever they appear, code blocks included. Deciding what Pandoc
+# would read as code is where a check like this goes wrong, so it does not try.
+SAFE_URL_SCHEMES = frozenset({"http", "https", "mailto"})
+# Pandoc resolves backslash escapes and character references in a destination
+# and drops the spaces around it, so `&nbsp;` or a backslash in front of the
+# scheme is padding too. A browser then ignores tabs and newlines inside a URL,
+# so any that a reference adds are dropped to leave the scheme whole.
+BACKSLASH_ESCAPE = re.compile(r"\\([!-/:-@\[-`{-~])")
+CHARACTER_REFERENCE = re.compile(
+    r"&(?:#[0-9]+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*);?"
+)
+TAB_OR_NEWLINE = re.compile(r"[\t\n\r]")
+# The lookahead reads the destination without consuming it, so a link written
+# right after another is still found. It skips what can stand between a link
+# and its destination: spaces, a backslash before one, a line break, and the
+# `>` or `|` that starts the next line inside a quote or a table cell. The
+# destination is then the whole run up to the next space, however long,
+# because padding in front of a scheme must not hide it.
+LINK_TARGET = re.compile(r"\](?:\(|:)(?=[\s<>|\\\x00-\x20]*(\S*))")
+URL_SCHEME = re.compile(r"\A([A-Za-z][A-Za-z0-9+.\-]*):")
+# A browser ignores spaces and control characters before a URL.
+LEADING_JUNK = re.compile(r"\A[\s<\\\x00-\x20\x7f]+")
+# A grid table's cells are read as blocks, so a `---` line in one starts a
+# metadata block like any other, behind a border the container check below
+# does not follow.
+GRID_TABLE = re.compile(r"\+[-=:]+\+")
+# The one attribute a note may set: an anchor to link to.
+ANCHOR_ID = re.compile(r"\{#[A-Za-z0-9_][A-Za-z0-9_:.\-]*\}")
+CONTROL_CHARACTER = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
+# A tag with no `>` of its own takes its end from whatever follows it, in the
+# next release if need be, so the opening is enough.
+RAW_HTML = re.compile(r"<(?:[^\W\d_]|[!/?])")
+# `---` at the start of a block is where Pandoc starts a YAML metadata block,
+# unless a blank line follows, and a block starts after any run of quote and
+# list-item markers, in any order: `>`, `-`, `+`, `*`, `1.`, `(a)`, `#.`,
+# `(@)`, and `:` or `~` before a definition. Pandoc's blank is only spaces and
+# tabs, so a line of other Unicode spaces is text.
+CONTAINER_MARKER = (
+    r"(?:>|[-+*:~](?=[ \t])|\(?(?:\d+|[A-Za-z]{1,8}|#|@[\w-]*)[.)](?=[ \t]))"
+)
+YAML_BLOCK_START = re.compile(rf"\A(?:[ \t]*{CONTAINER_MARKER})*[ \t]*---\Z")
+TEXT_AFTER_MARKERS = re.compile(r"\A[ \t>]*[^ \t>]")
+
+
+@dataclass(frozen=True)
+class Entry:
+    date: dt.date
+    title: str
+    summary: str
+    body: str
+
+    @property
+    def anchor(self) -> str:
+        return f"{RELEASE_ANCHOR_PREFIX}{self.date.isoformat()}"
+
+    @property
+    def suffix(self) -> str:
+        """Dataset-name suffix of the snapshot: 2026-06-08 -> ``_2026_06_08``."""
+        return "_" + self.date.isoformat().replace("-", "_")
+
+
+def year_anchor(year: int) -> str:
+    return f"{YEAR_ANCHOR_PREFIX}{year}"
+
+
+def by_year(entries: List[Entry]) -> List[Tuple[int, List[Entry]]]:
+    """Entries grouped by the year of their snapshot, keeping their order."""
+    return [
+        (year, list(group))
+        for year, group in groupby(entries, key=lambda entry: entry.date.year)
+    ]
+
+
+def numbered_lines(body: str, first_line: int) -> Iterator[Tuple[int, str, bool]]:
+    """Each line of an entry body with its line number in the file.
+
+    The flag is True inside a fenced code block, where a ``##`` is a comment in
+    the code being shown rather than a heading on the page.
+    """
+    fence_char: Optional[str] = None
+    fence_len: int = 0
+    for offset, line in enumerate(body.replace("\r\n", "\n").split("\n")):
+        if fence_char is None:
+            match = OPENING_FENCE.match(line)
+            if match:
+                delim = match.group(1)
+                char = delim[0]
+                # In CommonMark, backtick fences cannot have backticks in the info string
+                if char == "`" and "`" in match.group(2):
+                    yield first_line + offset, line, False
+                    continue
+                fence_char = char
+                fence_len = len(delim)
+                yield first_line + offset, line, True
+                continue
+            yield first_line + offset, line, False
+        else:
+            match = CLOSING_FENCE.match(line)
+            if match:
+                delim = match.group(1)
+                if delim[0] == fence_char and len(delim) >= fence_len:
+                    fence_char = None
+                    fence_len = 0
+                    yield first_line + offset, line, True
+                    continue
+            yield first_line + offset, line, True
+
+
+TABLE_SEPARATOR = re.compile(
+    r"^[ \t]*\|?[ \t]*:?-{3,}:?[ \t]*(?:\|[ \t]*:?-{3,}:?[ \t]*)*\|?[ \t]*$",
+    re.MULTILINE,
+)
+
+
+def identifier_text(text: str) -> str:
+    """Project visible Markdown for scanning, preserving physical newlines."""
+
+    def blank(match: re.Match) -> str:
+        return "\n" * match.group().count("\n")
+
+    text = re.sub(
+        r"&(?:#[xX][0-9a-fA-F]+|#\d+|[A-Za-z]+);",
+        lambda match: html.unescape(match.group())
+        .replace("\n", " ")
+        .replace("\r", " "),
+        text,
+    )
+    text = TABLE_SEPARATOR.sub(blank, text)
+    text = re.sub(r"(?<=\])\([^)]*\)", blank, text)
+    text = re.sub(r"<[^>\n]+>", "", text)
+    text = re.sub(r"[\\`*_~\[\]]", "", text)
+    return text.replace("|", " ")
+
+
+def identifier_problems(
+    where: str, text: str, first_line: Optional[int] = None
+) -> List[str]:
+    findings = set()
+    for content in (text, identifier_text(text)):
+        for pattern, label in IDENTIFIER_PATTERNS:
+            for match in pattern.finditer(content):
+                line = content.count("\n", 0, match.start())
+                findings.add((line, label))
+    # In a column-oriented table the label is in the header, not adjacent to
+    # the value. Scan that label with each value, reporting the value's row.
+    headers = []
+    lines = text.splitlines()
+    for offset, line in enumerate(lines):
+        if TABLE_SEPARATOR.fullmatch(line) and offset and "|" in lines[offset - 1]:
+            headers = lines[offset - 1].strip().strip("|").split("|")
+            continue
+        if not line.strip() or "|" not in line:
+            headers = []
+        if headers:
+            cells = line.strip().strip("|").split("|")
+            for header, cell in zip(headers, cells):
+                for pattern, label in IDENTIFIER_PATTERNS:
+                    if pattern.search(
+                        identifier_text(f"{header.rstrip().rstrip(':')}: {cell}")
+                    ):
+                        findings.add((offset, label))
+    return [
+        f"{where}{':' + str(first_line + line) if first_line is not None else ''}: "
+        f"{label}; example values must be synthetic and must not look real"
+        for line, label in sorted(findings)
+    ]
+
+
+def resolve_escapes(line: str) -> str:
+    """The line with backslash escapes and character references resolved."""
+    return CHARACTER_REFERENCE.sub(
+        lambda reference: TAB_OR_NEWLINE.sub("", html.unescape(reference.group())),
+        BACKSLASH_ESCAPE.sub(r"\1", line),
+    )
+
+
+def url_scheme(destination: str) -> Optional[str]:
+    """The scheme a browser finds in a resolved destination, if it has one."""
+    scheme = URL_SCHEME.match(LEADING_JUNK.sub("", destination))
+    return scheme.group(1).lower() if scheme else None
+
+
+def markup_problems(
+    where: str, text: str, first_line: Optional[int] = None
+) -> List[str]:
+    """Markup that runs script, sets attributes, or adds page metadata.
+
+    The text is read the way the page is built, line by line without trailing
+    whitespace. Everything is refused wherever it appears, code blocks
+    included: Pandoc reads a line as code only after quotes, lists, tables and
+    fences, which this check would have to mirror exactly.
+    """
+    lines = [line.rstrip() for line in text.replace("\r\n", "\n").split("\n")]
+    text = "\n".join(lines)
+    findings = set()
+
+    def report(offset: int, message: str, source: str = text) -> None:
+        findings.add((source.count("\n", 0, offset), message))
+
+    # Resolved line by line, so line numbers still match the text.
+    resolved = "\n".join(resolve_escapes(line) for line in lines)
+    for match in LINK_TARGET.finditer(resolved):
+        scheme = url_scheme(match.group(1))
+        if scheme is not None and scheme not in SAFE_URL_SCHEMES:
+            report(
+                match.start(),
+                "link destinations must be http, https, mailto, "
+                "a relative path, or an #anchor",
+                resolved,
+            )
+    for match in GRID_TABLE.finditer(text):
+        report(match.start(), "grid tables are not allowed; use a pipe table")
+    # Blanked out in place, so offsets and line numbers still match the text.
+    unanchored = ANCHOR_ID.sub(lambda anchor: " " * len(anchor.group()), text)
+    for match in re.finditer(r"\{", unanchored):
+        report(
+            match.start(),
+            "attributes are not allowed; the only one a note may set is an "
+            "anchor, {#id}",
+        )
+    for match in re.finditer(":::", text):
+        report(match.start(), "fenced divs (:::) are not allowed")
+    for match in CONTROL_CHARACTER.finditer(text):
+        report(match.start(), "control characters are not allowed")
+    for index, line in enumerate(lines[:-1]):
+        if YAML_BLOCK_START.match(line) and TEXT_AFTER_MARKERS.match(lines[index + 1]):
+            findings.add(
+                (
+                    index,
+                    "a line of --- directly followed by text starts a metadata "
+                    "block; leave a blank line after a horizontal rule",
+                )
+            )
+    return [
+        f"{where}{':' + str(first_line + line) if first_line is not None else ''}: "
+        f"{message}"
+        for line, message in sorted(findings)
+    ]
+
+
+def publication_problems(
+    where: str, text: str, first_line: Optional[int] = None
+) -> List[str]:
+    problems = identifier_problems(where, text, first_line)
+    problems.extend(markup_problems(where, text, first_line))
+    if RAW_HTML.search(text):
+        problems.append(
+            f"{where}: raw HTML is not allowed in public notes; "
+            "write &lt; for a literal <"
+        )
+    if re.search(
+        r"\{\{[<%]|\{(?:python|r|bash|sh|julia|ojs|sql)\b|^[ ]{0,3}(?:`{3,}|~{3,})\s*\{",
+        text,
+        re.IGNORECASE | re.MULTILINE,
+    ):
+        problems.append(
+            f"{where}: executable cells and Quarto shortcodes are not allowed"
+        )
+    if re.search(
+        r"https?://(?:github\.com/susom/starr-data-lake|stanfordmed\.atlassian\.net)(?:[/#?]|\b)",
+        text,
+        re.IGNORECASE,
+    ):
+        problems.append(
+            f"{where}: remove links to private source systems before publication"
+        )
+    return problems
+
+
+def has_unclosed_fence(text: str) -> bool:
+    # An added blank line is outside a closed fence even if the final original
+    # line is the closing delimiter (which numbered_lines marks as code).
+    return list(numbered_lines(text + "\n", 1))[-1][2]
+
+
+def check_entry(name: str, text: str) -> Tuple[Optional[Entry], List[str]]:
+    """Parse one entry file, returning it or every reason it cannot be published."""
+    named = ENTRY_NAME.match(name)
+    if not named:
+        return None, [f"{name}: entries are named YYYY-MM-DD.qmd, the snapshot date"]
+    try:
+        date = dt.date.fromisoformat(named.group(1))
+    except ValueError:
+        return None, [f"{name}: {named.group(1)} is not a calendar date"]
+
+    text = text.replace("\r\n", "\n")
+    # Front matter is optional, so an entry can be just the changes, exactly as
+    # the starr-data-lake pull requests describe them.
+    meta: Dict[str, object] = {}
+    body, first_line = text, 1
+    if text.startswith("---"):
+        parsed = FRONT_MATTER.match(text)
+        if not parsed:
+            return None, [f"{name}: the front matter block is not closed with ---"]
+        try:
+            meta = yaml.safe_load(parsed.group(1)) or {}
+        except yaml.YAMLError as error:
+            return None, [f"{name}: front matter is not valid YAML ({error})"]
+        if not isinstance(meta, dict):
+            return None, [f"{name}: front matter must be a set of `key: value` lines"]
+        body = parsed.group(2)
+        first_line = text.count("\n", 0, parsed.start(2)) + 1
+    # The page keeps each line without its trailing whitespace, so that is the
+    # text to check: a fence closed by a trailing Unicode space is closed there.
+    body = "\n".join(line.rstrip() for line in body.split("\n"))
+
+    problems = []
+    unknown = sorted(str(key) for key in meta if key not in FRONT_MATTER_KEYS)
+    if unknown:
+        problems.append(
+            f"{name}: unknown front matter key(s) {', '.join(unknown)} "
+            f"(allowed: {', '.join(FRONT_MATTER_KEYS)})"
+        )
+
+    summary = meta.get("summary", "")
+    title = meta.get("title", f"{MONTHS[date.month - 1]} {date.year}")
+    for field, value in (("summary", summary), ("title", title)):
+        if not isinstance(value, str) or (field in meta and not value.strip()):
+            problems.append(f"{name}: `{field}` must be text when it is given")
+            continue
+        if "<!--" in value:
+            problems.append(f"{name}: `{field}` still holds template guidance")
+        problems.extend(publication_problems(f"{name} ({field})", value))
+
+    if isinstance(title, str) and ("\n" in title or "\r" in title):
+        problems.append(f"{name}: `title` must be a single line")
+
+    if isinstance(summary, str) and summary:
+        if has_unclosed_fence(summary):
+            problems.append(f"{name} (summary): close the fenced code block")
+        prev_line = ""
+        for _, line, fenced in numbered_lines(summary, 1):
+            where = f"{name} (summary)"
+            if not fenced:
+                if RELEASE_LEVEL_HEADING.match(line):
+                    problems.append(
+                        f"{where}: start each change at `###`; `#` and `##` belong to the page"
+                    )
+                elif (
+                    SETEXT_UNDERLINE.match(line)
+                    and prev_line.strip()
+                    and not prev_line.lstrip().startswith(("#", "<!--", "|"))
+                ):
+                    problems.append(
+                        f"{where}: start each change at `###`; `#` and `##` belong to the page"
+                    )
+            prev_line = "" if fenced else line
+
+    has_change = False
+    prev_line = ""
+    for number, line, fenced in numbered_lines(body, first_line):
+        where = f"{name}:{number}"
+        if not fenced:
+            has_change |= bool(CHANGE_LEVEL_HEADING.match(line))
+            if RELEASE_LEVEL_HEADING.match(line):
+                problems.append(
+                    f"{where}: start each change at `###`; `#` and `##` belong to the page"
+                )
+            elif (
+                SETEXT_UNDERLINE.match(line)
+                and prev_line.strip()
+                and not prev_line.lstrip().startswith(("#", "<!--", "|"))
+            ):
+                problems.append(
+                    f"{where}: start each change at `###`; `#` and `##` belong to the page"
+                )
+        if not fenced and "<!--" in line:
+            problems.append(f"{where}: template guidance left in (an HTML comment)")
+        prev_line = "" if fenced else line
+    problems.extend(publication_problems(name, body, first_line))
+    if has_unclosed_fence(body):
+        problems.append(f"{name}: close the fenced code block before the next release")
+    if not has_change:
+        problems.append(f"{name}: no changes; add at least one `###` section")
+
+    if problems:
+        return None, problems
+    return Entry(date, title.strip(), " ".join(summary.split()), body.strip("\n")), []
+
+
+def anchor_problems(entries: List[Entry]) -> List[str]:
+    """Explicit ``{#id}`` anchors must be unique across the whole page."""
+    owner: Dict[str, str] = {entry.anchor: f"{entry.date}.qmd" for entry in entries}
+    for entry in entries:
+        owner[year_anchor(entry.date.year)] = f"the page's {entry.date.year} heading"
+    problems = []
+    for entry in entries:
+        for field, content in (
+            ("title", entry.title),
+            ("summary", entry.summary),
+            ("body", entry.body),
+        ):
+            where = f"{entry.date}.qmd ({field})"
+            for ident in EXPLICIT_ID.findall(content):
+                if ident in owner:
+                    problems.append(
+                        f"{where}: anchor #{ident} is already used by {owner[ident]}"
+                    )
+                else:
+                    owner[ident] = where
+    return problems
+
+
+def load_entries(entries_dir: Path) -> Tuple[List[Entry], List[str]]:
+    """Every publishable entry, newest first, and every problem found."""
+    entries: List[Entry] = []
+    problems: List[str] = []
+    if entries_dir.is_dir():
+        for path in sorted(entries_dir.glob("*.qmd")):
+            # `_template.qmd`, and anything else Quarto itself would skip.
+            if path.name.startswith(("_", ".")):
+                continue
+            entry, found = check_entry(path.name, path.read_text(encoding="utf-8"))
+            problems.extend(found)
+            if entry:
+                entries.append(entry)
+    entries.sort(key=lambda entry: entry.date, reverse=True)
+    problems.extend(anchor_problems(entries))
+    return entries, problems
+
+
+def render_release(entry: Entry) -> str:
+    lines = [
+        f"## {entry.title} {{#{entry.anchor}}}",
+        "",
+        f"Snapshot cut on **{long_date(entry.date)}** (`{entry.suffix}`). "
+        f"Dataset names are on [Released Datasets]({RELEASED_DATASETS}).",
+        "",
+    ]
+    if entry.summary:
+        lines += [entry.summary, ""]
+    return "\n".join(lines + [entry.body, ""])
+
+
+def index_label(entry: Entry, same_year: List[Entry]) -> str:
+    """The release's month, with the day when another release shares the month."""
+    month = MONTHS[entry.date.month - 1]
+    if sum(other.date.month == entry.date.month for other in same_year) > 1:
+        return f"{month} {entry.date.day}"
+    return month
+
+
+def render_index(entries: List[Entry]) -> str:
+    """One line per year, linking each of its releases by month."""
+    lines = []
+    for year, releases in by_year(entries):
+        links = INDEX_SEPARATOR.join(
+            f"[{index_label(entry, releases)}](#{entry.anchor})" for entry in releases
+        )
+        lines.append(f"- **{year}:** {links}")
+    return "\n".join(lines) + "\n"
+
+
+def render_page(entries: List[Entry]) -> str:
+    """The whole page: newest first, a `#` heading per year, a `##` per release."""
+    if not entries:
+        return PAGE_HEADER + "\n" + NO_ENTRIES
+    blocks = [render_index(entries)]
+    for year, releases in by_year(entries):
+        blocks.append(f"# {year} {{#{year_anchor(year)}}}\n")
+        blocks.extend(render_release(entry) for entry in releases)
+    return PAGE_HEADER + "\n" + "\n".join(blocks)
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Build docs/release_notes.qmd from docs/release_notes/*.qmd"
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="validate the entries without writing the page",
+    )
+    args = parser.parse_args(argv)
+
+    root = Path(__file__).resolve().parent.parent
+    docs_dir = root / "docs"
+    entries, problems = load_entries(docs_dir / ENTRIES_DIR)
+    try:
+        releases = load_catalog(root)
+        problems.extend(entry_problems(root, releases))
+    except (OSError, ValueError) as error:
+        print(f"Release catalog cannot be published: {error}", file=sys.stderr)
+        return 1
+    if problems:
+        print(
+            "Release notes cannot be published until these are fixed:", file=sys.stderr
+        )
+        for problem in problems:
+            print(f"  - {problem}", file=sys.stderr)
+        return 1
+
+    if args.check:
+        print(f"Release notes: {len(entries)} entries pass the checks")
+        return 0
+    (docs_dir / OUTPUT_FILE).write_text(render_page(entries), encoding="utf-8")
+    (docs_dir / RELEASED_DATASETS).write_text(
+        render_datasets(releases), encoding="utf-8"
+    )
+    print(
+        f"Generated {OUTPUT_FILE} and {RELEASED_DATASETS} from {len(releases)} release records"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
