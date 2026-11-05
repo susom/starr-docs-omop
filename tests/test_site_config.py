@@ -7,12 +7,14 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from site_config import load_settings  # noqa: E402
+import build_site  # noqa: E402
 
 
 class SiteConfigTests(unittest.TestCase):
@@ -62,6 +64,52 @@ class SiteConfigTests(unittest.TestCase):
                 "https://example.org/docs/notes.html", (docs / "llms.txt").read_text()
             )
             self.assertFalse((docs / "release_notes.qmd").exists())
+
+    def test_offline_staging_includes_configured_catalog(self):
+        run = subprocess.run
+        for catalog_dir in ("data/releases", "catalog", "custom/catalog"):
+            with (
+                self.subTest(catalog_dir=catalog_dir),
+                tempfile.TemporaryDirectory() as tmp,
+            ):
+                root = Path(tmp)
+                shutil.copytree(ROOT / "scripts", root / "scripts")
+                docs = root / "docs"
+                docs.mkdir()
+                shutil.copytree(ROOT / "docs/release_notes", docs / "release_notes")
+                (root / "data").mkdir()
+                shutil.copytree(ROOT / "data/releases", root / catalog_dir)
+                config = yaml.safe_load((ROOT / "docs/_quarto.yml").read_text())
+                config["starr"]["releases"]["catalog_dir"] = catalog_dir
+                (docs / "_quarto.yml").write_text(yaml.safe_dump(config))
+
+                def render(command, *, cwd, check):
+                    self.assertEqual(command, ["quarto", "render", "--no-execute"])
+                    # Run real hooks in the staged checkout; only Quarto is stubbed.
+                    for script in ("generate_release_notes.py", "generate_llms_txt.py"):
+                        run(
+                            [sys.executable, str(cwd.parent / "scripts" / script)],
+                            cwd=cwd,
+                            check=check,
+                            capture_output=True,
+                            text=True,
+                        )
+                    (cwd / "_site").mkdir()
+                    (cwd / "_site/index.html").write_text("Rendered preview")
+
+                with mock.patch.object(
+                    build_site.subprocess, "run", side_effect=render
+                ):
+                    build_site.offline_render(root)
+                self.assertIn(
+                    "September 2026", (docs / "release_notes.qmd").read_text()
+                )
+                self.assertIn(
+                    "_2026_09_10", (docs / "released_datasets.qmd").read_text()
+                )
+                self.assertEqual(
+                    (docs / "_site/index.html").read_text(), "Rendered preview"
+                )
 
     def test_september_correction_keeps_only_omop_content(self):
         text = (ROOT / "docs/release_notes/2026-09-10.qmd").read_text()

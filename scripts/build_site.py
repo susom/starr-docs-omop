@@ -32,9 +32,14 @@ GENERATED_RELEASE_FILES = (
 
 def offline_render(root: Path) -> None:
     docs = root / "docs"
+    config = yaml.safe_load((docs / "_quarto.yml").read_text(encoding="utf-8"))
+    catalog_dir = config["starr"]["releases"]["catalog_dir"]
     with tempfile.TemporaryDirectory(prefix="starr-docs-preview-") as tmp:
         stage = Path(tmp)
-        for name in ("docs", "scripts", "data"):
+        for name in ("docs", "scripts", "data", catalog_dir):
+            # The catalog may already be included by an earlier directory copy.
+            if (stage / name).exists():
+                continue
             shutil.copytree(
                 root / name,
                 stage / name,
@@ -43,7 +48,6 @@ def offline_render(root: Path) -> None:
                 ),
             )
         config_path = stage / "docs/_quarto.yml"
-        config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
         hooks = []
         for command in config["project"]["pre-render"]:
             script = Path(command.split()[0]).name
