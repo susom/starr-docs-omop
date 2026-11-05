@@ -60,9 +60,11 @@ except ImportError:
     sys.exit(1)
 
 
-ENTRIES_DIR = "release_notes"
-OUTPUT_FILE = "release_notes.qmd"
-RELEASED_DATASETS = "released_datasets.qmd"
+from site_config import SETTINGS
+
+ENTRIES_DIR = SETTINGS["releases"]["entries_dir"]
+OUTPUT_FILE = SETTINGS["releases"]["notes_page"]
+RELEASED_DATASETS = SETTINGS["releases"]["datasets_page"]
 
 ENTRY_NAME = re.compile(r"\A(\d{4}-\d{2}-\d{2})\.qmd\Z")
 FRONT_MATTER = re.compile(r"\A---[ \t]*\n(.*?)\n---[ \t]*(?:\n|\Z)(.*)\Z", re.DOTALL)

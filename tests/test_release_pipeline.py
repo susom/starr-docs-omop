@@ -394,10 +394,11 @@ class ReleasePipelineTests(unittest.TestCase):
         original = catalog.read_json(path)
         changed = dict(original, variants=["core"])
         path.write_text(catalog.json_text(changed))
-        with self.assertRaisesRegex(ValueError, "revision 2"):
+        with self.assertRaisesRegex(ValueError, f"revision {original['revision'] + 1}"):
             pipeline.check_history(self.docs, base)
         changed.update(
-            revision=2, correction_reason="Correct the recorded variant list."
+            revision=original["revision"] + 1,
+            correction_reason="Correct the recorded variant list.",
         )
         path.write_text(catalog.json_text(changed))
         pipeline.check_history(self.docs, base)
@@ -586,7 +587,7 @@ class ReleasePipelineTests(unittest.TestCase):
             "os.environ", {"STARR_DATA_LAKE_CHECKOUT": str(self.repo)}
         ):
             with mock.patch.object(models.subprocess, "run") as run:
-                self.assertEqual(generator.clone_repository(), self.repo)
+                self.assertEqual(generator.clone_repository(), self.repo.resolve())
                 run.assert_not_called()
         generator.cleanup()
         self.assertTrue(folder.exists())

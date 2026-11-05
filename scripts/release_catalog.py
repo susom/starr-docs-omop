@@ -9,6 +9,8 @@ import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from site_config import SETTINGS
+
 MONTHS = (
     "January",
     "February",
@@ -24,9 +26,9 @@ MONTHS = (
     "December",
 )
 VARIANTS = ("core", "1pcent", "lite", "1pcent_lite")
-PROJECT = "som-rit-phi-starr-prod"
-DATASET_PREFIX = "starr_omop_cdm54_confidential"
-CATALOG_DIR = "data/releases"
+PROJECT = SETTINGS["releases"]["project"]
+DATASET_PREFIX = SETTINGS["releases"]["dataset_prefix"]
+CATALOG_DIR = SETTINGS["releases"]["catalog_dir"]
 LEGACY_DATES = frozenset(("2026-01-18", "2026-06-08", "2026-09-10"))
 SHA = re.compile(r"[0-9a-f]{40}")
 NOTE_ID = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*")
@@ -224,7 +226,7 @@ def load_catalog(root: Path) -> list[Release]:
 
 
 def entry_problems(root: Path, releases: list[Release]) -> list[str]:
-    folder = root / "docs/release_notes"
+    folder = root / "docs" / SETTINGS["releases"]["entries_dir"]
     expected = {
         f"{record.release_date}.qmd": record
         for record in releases
@@ -275,7 +277,7 @@ def render_datasets(releases: list[Release]) -> str:
         "---",
         "",
         "A reverse-chronological log of available STARR-OMOP dataset releases. "
-        "The same release records supply this page and the [Release Notes](release_notes.qmd).",
+        f"The same release records supply this page and the [Release Notes]({SETTINGS['releases']['notes_page']}).",
         "",
         "::: {.callout-note}",
         "Each dataset name below links directly to the Google Cloud Console, pinned to that "
@@ -332,7 +334,7 @@ def render_datasets(releases: list[Release]) -> str:
             ]
         else:
             lines += [
-                f"[Read the release notes](release_notes.qmd#release-{record.release_date}).",
+                f"[Read the release notes]({SETTINGS['releases']['notes_page']}#release-{record.release_date}).",
                 "",
             ]
         lines += [

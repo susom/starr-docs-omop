@@ -16,14 +16,15 @@ from pathlib import Path
 
 import yaml
 
+from site_config import SETTINGS
 from release_catalog import read_json
 from release_pipeline import ROOT, sync_bundle
 
 LOCAL_HOOKS = {"generate_faq.py", "generate_release_notes.py", "generate_llms_txt.py"}
 NETWORK_HOOKS = {"generate_docs.py", "generate_exports.py"}
 GENERATED_RELEASE_FILES = (
-    "release_notes.qmd",
-    "released_datasets.qmd",
+    SETTINGS["releases"]["notes_page"],
+    SETTINGS["releases"]["datasets_page"],
     "llms.txt",
     "llms-full.txt",
 )
@@ -95,7 +96,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--offline",
         action="store_true",
-        help="credential-free preview only; never used by the deployment job",
+        help="credential-free preview only; does not execute FAQ queries",
     )
     args = parser.parse_args(argv)
     try:

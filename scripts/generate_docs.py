@@ -24,6 +24,8 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from site_config import SETTINGS
+
 try:
     import yaml
 except ImportError:
@@ -33,30 +35,11 @@ except ImportError:
     sys.exit(1)
 
 
-REPO_URL = "https://github.com/susom/starr-data-lake.git"
+REPO_URL = SETTINGS["source_repo"]
 
-MODEL_CONFIGS = {
-    "omop": {
-        "yml_path": "dbt/omop_cdm54/models/baseline",
-        "manifest_path": None,
-        "output_file": "docs/omop_data_model.qmd",
-        "dictionary_page": "omop_data_dictionary.qmd",
-        "title": "OMOP CDM v5.4 Data Model",
-        "description": "What each table holds and how Stanford populates it",
-        "overview": (
-            "This page describes what each table in the STARR-OMOP CDM v5.4 "
-            "implementation holds, and how Stanford populates it. The fields "
-            "themselves — type, requiredness, foreign keys and per-field "
-            "descriptions — are in the "
-            "[data dictionary](omop_data_dictionary.qmd), which is searchable, "
-            "filterable and downloadable as a spreadsheet."
-        ),
-        "bq_project": None,
-        "bq_schema": None,
-    },
-}
+MODEL_CONFIGS = SETTINGS["models"]
 
-EXCLUDE_FOLDERS = ["temp"]
+EXCLUDE_FOLDERS = SETTINGS["exclude_folders"]
 
 # The line each table section carries in place of the column list it used to
 # spell out, and the shape generate_llms_txt.py reads the count back out of.

@@ -20,17 +20,19 @@ from pathlib import Path
 
 import yaml
 
+from site_config import SETTINGS
+
 import generate_release_notes as rn
 import release_catalog as catalog
 
 ROOT = Path(__file__).resolve().parents[1]
-PRODUCT = "STARR OMOP 5.4"
+PRODUCT = SETTINGS["releases"]["product"]
 FRAGMENT = re.compile(r"CHANGELOG-[A-Za-z0-9][A-Za-z0-9._-]*\.adoc")
 BLOCK = re.compile(
     r"^////[ \t]*\n(starr-user-note:[^\n]*\n.*?)^////[ \t]*(?:\n|\Z)",
     re.MULTILINE | re.DOTALL,
 )
-USER_FACING_PATHS = ("dbt/", "src/", "deployments/")
+USER_FACING_PATHS = tuple(SETTINGS["releases"]["user_facing_paths"])
 RECORD_FIELDS = {
     "schema_version",
     "release_date",
@@ -505,7 +507,7 @@ def sync_bundle(root: Path, value: object) -> bool:
     release, text = parse_bundle(value)
     releases = catalog.load_catalog(root)
     problems = catalog.entry_problems(root, releases)
-    entries, entry_errors = rn.load_entries(root / "docs/release_notes")
+    entries, entry_errors = rn.load_entries(root / "docs" / rn.ENTRIES_DIR)
     if problems or entry_errors:
         raise ValueError("\n".join(problems + entry_errors))
     old = next(
@@ -513,7 +515,7 @@ def sync_bundle(root: Path, value: object) -> bool:
     )
     check_evolution(old, release)
     record_path = root / catalog.CATALOG_DIR / f"{release.release_date}.json"
-    entry_path = root / "docs/release_notes" / f"{release.release_date}.qmd"
+    entry_path = root / "docs" / rn.ENTRIES_DIR / f"{release.release_date}.qmd"
     if old == release:
         return False
     incoming, problems = rn.check_entry(entry_path.name, text)
@@ -631,9 +633,9 @@ def delivery_body(root: Path, date: str) -> str:
     section = text[start:end]
     files = [
         f"{catalog.CATALOG_DIR}/{date}.json",
-        f"docs/release_notes/{date}.qmd",
-        "docs/release_notes.qmd",
-        "docs/released_datasets.qmd",
+        f"docs/{rn.ENTRIES_DIR}/{date}.qmd",
+        f"docs/{rn.OUTPUT_FILE}",
+        f"docs/{rn.RELEASED_DATASETS}",
         "docs/llms.txt",
         "docs/llms-full.txt",
     ]

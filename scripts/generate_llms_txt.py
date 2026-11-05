@@ -204,7 +204,7 @@ def main():
     )
     parser.add_argument(
         "--base-url",
-        default="",
+        default=None,
         help="Base URL for the deployed site (used in llms.txt links)",
     )
     args = parser.parse_args()
@@ -217,7 +217,11 @@ def main():
 
     config = parse_quarto_config(docs_dir)
 
-    llms_txt = generate_llms_txt(config, docs_dir, args.base_url)
+    llms_txt = generate_llms_txt(
+        config,
+        docs_dir,
+        args.base_url if args.base_url is not None else config["website"]["site-url"],
+    )
     llms_txt_path = docs_dir / "llms.txt"
     llms_txt_path.write_text(llms_txt, encoding="utf-8")
 
