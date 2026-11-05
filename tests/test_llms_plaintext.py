@@ -74,6 +74,44 @@ def test_prose_that_merely_mentions_a_script_tag_survives():
     assert "Keep this sentence." in out
 
 
+def test_removing_release_anchors_does_not_leave_trailing_whitespace():
+    out = gl.strip_to_plaintext(
+        "# 2026 {#year-2026}\n\n"
+        "## September 2026 {#release-2026-09-10}\n\n"
+        "### Lab results {#star-12810}\n\nPublished text.\n"
+    )
+    assert "{#" not in out
+    assert all(line == line.rstrip() for line in out.splitlines())
+    assert "Published text." in out
+
+
+def test_all_plaintext_lines_pass_the_whitespace_hooks():
+    out = gl.strip_to_plaintext(
+        "Introductory prose.  \n\n- A list item. \n   \n"
+        "    An indented example.\t\n\nFinal paragraph.\n"
+    )
+    assert all(line == line.rstrip() for line in out.splitlines())
+    assert "    An indented example." in out
+
+
+def test_lab_result_comparisons_survive_plaintext_conversion():
+    table = (
+        "| Text | Numeric |\n"
+        "| --- | --- |\n"
+        "| `<0.5` | `0.5` |\n"
+        "| `<=1` | `1` |\n"
+        "| `>10` | `10` |\n"
+        "| `>=10` | `10` |\n"
+    )
+    out = gl.strip_to_plaintext(
+        '<div class="example">\n<strong>Lab results</strong>\n'
+        "<!-- explanatory markup -->\n" + table + "</div>"
+    )
+    assert table.strip() in out, out
+    assert "Lab results" in out
+    assert "<div" not in out and "<strong>" not in out and "<!--" not in out
+
+
 if __name__ == "__main__":
     failed = 0
     for name, fn in sorted(globals().items()):

@@ -9,12 +9,14 @@ import yaml
 from pathlib import Path
 import os
 
+from site_config import SETTINGS
+
 # Change to the docs directory
 docs_dir = Path(__file__).parent.parent / "docs"
 os.chdir(docs_dir)
 
 # Get all q*.qmd files in the faqs folder
-faq_files = sorted(glob.glob("faqs/q*.qmd"))
+faq_files = sorted(glob.glob(SETTINGS["faq"]["pattern"]))
 
 # Start building the FAQ content
 faq_content = """---
@@ -55,7 +57,7 @@ for faq_file_path in faq_files:
     faq_content += ":::\n\n"
 
 # Write the generated content to faq.qmd
-with open("faq.qmd", "w") as f:
+with open(SETTINGS["faq"]["output"], "w") as f:
     f.write(faq_content)
 
 print(f"Generated faq.qmd from {len(faq_files)} FAQ files")

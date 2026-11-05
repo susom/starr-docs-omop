@@ -1,0 +1,13 @@
+.git
+.venv
+.claude
+.astra
+.temp
+**/__pycache__
+**/.quarto
+**/.ruff_cache
+**/.pytest_cache
+**/.env
+**/.env.*
+gha-creds-*.json
+docs/_site

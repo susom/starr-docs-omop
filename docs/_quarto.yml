@@ -6,7 +6,10 @@ project:
     # generate_llms_txt.py, which reads the dictionary page.
     - ../scripts/generate_exports.py omop
     - ../scripts/generate_faq.py
-    - ../scripts/generate_llms_txt.py --base-url "https://shiny-funicular-j1po82z.pages.github.io/about/"
+    # Validates fixed release records and entries, then writes both release
+    # pages. No live PR lookups. Must precede generate_llms_txt.py.
+    - ../scripts/generate_release_notes.py
+    - ../scripts/generate_llms_txt.py
   render:
     - starr_omop54.qmd
     - omop_data_model.qmd
@@ -15,6 +18,7 @@ project:
     - 404.qmd
     - changes_53_to_54.qmd
     - released_datasets.qmd
+    - release_notes.qmd
     - getting_access.qmd
     - omop_data_dictionary.qmd
   resources:
@@ -25,6 +29,7 @@ project:
 
 website:
   title: "STARR-OMOP Docs"
+  site-url: "https://shiny-funicular-j1po82z.pages.github.io/about/"
   site-path: "/about/"
   open-graph: true
   page-navigation: true
@@ -131,6 +136,8 @@ website:
               href: omop_data_model.qmd#whole_slide_imaging
         - text: "Data Dictionary"
           href: omop_data_dictionary.qmd
+        - text: "Release Notes"
+          href: release_notes.qmd
       - text: "STARR-OMOP v5.3"
         href: about.qmd#53_docs
       - text: "FAQ"
@@ -149,6 +156,8 @@ website:
             href: omop_data_model.qmd
           - text: "Data Dictionary"
             href: omop_data_dictionary.qmd
+          - text: "Release Notes"
+            href: release_notes.qmd
       - text: "STARR-OMOP v5.3"
         href: about.qmd#53_docs
       - text: "FAQ"
@@ -190,3 +199,53 @@ format:
 
 execute:
   lib-dir: /home/rstudio/renv/library/linux-ubuntu-noble/R-4.4/aarch64-unknown-linux-gnu
+
+# Inputs shared by the Python generators. Keep environment credentials outside YAML.
+starr:
+  source_repo: https://github.com/susom/starr-data-lake.git
+  models:
+    omop:
+      yml_path: dbt/omop_cdm54/models/baseline
+      manifest_path: null
+      output_file: docs/omop_data_model.qmd
+      dictionary_page: omop_data_dictionary.qmd
+      title: OMOP CDM v5.4 Data Model
+      description: What each table holds and how Stanford populates it
+      overview: >-
+        This page describes what each table in the STARR-OMOP CDM v5.4
+        implementation holds, and how Stanford populates it. The fields
+        themselves — type, requiredness, foreign keys and per-field
+        descriptions — are in the
+        [data dictionary](omop_data_dictionary.qmd), which is searchable,
+        filterable and downloadable as a spreadsheet.
+      bq_project: null
+      bq_schema: null
+  exports:
+    omop:
+      page_file: docs/omop_data_dictionary.qmd
+      workbook_file: docs/downloads/starr_omop_data_dictionary.xlsx
+      page_title: OMOP Data Dictionary
+      page_description: Every STARR-OMOP CDM v5.4 table and field in one searchable
+        page, downloadable as an Excel workbook.
+      workbook_title: STARR-OMOP CDM v5.4 Data Dictionary
+      cdm_version: OMOP CDM v5.4
+      model_page: omop_data_model.qmd
+      csv_prefix: starr_omop
+  exclude_folders:
+    - temp
+  dictionary_baseline: data/dictionary_baseline.json
+  faq:
+    pattern: faqs/q*.qmd
+    output: faq.qmd
+  releases:
+    product: STARR OMOP 5.4
+    project: som-rit-phi-starr-prod
+    dataset_prefix: starr_omop_cdm54_confidential
+    catalog_dir: data/releases
+    entries_dir: release_notes
+    notes_page: release_notes.qmd
+    datasets_page: released_datasets.qmd
+    user_facing_paths:
+      - dbt/
+      - src/
+      - deployments/

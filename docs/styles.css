@@ -1077,3 +1077,239 @@ strong, b {
   font-weight: 700;
   color: inherit;
 }
+
+/* ---------------------------------------------------------------------------
+   Release notes page (docs/release_notes.qmd)
+
+   Scoped to `body.release-notes`, which scripts/generate_release_notes.py
+   sets in the page's front matter (`body-classes`). A change's heading is the
+   first sentence of its changelog entry, so at the site-wide heading sizes,
+   with Lux's 3px letter-spacing, one title ran to five lines. Here a year is
+   a divider, a month is a row, and a change's title sits just above body
+   text.
+
+   docs/assets/release-notes.js makes each year and month heading a button
+   that opens and closes the rest of its section (the `.rn-*` rules). Without
+   JavaScript none of that exists and every section is open.
+   ------------------------------------------------------------------------ */
+
+.release-notes main section.level1 > h1,
+.release-notes main section.level2 > h2,
+.release-notes main section.level3 > h3 {
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+}
+
+/* A year: a divider in the Stanford red. */
+.release-notes main section.level1 > h1 {
+  margin: 2.5rem 0 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--red-vivid);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* A month: one row per release, so the months before it read as a list. */
+.release-notes main section.level2 > h2 {
+  margin: 0;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 1.15rem;
+}
+
+/* The snapshot line that opens each month. */
+.release-notes main section.level2 > h2 + p,
+.release-notes main section.level2 > .rn-panel > p:first-child {
+  margin: 0.75rem 0 1rem;
+  color: var(--cool-grey);
+  font-size: 0.875rem;
+}
+
+/* A change. */
+.release-notes main section.level3 > h3 {
+  margin: 1.5rem 0 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--red-vivid);
+  font-size: 1.1rem;
+  line-height: 1.45;
+}
+
+/* Headings inside a change stay below its title. */
+.release-notes main section.level3 :is(h4, h5, h6) {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+/* Lux pads every cell by 1.5rem and capitalizes header cells. Here a header
+   is usually a column name, which is case-sensitive, and the site-wide
+   `overflow-wrap: anywhere` split names and values mid-word. Here they stay
+   whole: release-notes.js lets a snake_case name wrap after an underscore,
+   and a table still too wide for the page scrolls sideways in its own box
+   (the site-wide `table { display: block; overflow: auto }`). */
+.release-notes main section.level3 table {
+  font-size: 0.875rem;
+}
+
+.release-notes main section.level3 .table th,
+.release-notes main section.level3 .table td,
+.release-notes main section.level3 .table code {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* Code in a header cell is `white-space: pre`, where Firefox and Safari do
+   not break at a <wbr>. Code in other cells is already `pre-wrap`. */
+.release-notes main section.level3 .table code {
+  white-space: pre-wrap;
+}
+
+.release-notes main section.level3 .table th,
+.release-notes main section.level3 .table td {
+  padding: 0.45rem 0.75rem;
+}
+
+.release-notes main section.level3 .table th {
+  text-transform: none;
+}
+
+/* --- Open and close: years and months (release-notes.js) ---------------- */
+
+/* anchor.js appends its link to the heading after the button. Pinned to the
+   end of the row, in space the button leaves for it, the link stays clear of
+   the button, and the counts on year rows, which have no link, line up with
+   those on month rows. */
+.release-notes .rn-heading {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.release-notes .rn-heading > .anchorjs-link {
+  position: absolute;
+  right: 0;
+}
+
+/* The whole row is the button. Its look stays the heading's. */
+.release-notes .rn-toggle {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  margin: 0 1.75rem 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.release-notes .rn-toggle:hover {
+  color: var(--red-vivid);
+}
+
+.release-notes .rn-toggle:focus-visible {
+  outline: 2px solid var(--red-vivid);
+  outline-offset: 2px;
+}
+
+/* Drawn from two borders, like the dictionary's chevrons, so there is no
+   glyph to go missing from a font. Right while closed, down while open. */
+.release-notes .rn-chevron {
+  flex: none;
+  width: 0.45em;
+  height: 0.45em;
+  margin: 0 0.2em;
+  border-top: 2px solid currentcolor;
+  border-left: 2px solid currentcolor;
+  transform: rotate(135deg);
+  transition: transform 0.15s ease;
+}
+
+.release-notes .rn-toggle[aria-expanded="true"] .rn-chevron {
+  transform: rotate(225deg);
+}
+
+.release-notes .rn-label {
+  min-width: 0;
+}
+
+/* How many releases a year holds, or changes a month: what a closed row
+   hides. */
+.release-notes .rn-meta {
+  margin-left: auto;
+  padding-left: 1rem;
+  color: var(--cool-grey);
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* A month's changes line up with its name rather than its chevron. Only
+   horizontal padding: a closed panel has to take up no height at all. */
+.release-notes section.level2 > .rn-panel {
+  padding-left: 1.4rem;
+}
+
+/* Bootstrap hides every `[hidden]` with `display: none !important`, which
+   would hide a closed panel from find-in-page as well. An `until-found` panel
+   keeps its box, and the browser keeps what is in it out of view until a
+   search lands there. */
+.release-notes .rn-panel[hidden="until-found"] {
+  display: block !important;
+}
+
+.release-notes .rn-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0 0;
+}
+
+/* Legible despite Lux's 10px `.btn-sm`, as on the dictionary's toolbar, and
+   no taller than a month's row. */
+.release-notes .rn-button.btn {
+  padding: 0.3rem 0.75rem;
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.release-notes .rn-button:hover,
+.release-notes .rn-button:focus {
+  border-color: var(--red-vivid);
+  color: var(--red-vivid);
+}
+
+@media (max-width: 575.98px) {
+  .release-notes section.level2 > .rn-panel {
+    padding-left: 0;
+  }
+
+  .release-notes main section.level3 > h3 {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .release-notes .rn-chevron {
+    transition: none;
+  }
+}
+
+/* Printing wants every release, not whichever happen to be open. */
+@media print {
+  .release-notes .rn-toolbar,
+  .release-notes .rn-chevron,
+  .release-notes .rn-meta {
+    display: none !important;
+  }
+
+  .release-notes .rn-panel[hidden] {
+    display: block !important;
+    content-visibility: visible !important;
+  }
+}

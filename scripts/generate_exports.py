@@ -37,6 +37,8 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from site_config import SETTINGS
+
 try:
     import pandas as pd
 except ImportError:
@@ -55,25 +57,7 @@ from generate_docs import (
 )
 
 
-EXPORT_CONFIGS = {
-    "omop": {
-        "page_file": "docs/omop_data_dictionary.qmd",
-        "workbook_file": "docs/downloads/starr_omop_data_dictionary.xlsx",
-        "page_title": "OMOP Data Dictionary",
-        "page_description": (
-            "Every STARR-OMOP CDM v5.4 table and field in one searchable page, "
-            "downloadable as an Excel workbook."
-        ),
-        "workbook_title": "STARR-OMOP CDM v5.4 Data Dictionary",
-        "cdm_version": "OMOP CDM v5.4",
-        "model_page": "omop_data_model.qmd",
-        # Stem for the filenames the grid's CSV export offers. Reaches the
-        # browser as `data-dd-csv` on each static table rather than as a
-        # constant in data-dictionary.js, so the script stays identical to the
-        # one starr-docs-common ships.
-        "csv_prefix": "starr_omop",
-    },
-}
+EXPORT_CONFIGS = SETTINGS["exports"]
 
 # Constraint strings emitted by DocGenerator._parse_constraints that mean
 # "this field must be populated".
@@ -260,7 +244,7 @@ FOREIGN_KEY_CONSTRAINT = re.compile(r"\*\*Foreign Key\*\*\s*→\s*`([^`]*)`")
 # (`--update-baseline`), never by the pre-render hook: a snapshot that
 # refreshed itself on every build would compare each render against the one
 # before it and never have anything to report.
-BASELINE_FILE = "data/dictionary_baseline.json"
+BASELINE_FILE = SETTINGS["dictionary_baseline"]
 BASELINE_SCHEMA = 1
 
 # Stanford brand tokens, mirrored from docs/styles.css :root.

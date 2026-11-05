@@ -25,22 +25,28 @@ scripts/
   generate_docs.py      # Builds omop_data_model.qmd from starr-data-lake dbt YMLs
   generate_exports.py   # Builds the data dictionary page and Excel workbook
   generate_faq.py       # Builds faq.qmd from docs/faqs/q*.qmd entries
+  generate_release_notes.py  # Builds both release pages from the catalog and entries
+  release_pipeline.py  # Validates source notes, freezes releases, imports fixed bundles
+  release_catalog.py   # Shared public dataset-availability record and validation
+  build_site.py        # Optional fixed-release synchronization followed by rendering
   generate_llms_txt.py  # Builds llms.txt and llms-full.txt from the rendered site
 docs/
   _quarto.yml           # Quarto site config (pages, navbar, pre-render hooks)
   *.qmd                 # Site pages (about, getting_access, starr_omop54, ...)
-  assets/               # Hand-written site scripts (data dictionary grid)
+  assets/               # Hand-written site scripts (data dictionary grid, release notes sections)
   downloads/            # Generated downloadable artifacts (not committed)
   faqs/                 # Individual FAQ entries (see docs/faqs/README.md)
+  release_notes/        # One entry per dataset release (see CONTRIBUTING.md)
   styles.css, fonts/    # Stanford theme assets
 data/
   dictionary_baseline.json  # Last released field signatures (see below)
-tests/                  # Escaping and workbook-layout invariants
+  releases/            # One versioned availability record per dataset snapshot
+tests/                  # Escaping, workbook-layout and release-notes invariants
 ```
 
 ## How the Site Is Built
 
-The pages `omop_data_model.qmd`, `omop_data_dictionary.qmd`, `faq.qmd`, `llms.txt`, `llms-full.txt`, and the Excel workbook `downloads/starr_omop_data_dictionary.xlsx` are **generated** — do not edit them by hand.
+The pages `omop_data_model.qmd`, `omop_data_dictionary.qmd`, `faq.qmd`, `release_notes.qmd`, `released_datasets.qmd`, `llms.txt`, `llms-full.txt`, and the Excel workbook `downloads/starr_omop_data_dictionary.xlsx` are **generated** — do not edit them by hand.
 
 The generated pages are committed so that a diff shows what a dbt change did to the docs. The workbook is not: it is a binary, nothing can be read out of its diff, and the same hooks rebuild it on every render and publish. Expect `docs/downloads/` to be empty in a fresh clone until you render.
 
@@ -49,9 +55,10 @@ They are produced automatically by the `pre-render` hooks declared in [docs/_qua
 1. `scripts/generate_docs.py omop` — sparse-clones [starr-data-lake](https://github.com/susom/starr-data-lake) and writes one section per table into `docs/omop_data_model.qmd`: what the table holds, and how many fields it has. It also rewrites the per-table list under **Data Model Tables** in `docs/_quarto.yml` (see below).
 2. `scripts/generate_exports.py omop` — sparse-clones the same repo and flattens the same models into `docs/omop_data_dictionary.qmd` and `docs/downloads/starr_omop_data_dictionary.xlsx`.
 3. `scripts/generate_faq.py` — collects every `docs/faqs/q*.qmd` entry into `docs/faq.qmd` (see [docs/faqs/README.md](docs/faqs/README.md)).
-4. `scripts/generate_llms_txt.py` — builds `docs/llms.txt` and `docs/llms-full.txt` from the site structure.
+4. `scripts/generate_release_notes.py` — checks every entry against its fixed availability record in `data/releases/`, then generates both `release_notes.qmd` and `released_datasets.qmd`. Notes remain newest first and grouped by year and month. Missing records, missing entries, checksum mismatches, and invalid content stop the render (see [the release guide](CONTRIBUTING.md#publish-release-notes)).
+5. `scripts/generate_llms_txt.py` — builds `docs/llms.txt` and `docs/llms-full.txt` from the site structure.
 
-The order matters twice: step 4 reads the pages written by steps 1–3, and step 2 must run before it or `llms-full.txt` describes the previous dictionary.
+The order matters twice: step 5 reads the pages written by steps 1–4, and step 2 must run before it or `llms-full.txt` describes the previous dictionary.
 
 You can also run any of these scripts manually while iterating (see below).
 
@@ -107,15 +114,48 @@ python scripts/generate_exports.py omop --update-baseline
 
 Commit the result together with the page it produces.
 
+### Where release notes come from
+
+Release notes are committed snapshot text in `docs/release_notes/`, backed by
+versioned availability records in `data/releases/`. The build validates both and
+generates the release pages without live PR lookups. Authoring belongs in
+[starr-data-lake](https://github.com/susom/starr-data-lake/blob/main/docs/getting_started/dbt_pr_template.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md#publish-release-notes) for validation,
+manual import, corrections, and the pending upstream contract follow-up.
+
+### Generator configuration
+
+`docs/_quarto.yml` is the single source for generator inputs. Its `starr` section
+holds source/model paths, export settings, FAQ paths, and release catalog/product
+settings. Python scripts share `scripts/site_config.py`; the LLM generator reads
+`website.site-url`. Keep credentials outside this file. CLI flags describe the
+specific operation (for example, a bundle path or source commit); they do not
+duplicate site defaults. Validation rules and format versions remain in code.
+
 ### Tests
 
-`tests/` holds the invariants that are cheap to break and expensive to notice: HTML escaping on the generated page, and the workbook's registry-driven column formatting. They need no fixtures and no network.
+`tests/` holds the invariants that are cheap to break and expensive to notice: HTML escaping on the generated page, the workbook's registry-driven column formatting, and what the release-notes generator refuses. They need no fixtures and no network.
 
 ```bash
 python tests/test_html_escaping.py
 python tests/test_workbook_layout.py
+python tests/test_release_notes.py
+python tests/test_release_pipeline.py
 # or, if you have pytest: pytest tests
 ```
+
+Run these checks in the existing dev container after its setup completes:
+
+```bash
+source .venv/bin/activate
+for test in tests/test_*.py; do python "$test" || exit 1; done
+python scripts/generate_release_notes.py --check
+python scripts/build_site.py --offline
+```
+
+For an interactive preview use `quarto preview` as described below. The offline
+build uses committed model pages and skips FAQ queries; it is for reviewing site
+changes without credentials. The Excel download requires a prior dictionary build.
 
 ## Developer Guide
 
@@ -164,7 +204,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to author content (updating the O
 
 ## Publishing the Website
 
-The site is published manually to GitHub Pages from a contributor's machine. There is no CI pipeline. After changes are merged into `main`:
+An authorized maintainer publishes manually from the authenticated dev container
+after changes are merged:
 
 ```bash
 git checkout main
