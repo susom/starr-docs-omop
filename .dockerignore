@@ -5,6 +5,7 @@
 .temp
 **/__pycache__
 **/.quarto
+**/.jupyter_cache
 **/.ruff_cache
 **/.pytest_cache
 **/.env

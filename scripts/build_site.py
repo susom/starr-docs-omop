@@ -44,7 +44,11 @@ def offline_render(root: Path) -> None:
                 root / name,
                 stage / name,
                 ignore=shutil.ignore_patterns(
-                    "_site", ".quarto", "__pycache__", ".ruff_cache"
+                    "_site",
+                    ".quarto",
+                    ".jupyter_cache",
+                    "__pycache__",
+                    ".ruff_cache",
                 ),
             )
         config_path = stage / "docs/_quarto.yml"

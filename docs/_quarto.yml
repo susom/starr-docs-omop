@@ -197,7 +197,10 @@ format:
     toc-depth: 5
     smooth-scroll: true
 
+# Project-level execution caching (.jupyter_cache/) and freezing (_freeze/).
 execute:
+  cache: true
+  freeze: auto
   lib-dir: /home/rstudio/renv/library/linux-ubuntu-noble/R-4.4/aarch64-unknown-linux-gnu
 
 # Inputs shared by the Python generators. Keep environment credentials outside YAML.
