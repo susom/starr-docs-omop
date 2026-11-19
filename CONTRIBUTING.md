@@ -207,7 +207,7 @@ refactor(scripts): simplify llms.txt generation
 
 1. Create a branch off `main` (see [Branching](#branching)).
 2. Make your changes — edit `.qmd` pages or add FAQ entries.
-3. Preview locally with `quarto preview` and confirm everything renders.
+3. Preview locally with `quarto preview` and confirm everything renders. If you added or modified executable FAQ entries, ensure you were authenticated with `gcloud` so `docs/_freeze/` refreshes, and include the updated `docs/_freeze/` files in your commit.
 4. Confirm you did **not** hand-edit any generated files.
 5. Open a pull request; the [pull request template](.github/pull_request_template.md)
    is applied automatically — fill it in.

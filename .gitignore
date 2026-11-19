@@ -9,6 +9,7 @@ uv.lock
 
 # Quarto
 .quarto/
+.jupyter_cache/
 docs/_site/
 
 # Temporary files

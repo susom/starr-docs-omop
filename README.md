@@ -31,6 +31,7 @@ scripts/
   build_site.py        # Optional fixed-release synchronization followed by rendering
   generate_llms_txt.py  # Builds llms.txt and llms-full.txt from the rendered site
 docs/
+  _freeze/              # Committed Quarto execution snapshots (reused when FAQs don't change)
   _quarto.yml           # Quarto site config (pages, navbar, pre-render hooks)
   *.qmd                 # Site pages (about, getting_access, starr_omop54, ...)
   assets/               # Hand-written site scripts (data dictionary grid, release notes sections)
@@ -154,8 +155,9 @@ python scripts/build_site.py --offline
 ```
 
 For an interactive preview use `quarto preview` as described below. The offline
-build uses committed model pages and skips FAQ queries; it is for reviewing site
-changes without credentials. The Excel download requires a prior dictionary build.
+build uses committed model pages (without cloning `starr-data-lake`) and skips
+FAQ execution/freeze restoration (`--no-execute`); it is for reviewing site
+changes offline. The Excel download requires a prior dictionary build.
 
 ## Developer Guide
 
@@ -166,7 +168,7 @@ changes without credentials. The Excel download requires a prior dictionary buil
 1. **Docker Desktop** — [Download and install Docker](https://www.docker.com/products/docker-desktop/)
 2. **Visual Studio Code** — [Download VS Code](https://code.visualstudio.com/)
 3. **Dev Containers extension** — Install from the [VS Code marketplace](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-4. **Google Cloud authentication** — Authenticate with the `gcloud` CLI on your host. Your `~/.config/gcloud` directory is mounted into the container (see [.devcontainer/devcontainer.json](.devcontainer/devcontainer.json)), so FAQ code cells that query BigQuery can run during rendering.
+4. **Google Cloud authentication** — Authenticate with the `gcloud` CLI on your host when authoring or refreshing BigQuery-backed FAQ cells. Your `~/.config/gcloud` directory is mounted into the container (see [.devcontainer/devcontainer.json](.devcontainer/devcontainer.json)). Unchanged FAQ computations are served from `docs/_freeze/` without needing live BigQuery access.
 
 When you open the folder in the dev container, [post_create.sh](post_create.sh) runs automatically and:
 
@@ -178,7 +180,7 @@ When you open the folder in the dev container, [post_create.sh](post_create.sh) 
 1. **Quarto CLI 1.7.29+** — [Download from quarto.org](https://quarto.org/docs/get-started/) or `brew install --cask quarto`
 2. **Python 3.12+**
 3. **[uv](https://docs.astral.sh/uv/)** for dependency management
-4. **Google Cloud authentication** — `gcloud auth application-default login`
+4. **Google Cloud authentication** (when editing FAQs or refreshing query snapshots) — `gcloud auth application-default login`
 
 ```bash
 git clone https://github.com/susom/starr-docs-omop.git
@@ -196,7 +198,19 @@ cd docs
 quarto preview
 ```
 
-This runs the pre-render hooks (regenerating the OMOP, FAQ, and llms.txt content) and serves the site with live reload. Because FAQ code cells execute BigQuery queries at render time, you must be authenticated with `gcloud`.
+This runs the pre-render hooks (regenerating the OMOP, FAQ, and llms.txt content) and serves the site with live reload.
+
+[docs/_quarto.yml](docs/_quarto.yml) enables project-level `execute.cache: true` (backed by `jupyter-cache` in gitignored `.jupyter_cache/`) and `execute.freeze: auto` (stored in committed `docs/_freeze/`). Because `docs/faq.qmd` is the only page with executable code cells:
+
+- When `docs/faqs/q*.qmd` entries are unchanged, `quarto preview`, `quarto render`, and `quarto publish` reuse `docs/_freeze/` without launching Jupyter or requiring `gcloud` credentials.
+- When any `docs/faqs/q*.qmd` changes, `freeze: auto` re-executes `docs/faq.qmd` (using `jupyter-cache` for unchanged cell inputs when applicable) and updates `docs/_freeze/`. Commit the updated `docs/_freeze/` alongside your FAQ changes.
+- To force a live BigQuery refresh of FAQ outputs without editing `q*.qmd`, run:
+
+  ```bash
+  cd docs && quarto render faq.qmd --cache-refresh
+  ```
+
+- **Scope:** Quarto `cache` and `freeze` only skip Jupyter/BigQuery cell execution; `pre-render` hooks (`generate_docs.py` and `generate_exports.py` cloning `starr-data-lake`) and Pandoc HTML rendering still run on every render.
 
 ## Contributing
 

@@ -57,9 +57,10 @@ python ../../scripts/generate_faq.py
 
 ## Writing Code Cells
 
-FAQ entries can include executable Python code that runs **at render time**. This means:
+FAQ entries can include executable Python code (`{python}` cells) with project-level `cache: true` and `freeze: auto` enabled in [docs/_quarto.yml](../_quarto.yml). This means:
 
-- You must be authenticated with `gcloud` (see the root [README](../../README.md)) — cells that query BigQuery will actually run.
+- When `docs/faqs/q*.qmd` entries are unchanged, `quarto preview`, `quarto render`, and `quarto publish` reuse committed query results from `docs/_freeze/` without requiring `gcloud` credentials.
+- When you add or edit a `docs/faqs/q*.qmd` file (or force a live refresh via `cd .. && quarto render faq.qmd --cache-refresh`), `docs/faq.qmd` re-executes against BigQuery — you must be authenticated with `gcloud` (see the root [README](../../README.md)). Note that because `generate_faq.py` combines all `q*.qmd` files into one `docs/faq.qmd`, any change re-renders that page together (though `jupyter-cache` reuses matching cell results where inputs/options are unchanged).
 - Use a suitable project for queries (for example the training project `som-rit-starr-training`, as in [q1.qmd](q1.qmd)).
 - Keep queries small (use `LIMIT`) so the site renders quickly.
 
@@ -81,6 +82,6 @@ Markdown(df.to_markdown(index=False))
 ## What Happens When You Add a Question
 
 1. You add a new `q*.qmd` file here.
-2. On the next `quarto preview` / `render` / `publish`, `generate_faq.py` runs and rebuilds `docs/faq.qmd`, adding your entry as a new collapsible section (ordered by filename).
-3. Any code cells execute against BigQuery and their output is embedded in the page.
-4. After merging to `main`, running `quarto publish gh-pages` (from `docs/`) publishes the updated FAQ page to the live site.
+2. On the next `quarto preview` / `render`, `generate_faq.py` runs and rebuilds `docs/faq.qmd`, adding your entry as a new collapsible section (ordered by filename).
+3. Because `docs/faq.qmd` changed, `freeze: auto` executes the page's code cells against BigQuery, embeds their output, and updates `docs/_freeze/faq/`.
+4. Commit your `docs/faqs/q*.qmd` file, the regenerated `docs/faq.qmd`, and the updated `docs/_freeze/` directory. Future credential-free `quarto render` / `quarto publish gh-pages` runs will reuse those frozen outputs without re-querying BigQuery.
