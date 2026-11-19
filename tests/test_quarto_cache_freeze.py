@@ -47,7 +47,9 @@ class QuartoCacheFreezeTests(unittest.TestCase):
 
     def test_gitignore_rules_for_cache_and_freeze(self):
         root_ignore = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
-        docs_ignore = (ROOT / "docs/.gitignore").read_text(encoding="utf-8").splitlines()
+        docs_ignore = (
+            (ROOT / "docs/.gitignore").read_text(encoding="utf-8").splitlines()
+        )
         self.assertIn(".jupyter_cache/", root_ignore)
         self.assertIn("/.jupyter_cache/", docs_ignore)
         self.assertIn("/_freeze/site_libs/", docs_ignore)
@@ -66,24 +68,36 @@ class QuartoCacheFreezeTests(unittest.TestCase):
             )
         )
         if (ROOT / ".git").exists() and shutil.which("git"):
-            kept = subprocess.run(
-                [
-                    "git",
-                    "-C",
-                    str(ROOT),
-                    "check-ignore",
-                    "docs/_freeze/faq/execute-results/html.json",
-                ],
-                capture_output=True,
-                text=True,
-            )
-            self.assertEqual(kept.returncode, 1, kept.stdout or kept.stderr)
+            for kept_path in (
+                "docs/_freeze/faq/execute-results/html.json",
+                "docs/_freeze/other/execute-results/html.json",
+            ):
+                kept = subprocess.run(
+                    [
+                        "git",
+                        "-C",
+                        str(ROOT),
+                        "check-ignore",
+                        "--no-index",
+                        kept_path,
+                    ],
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(kept.returncode, 1, kept.stdout or kept.stderr)
             for ignored_path in (
                 "docs/.jupyter_cache/global.db",
                 "docs/_freeze/site_libs/clipboard/clipboard.min.js",
             ):
                 ignored = subprocess.run(
-                    ["git", "-C", str(ROOT), "check-ignore", ignored_path],
+                    [
+                        "git",
+                        "-C",
+                        str(ROOT),
+                        "check-ignore",
+                        "--no-index",
+                        ignored_path,
+                    ],
                     capture_output=True,
                     text=True,
                 )
@@ -94,9 +108,7 @@ class QuartoCacheFreezeTests(unittest.TestCase):
             (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
         )
         hooks = {
-            hook["id"]: hook
-            for repo in cfg["repos"]
-            for hook in repo.get("hooks", [])
+            hook["id"]: hook for repo in cfg["repos"] for hook in repo.get("hooks", [])
         }
         for hook_id in ("trailing-whitespace", "end-of-file-fixer"):
             self.assertEqual(hooks[hook_id].get("exclude"), "^docs/_freeze/")
@@ -136,9 +148,7 @@ class QuartoCacheFreezeTests(unittest.TestCase):
                 )
                 outputs.append((docs / "faq.qmd").read_bytes())
             self.assertEqual(outputs[0], outputs[1])
-            self.assertEqual(
-                outputs[0], (ROOT / "docs/faq.qmd").read_bytes()
-            )
+            self.assertEqual(outputs[0], (ROOT / "docs/faq.qmd").read_bytes())
 
     def test_offline_staging_ignores_jupyter_cache(self):
         run = subprocess.run
